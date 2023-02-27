@@ -1,0 +1,22 @@
+@tailwind base;
+
+html,body, #__nuxt, #__layout{
+    height:100%!important;
+    width: 100%!important;
+  }
+
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "PTSansRegular";
+    src: url("fonts/PTS55F_W.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  html {
+    font-family: "PTSansRegular", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
+}
