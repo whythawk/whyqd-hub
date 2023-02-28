@@ -46,7 +46,7 @@ const footerNavigation = {
     },
     {
       name: "GitHub",
-      href: "https://github.com/whythawk/whyqd",
+      href: "https://github.com/whythawk/whyqd-hub",
       icon: defineComponent({
         render: () =>
           h("svg", { fill: "currentColor", viewBox: "0 0 24 24" }, [
