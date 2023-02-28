@@ -266,6 +266,8 @@ services:
     environment:
       - NUXT_HOST=0.0.0.0
       - NUXT_PORT=80
+      - NITRO_HOST=0.0.0.0
+      - NITRO_PORT=80
     build:
       context: ./frontend
       args:
