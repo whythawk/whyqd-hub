@@ -135,4 +135,4 @@ The 'backronym' for **whyqd** `/wɪkɪd/` is _Whythawk Quantitative Data_, [Whyt
 
 ## Licence
 
-The [whyqd Python distribution](https://github.com/whythawk/whyqd) is licensed under the terms of the [BSD 3-Clause license](https://github.com/whythawk/whyqd/blob/master/LICENSE). This [whyqd hub distribution](https://github.com/whythawk/whyqd-hub) is licensed under the terms of the [GUN Affero General Public License](https://github.com/whythawk/whyqd/blob/master/LICENSE).
+The [whyqd Python distribution](https://github.com/whythawk/whyqd) is licensed under the terms of the [BSD 3-Clause license](https://github.com/whythawk/whyqd/blob/master/LICENSE). This [whyqd hub distribution](https://github.com/whythawk/whyqd-hub) is licensed under the terms of the [GNU Affero General Public License](https://github.com/whythawk/whyqd-hub/blob/main/LICENSE).
