@@ -55,5 +55,4 @@ COPY --from=build /app/app.vue ./
 COPY --from=build /app/nuxt.config* ./
 COPY --from=build /app/tailwind.config* ./
 COPY --from=build /app/tsconfig.json ./
-ENTRYPOINT ["yarn"]
-CMD ["start"]
+CMD ["node", ".output/server/index.mjs"]
