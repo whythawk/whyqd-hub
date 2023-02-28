@@ -11,7 +11,7 @@ html,body, #__nuxt, #__layout{
 @layer base {
   @font-face {
     font-family: "PTSansRegular";
-    src: url("fonts/PTS55F_W.woff2") format("woff2");
+    src: url("/fonts/PTS55F_W.woff2") format("woff2");
     font-weight: normal;
     font-style: normal;
     font-display: swap;

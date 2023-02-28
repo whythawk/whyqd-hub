@@ -14,8 +14,8 @@
           </div>
           <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div class="flex flex-shrink-0 items-center">
-              <img class="block h-8 w-auto lg:hidden" src="img/mark.svg" alt="Your Company" />
-              <img class="hidden h-8 w-auto lg:block" src="img/mark.svg" alt="Your Company" />
+              <img class="block h-8 w-auto lg:hidden" src="/img/mark.svg" alt="Whyqd.com" />
+              <img class="hidden h-8 w-auto lg:block" src="/img/mark.svg" alt="Whyqd.com" />
             </div>
             <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
               <NuxtLink v-for="(nav, i) in navigation" :key="`nav-${i}`" :to="nav.to"

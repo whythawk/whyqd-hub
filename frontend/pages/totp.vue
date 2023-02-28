@@ -3,7 +3,7 @@
     <div class="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
       <div class="mx-auto w-full max-w-sm lg:w-96">
         <div>
-          <img class="h-12 w-auto" src="img/mark.svg" alt="Your Company" />
+          <img class="h-12 w-auto" src="/img/mark.svg" alt="Whyqd.com" />
           <h2 class="mt-6 text-3xl font-bold tracking-tight text-gray-900">Two-factor authentication</h2>
           <p class="text-sm font-medium text-ochre-500 hover:text-ochre-600 mt-6">
             Enter the 6-digit verification code from your app.
