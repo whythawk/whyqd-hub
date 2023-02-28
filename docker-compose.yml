@@ -269,7 +269,7 @@ services:
     build:
       context: ./frontend
       args:
-        NUXT_VERSION: ${NUXT_VERSION:-^2.15}
+        NUXT_VERSION: ${NUXT_VERSION:-^3.0}
     deploy:
       labels:
         - traefik.enable=true
