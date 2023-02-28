@@ -4,7 +4,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "start": "nuxt start",
+    "start": "node .output/server/index.mjs",
     "preview": "nuxt preview"
   },
   "devDependencies": {
