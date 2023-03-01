@@ -2,10 +2,20 @@
 export default defineNuxtConfig({
     app: {
         head: {
+          title: "whyqd.com",
           meta: [
             { charset: "utf-8" },
             // <meta name="viewport" content="width=device-width, initial-scale=1">
-            { name: "viewport", content: "width=device-width, initial-scale=1" }
+            { name: "viewport", content: "width=device-width, initial-scale=1" },
+            {
+              hid: "description",
+              name: "description",
+              content:
+                "Perform schema-to-schema transforms for interoperability and data reuse. Transform messy data into structured schemas using readable, auditable methods.",
+            },
+          ],
+          link: [
+            { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
           ],
           script: [
             // <script src="https://myawesome-lib.js"></script>
@@ -44,7 +54,8 @@ export default defineNuxtConfig({
         ],
         "@pinia-plugin-persistedstate/nuxt",
         "@nuxt/content",
-        "tailwindcss"
+        "tailwindcss",
+        "@kevinmarrec/nuxt-pwa"
     ],
     piniaPersistedstate: {
       cookieOptions: {
@@ -61,6 +72,31 @@ export default defineNuxtConfig({
       navigation: {
         fields: ["title", "author", "publishedAt"]
       }
+    },
+    // PWA module configuration: https://go.nuxtjs.dev/pwa
+    // @ts-ignore
+    pwa: {
+      meta: {
+        name: "whyqd.com",
+        author: "Gavin Chait",
+        description:
+          "Perform schema-to-schema transforms for interoperability and data reuse. Transform messy data into structured schemas using readable, auditable methods.",
+        theme_color: "#c0651f",
+        ogHost: "https://whyqd.com/",
+        ogImage: {
+          path: "https://whyqd.com/img/ugly-data.png",
+          width: 1753,
+          height: 806,
+          type: "image/x-png"
+        }
+      },
+      manifest: {
+        name: "whyqd.com",
+        short_name: "whyqd",
+        description:
+          "Perform schema-to-schema transforms for interoperability and data reuse. Transform messy data into structured schemas using readable, auditable methods.",
+        lang: "en",
+      },
     },
     css: ["~/assets/css/main.css"],
     postcss: {

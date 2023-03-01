@@ -148,4 +148,24 @@ onMounted(async () => {
     else await navigateTo(redirectAfterLogin)
   }
 })
+
+// METADATA - START
+// https://nuxt.com/docs/getting-started/seo-meta
+const title = ref("whyqd.com — more research, less wrangling")
+const description = ref("Perform schema-to-schema transforms for interoperability and data reuse. Transform messy data into structured schemas using readable, auditable methods.")
+useHead({
+  title,
+  meta: [{
+    name: "description",
+    content: description
+  }]
+})
+useServerSeoMeta({
+  title,
+  ogTitle: title,
+  description: 'This is my amazing site, let me tell you all about it.',
+  ogDescription: description,
+  ogImage: "https://whyqd.com/img/ugly-data.png"
+})
+// METADATA - END
 </script>

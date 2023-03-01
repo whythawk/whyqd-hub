@@ -2,14 +2,12 @@
   <!-- Profile dropdown -->
   <Menu as="div" class="relative ml-3">
     <div v-if="!auth.loggedIn">
-      <NuxtLink to="/login"
-        class="rounded-full p-1 text-ochre-600 hover:text-ochre-500 focus:outline-none focus:ring-2 focus:ring-ochre-500 focus:ring-offset-2">
+      <NuxtLink to="/login" class="rounded-full p-1 text-ochre-600 hover:text-ochre-500 focus:outline-none">
         <ArrowLeftOnRectangleIcon class="block h-6 w-6" />
       </NuxtLink>
     </div>
     <div v-else>
-      <MenuButton
-        class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-ochre-500 focus:ring-offset-2">
+      <MenuButton class="flex rounded-full bg-white text-sm focus:outline-none">
         <span class="sr-only">Open user menu</span>
         <img class="h-8 w-8 rounded-full" :src="avatar" alt="auth.email" />
       </MenuButton>

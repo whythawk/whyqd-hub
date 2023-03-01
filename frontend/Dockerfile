@@ -48,6 +48,7 @@ COPY --from=build /app/middleware ./middleware
 COPY --from=build /app/pages ./pages
 COPY --from=build /app/plugins ./plugins
 COPY --from=build /app/public ./public
+COPY --from=build /app/static ./static
 COPY --from=build /app/stores ./stores
 COPY --from=build /app/utilities ./utilities
 COPY --from=build /app/.env ./
