@@ -7,7 +7,7 @@
           src="https://whyqd.com/img/mark.svg"
           href="{{ server_host }}"
         ></mj-image>
-        <mj-divider border-color="#f43f5e"></mj-divider>
+        <mj-divider border-color="#c0651f"></mj-divider>
         <mj-text font-size="20px" color="#635246" font-family="helvetica"
           >{{ project_name }} - New Account</mj-text
         >
@@ -24,7 +24,7 @@
           >Password: {{ password }}</mj-text
         >
         <mj-button
-          background-color="#f43f5e"
+          background-color="#c0651f"
           color="white"
           font-family="helvetica"
           href="{{ link }}"

@@ -7,7 +7,7 @@
           src="https://whyqd.com/img/mark.svg"
           href="{{ server_host }}"
         ></mj-image>
-        <mj-divider border-color="#f43f5e"></mj-divider>
+        <mj-divider border-color="#c0651f"></mj-divider>
         <mj-text font-size="16px" font-weight="bold" color="#635246"
           >Confirm your email address</mj-text
         >
@@ -19,7 +19,7 @@
           work. All you need to do is click this button.</mj-text
         >
         <mj-button
-          background-color="#f43f5e"
+          background-color="#c0651f"
           color="white"
           font-family="helvetica"
           href="{{ link }}"
