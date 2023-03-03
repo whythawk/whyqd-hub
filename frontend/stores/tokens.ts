@@ -4,6 +4,7 @@ import { tokenExpired, tokenParser } from "@/utilities"
 import { useToastStore } from "./toasts"
 
 const toasts = useToastStore()
+const config = useRuntimeConfig()
 
 export const useTokenStore = defineStore("tokens", {
   state: (): ITokenResponse => ({
@@ -11,7 +12,17 @@ export const useTokenStore = defineStore("tokens", {
     refresh_token: "",
     token_type: ""
   }),
-  persist: true,
+  persist: {
+    storage: persistedState.cookiesWithOptions({
+        // https://prazdevs.github.io/pinia-plugin-persistedstate/frameworks/nuxt-3.html
+        // https://nuxt.com/docs/api/composables/use-cookie#options
+        // in seconds
+        path: "/",
+        secure: true,
+        maxAge: config.public.appCookieExpire,
+        expires: new Date(new Date().getTime() + config.public.appCookieExpire),
+    }),
+  },
   getters: {
     token: (state) => state.access_token,
     refresh: (state) => state.refresh_token

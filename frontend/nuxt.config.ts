@@ -38,6 +38,7 @@ export default defineNuxtConfig({
         appEnv: process.env.VUE_APP_ENV,
         apiWS: process.env.VUE_APP_DOMAIN_WS,
         apiUrl: process.env.VUE_APP_DOMAIN_API,
+        appCookieExpire: 60 * 60 * 24 * 90,
         // idbName: process.env.VUE_IDB_NAME,
         // idbVersion: process.env.VUE_IDB_VERSION,
       }
@@ -60,7 +61,6 @@ export default defineNuxtConfig({
     piniaPersistedstate: {
       cookieOptions: {
         path: "/",
-        // maxAge: 60 * 60 * 24 * 30,
         secure: true,
       },
     },
@@ -107,5 +107,8 @@ export default defineNuxtConfig({
     },
     build: {
       transpile: ["@heroicons/vue"]
+    },
+    vite: {
+      base: '/_nuxt/'
     }
 })

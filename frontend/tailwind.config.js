@@ -12,6 +12,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      backgroundImage: (theme) => ({
+        "whyqd-lost": "url('./img/whyqd-lost.jpg')",
+      }),
       colors: {
         ochre: {
           50: "#fdf8ed",
