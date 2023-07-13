@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    # https://stackoverflow.com/a/70657621/295606
+    # Set to 1Mb ... Starlette has 1Mb as default, so only use this if different
+    CHUNK_SIZE: int = 1024 * 1024
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
@@ -37,6 +40,12 @@ class Settings(BaseSettings):
         if len(v) == 0:
             return None
         return v
+
+    # GENERAL SETTINGS
+
+    MULTI_MAX: int = 50
+
+    # COMPONENT SETTINGS
 
     POSTGRES_SERVER: str
     POSTGRES_USER: str
@@ -84,22 +93,107 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str
     USERS_OPEN_REGISTRATION: bool = True
 
-    # NEO4J
-    NEO4J_FORCE_TIMEZONE: Optional[bool] = True
-    NEO4J_AUTO_INSTALL_LABELS: Optional[bool] = True
-    NEO4J_MAX_CONNECTION_POOL_SIZE: Optional[int] = 50
-    NEO4J_SERVER: Optional[str] = "localhost"
-    NEO4J_USERNAME: str
-    NEO4J_PASSWORD: str
-    NEO4J_AUTH: str
-    NEO4J_BOLT: str
-    NEO4J_BOLT_URL: Optional[str] = None
-    NEO4J_SUGGESTION_LIMIT: int = 8
-    NEO4J_RESULTS_LIMIT: int = 100
+    # WHYQD KEYS
+    # 10**9 == 1gb ==> try 16gb? 16000000000 dev_shm must be aligned in docker-compose, currently 8611409920
+    WHYQD_MEMORY: int = 6000000000
+    WHYQD_CPUS: int = 3
+    WHYQD_SPILLWAY: str = "/app/tmp/spill"
+    WHYQD_DIRECTORY: str = "/app/working/tmp"
+    WHYQD_DEFAULT_MIMETYPE: str = "application/vnd.apache.parquet"
+    WHYQD_SUMMARY_ROWS: int = 50
 
-    @validator("NEO4J_BOLT_URL", pre=True)
-    def get_neo4j_bolt_url(cls, v: str, values: Dict[str, Any]) -> str:
-        return f"{values.get('NEO4J_BOLT')}://{values.get('NEO4J_USERNAME')}:{values.get('NEO4J_PASSWORD')}@{values.get('NEO4J_SERVER')}:7687"
+    # PAYMENT KEYS
+    STRIPE_API_KEY: Optional[str] = None
+    STRIPE_PUBLIC_KEY: Optional[str] = None
+    STRIPE_WEBHOOK: Optional[str] = None
+    STRIPE_MINIMUM_CHARGE_AMOUNT: Optional[int] = None
+    USE_STRIPE: bool = False
+
+    @validator("USE_STRIPE", pre=True)
+    def get_use_stripe(cls, v: bool, values: Dict[str, Any]) -> bool:
+        return bool(
+            values.get("STRIPE_API_KEY")
+            and values.get("SPACES_SECRET_KEY")
+            and values.get("STRIPE_PUBLIC_KEY")
+            and values.get("STRIPE_WEBHOOK")
+        )
+
+    # WORKING WITH REFERENCES
+    WORKING_PATH: str = "/app/working"
+    REFERENCE_PATH: str = "/references"
+    SUMMARY_PATH: str = "/summary"
+
+    # DIGITALOCEAN SPACES KEYS
+    SPACES_ACCESS_KEY: Optional[str] = None
+    SPACES_SECRET_KEY: Optional[str] = None
+    SPACES_REGION_NAME: Optional[str] = None
+    SPACES_ENDPOINT_URL: Optional[HttpUrl] = None
+    SPACES_BUCKET: Optional[str] = None
+    USE_SPACES: bool = False
+
+    # @validator("USE_SPACES", pre=True)
+    # def get_use_spaces(cls, v: bool, values: Dict[str, Any]) -> bool:
+    #     return bool(
+    #         values.get("SPACES_ACCESS_KEY")
+    #         and values.get("SPACES_SECRET_KEY")
+    #         and values.get("SPACES_REGION_NAME")
+    #         and values.get("SPACES_ENDPOINT_URL")
+    #         and values.get("SPACES_BUCKET")
+    #     )
+
+    # IP2LOCATION IP COUNTRY LOCATION
+    IP2_LINK: HttpUrl = "https://www.ip2location.com/download/"
+    IP2_FOLDER: Optional[str] = None
+    IP2_BIN_FILE: str = "IP2LOCATION-LITE-DB1.BIN"
+    IP2_TOKEN: Optional[str] = None
+    IP2_FILE: Optional[str] = None
+    IP2_FILE_IPV6: Optional[str] = None
+    IP2_ENDPOINT_URL: Optional[HttpUrl] = None
+    USE_IP2: bool = False
+    EURO_CURRENCY: List[str] = [
+        "AT",
+        "BE",
+        "BG",
+        "CH",
+        "CY",
+        "CZ",
+        "DE",
+        "DK",
+        "EE",
+        "ES",
+        "FI",
+        "FR",
+        "GR",
+        "HR",
+        "HU",
+        "IE",
+        "IS",
+        "IT",
+        "LI",
+        "LT",
+        "LU",
+        "LV",
+        "MT",
+        "NL",
+        "NO",
+        "PL",
+        "PT",
+        "RO",
+        "SE",
+        "SI",
+        "SK",
+    ]
+
+    @validator("IP2_ENDPOINT_URL", pre=True)
+    def get_ip2_endpoint_url(cls, v: str, values: Dict[str, Any]) -> str:
+        return f"{values.get('IP2_LINK')}?token={values.get('IP2_TOKEN')}&file={values.get('IP2_FILE')}"
+
+    @validator("USE_IP2", pre=True)
+    def get_use_ip2(cls, v: bool, values: Dict[str, Any]) -> bool:
+        return bool(values.get("IP2_TOKEN") and values.get("IP2_LINK") and values.get("IP2_FILE"))
+
+    class Config:
+        case_sensitive = True
 
 
 settings = Settings()

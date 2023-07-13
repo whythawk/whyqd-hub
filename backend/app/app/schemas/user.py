@@ -1,6 +1,14 @@
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 from pydantic import BaseModel, Field, EmailStr, constr, validator
+from sqlalchemy.orm import Query
+from sqlalchemy import desc, or_
+from datetime import datetime, timedelta
+
+
+# from app.schemas.subscription import Subscription, SubscriptionInProfile
+# from app.models.subscription import Subscription as SubscriptionMDL
+# from app.schema_types import SubscriptionEventType, SubscriptionType
 
 
 class UserLogin(BaseModel):
@@ -15,6 +23,14 @@ class UserBase(BaseModel):
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
     full_name: Optional[str] = None
+
+
+class UserSummary(BaseModel):
+    email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
+
+    class Config:
+        orm_mode = True
 
 
 # Properties to receive via API on creation
@@ -62,3 +78,38 @@ class UserInDB(UserInDBBase):
     hashed_password: Optional[str] = None
     totp_secret: Optional[str] = None
     totp_counter: Optional[int] = None
+
+
+# class UserProfile(UserInDBBase):
+#     subscriptions: SubscriptionInProfile
+
+#     @validator("subscriptions", pre=True)
+#     def evaluate_lazy_subscriptions(cls, v):
+#         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
+#         # Call PydanticModel.from_orm(dbQuery)
+#         if isinstance(v, Query):
+#             expires = datetime.utcnow() - timedelta(days=1)  # 1 day grace
+#             v = (
+#                 v.filter(or_(SubscriptionMDL.ends > expires, SubscriptionMDL.override.is_(True)))
+#                 .order_by(SubscriptionMDL.created.desc())
+#                 .first()
+#             )
+#             if v:
+#                 return {"membership": v.subscription_type, "ends": v.ends, "override": v.override}
+#         return {"membership": SubscriptionType.REVIEWER, "ends": datetime.max, "override": False}
+
+
+# class UserCustodialProfile(UserInDBBase):
+#     subscriptions: Optional[List[Subscription]] = []
+
+#     @validator("subscriptions", pre=True)
+#     def evaluate_lazy_subscriptions(cls, v):
+#         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
+#         # Call PydanticModel.from_orm(dbQuery)
+#         if isinstance(v, Query):
+#             return (
+#                 v.filter(SubscriptionMDL.subscription_event_type == SubscriptionEventType.RENEWED)
+#                 .order_by(desc("ends"))
+#                 .all()
+#             )
+#         return v

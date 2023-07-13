@@ -32,4 +32,5 @@ export interface IUserOpenProfileCreate {
   full_name?: string
   password: string
 }
+
   

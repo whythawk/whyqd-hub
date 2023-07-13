@@ -10,9 +10,9 @@ import { useTokenStore } from "./tokens"
 import { useToastStore } from "./toasts"
 import { tokenIsTOTP, tokenParser } from "@/utilities"
 
-const toasts = useToastStore()
+// const toasts = useToastStore()
 
-export const useAuthStore = defineStore("authUser", {
+export const useAuthStore = defineStore("authStore", {
   state: (): IUserProfile => ({
     id: "",
     email: "",
@@ -47,6 +47,7 @@ export const useAuthStore = defineStore("authUser", {
             !tokenIsTOTP(this.authTokens.token)
             ) await this.getUserProfile()
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Login error",
           content: "Please check your details, or internet connection, and try again.",
@@ -62,6 +63,7 @@ export const useAuthStore = defineStore("authUser", {
           !tokenIsTOTP(this.authTokens.token)
           ) await this.getUserProfile()
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Login error",
           content: "Please check your details, or internet connection, and try again.",
@@ -77,6 +79,7 @@ export const useAuthStore = defineStore("authUser", {
           !tokenIsTOTP(this.authTokens.token)
           ) await this.getUserProfile()
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Login error",
           content: "Please check your details, or internet connection, and try again.",
@@ -95,6 +98,7 @@ export const useAuthStore = defineStore("authUser", {
           password: payload.password 
         })
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Login creation error",
           content: "Please check your details, or internet connection, and try again.",
@@ -118,9 +122,9 @@ export const useAuthStore = defineStore("authUser", {
     async updateUserProfile(payload: IUserProfileUpdate) {
       await this.authTokens.refreshTokens()
       if (this.loggedIn && this.authTokens.token) {
+        const toasts = useToastStore()
         try {
           const { data: response } = await apiAuth.updateProfile(this.authTokens.token, payload)
-          if (response.value) 
           if (response.value) {
             this.setUserProfile(response.value)
             toasts.addNotice({
@@ -139,6 +143,7 @@ export const useAuthStore = defineStore("authUser", {
     },
     // MANAGING TOTP
     async enableTOTPAuthentication(payload: IEnableTOTP) {
+      const toasts = useToastStore()
       await this.authTokens.refreshTokens()
       if (this.loggedIn && this.authTokens.token) {
         try {
@@ -160,6 +165,7 @@ export const useAuthStore = defineStore("authUser", {
       }
     },
     async disableTOTPAuthentication(payload: IUserProfileUpdate) {
+      const toasts = useToastStore()
       await this.authTokens.refreshTokens()
       if (this.loggedIn && this.authTokens.token) {
         try {
@@ -192,6 +198,7 @@ export const useAuthStore = defineStore("authUser", {
       this.totp = payload.totp
     },
     async recoverPassword(email: string) {
+      const toasts = useToastStore()
       if (!this.loggedIn) {
         try {
           const { data: response } = await apiAuth.recoverPassword(email)
@@ -209,11 +216,12 @@ export const useAuthStore = defineStore("authUser", {
             content: "Please check your details, or internet connection, and try again.",
             icon: "error"
           })
-          this.authTokens.deleteTokens()
+          this.authTokens.resetState()
         }
       }
     },
     async resetPassword(password: string, token: string) {
+      const toasts = useToastStore()
       if (!this.loggedIn) {
         try {
           const claim: string = this.authTokens.token
@@ -236,13 +244,13 @@ export const useAuthStore = defineStore("authUser", {
             content: "Ensure you're using the same browser and that the token hasn't expired.",
             icon: "error"
           })
-          this.authTokens.deleteTokens()
+          this.authTokens.resetState()
         }
       }
     },
     // reset state using `$reset`
     logOut () {
-      this.authTokens.deleteTokens()
+      this.authTokens.resetState()
       this.$reset()
     }
   }

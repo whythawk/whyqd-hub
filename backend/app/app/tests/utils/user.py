@@ -10,12 +10,10 @@ from app.schemas.user import UserCreate, UserUpdate
 from app.tests.utils.utils import random_email, random_lower_string
 
 
-def user_authentication_headers(
-    *, client: TestClient, email: str, password: str
-) -> Dict[str, str]:
+def user_authentication_headers(*, client: TestClient, email: str, password: str) -> Dict[str, str]:
     data = {"username": email, "password": password}
 
-    r = client.post(f"{settings.API_V1_STR}/login/access-token", data=data)
+    r = client.post(f"{settings.API_V1_STR}/login/oauth", data=data)
     response = r.json()
     auth_token = response["access_token"]
     headers = {"Authorization": f"Bearer {auth_token}"}
@@ -30,9 +28,7 @@ def create_random_user(db: Session) -> User:
     return user
 
 
-def authentication_token_from_email(
-    *, client: TestClient, email: str, db: Session
-) -> Dict[str, str]:
+def authentication_token_from_email(*, client: TestClient, email: str, db: Session) -> Dict[str, str]:
     """
     Return a valid token for the user with given email.
 

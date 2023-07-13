@@ -24,7 +24,6 @@ ARG POSTCSS_VERSION=^8.4.18
 ARG ASPECT_RATIO_VERSION=^0.4.2
 ARG FORMS_VERSION=^0.5.3
 ARG TYPOGRAPHY_VERSION=^0.5.7
-ARG LINE_CLAMP_VERSION=^0.4.2
 ARG HEADLESSUI_VERSION=^1.7.3
 ARG HEROICONS_VERSION=^2.0.12
 ARG PINIA_VERSION=^0.4.3
@@ -36,7 +35,7 @@ ARG QR_CODE_VERSION=^3.3.3
 ARG DICEBEAR_BOTTTS_VERSION=^5.3.4
 ENV NODE_ENV=production NITRO_HOST=${NITRO_HOST:-0.0.0.0} NITRO_PORT=${NITRO_PORT:-80} NUXT_TELEMETRY_DISABLED=1
 WORKDIR /app
-RUN yarn add nuxt@${NUXT_VERSION} @nuxt/content@${NUXT_CONTENT_VERSION} tailwindcss@${TAILWINDCSS_VERSION} autoprefixer@${AUTOPREFIXER_VERSION} postcss@${POSTCSS_VERSION} @tailwindcss/aspect-ratio@${ASPECT_RATIO_VERSION} @tailwindcss/forms@${FORMS_VERSION} @tailwindcss/line-clamp@${LINE_CLAMP_VERSION} @tailwindcss/typography@${TYPOGRAPHY_VERSION} @headlessui/vue@${HEADLESSUI_VERSION} @heroicons/vue@${HEROICONS_VERSION} @pinia/nuxt@${PINIA_VERSION} @pinia-plugin-persistedstate/nuxt@${PINIA_PERSISTED_VERSION} vee-validate@${VEE_VERSION} @vee-validate/i18n@${VEE_INT_VERSION} @vee-validate/rules@${VEE_RULES_VERSION} qrcode.vue@${QR_CODE_VERSION} @dicebear/core@${DICEBEAR_BOTTTS_VERSION} @dicebear/bottts@${DICEBEAR_BOTTTS_VERSION}
+RUN yarn add nuxt@${NUXT_VERSION} @nuxt/content@${NUXT_CONTENT_VERSION} tailwindcss@${TAILWINDCSS_VERSION} autoprefixer@${AUTOPREFIXER_VERSION} postcss@${POSTCSS_VERSION} @tailwindcss/aspect-ratio@${ASPECT_RATIO_VERSION} @tailwindcss/forms@${FORMS_VERSION} @tailwindcss/typography@${TYPOGRAPHY_VERSION} @headlessui/vue@${HEADLESSUI_VERSION} @heroicons/vue@${HEROICONS_VERSION} @pinia/nuxt@${PINIA_VERSION} @pinia-plugin-persistedstate/nuxt@${PINIA_PERSISTED_VERSION} vee-validate@${VEE_VERSION} @vee-validate/i18n@${VEE_INT_VERSION} @vee-validate/rules@${VEE_RULES_VERSION} qrcode.vue@${QR_CODE_VERSION} @dicebear/core@${DICEBEAR_BOTTTS_VERSION} @dicebear/bottts@${DICEBEAR_BOTTTS_VERSION}
 COPY --from=build /app/.nuxt ./.nuxt
 COPY --from=build /app/.output/ ./.output
 COPY --from=build /app/api ./api

@@ -6,3 +6,4 @@ docker-stack.yml
 *.code-workspace
 .s3cfg
 cookiecutter-config-file.yml
+*.zip
