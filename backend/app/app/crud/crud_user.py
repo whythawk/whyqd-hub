@@ -78,6 +78,11 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             return None
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)
 
+    def has_password(self, user: User) -> bool:
+        if user.hashed_password:
+            return True
+        return False
+
     def is_active(self, user: User) -> bool:
         return user.is_active
 

@@ -33,6 +33,7 @@ class Token(BaseModel):
 class TokenPayload(BaseModel):
     sub: Optional[UUID] = None
     refresh: Optional[bool] = False
+    ogun: Optional[bool] = False
     totp: Optional[bool] = False
 
 

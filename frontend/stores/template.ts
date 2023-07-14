@@ -17,6 +17,9 @@ export const useTemplateStore = defineStore("templateStore", {
     edit: {} as IDataSourceTemplate | ICrosswalkTemplate,
     facets: {} as IReferenceFilters,
   }),
+  persist: {
+    storage: persistedState.localStorage,
+  },
   getters: {
     multi: (state) => state.board,
     term: (state) => state.one,

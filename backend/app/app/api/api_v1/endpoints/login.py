@@ -193,11 +193,11 @@ def refresh_token(
     """
     Refresh tokens for future requests
     """
-    refresh_token = security.create_refresh_token(subject=current_user.id)
-    crud.token.create(db=db, obj_in=refresh_token, user_obj=current_user)
+    new_token = security.create_refresh_token(subject=current_user.id)
+    crud.token.create(db=db, obj_in=new_token, user_obj=current_user)
     return {
         "access_token": security.create_access_token(subject=current_user.id),
-        "refresh_token": refresh_token,
+        "refresh_token": new_token,
         "token_type": "bearer",
     }
 

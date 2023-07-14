@@ -23,7 +23,18 @@ export const useAuthStore = defineStore("authStore", {
     password: false,
     totp: false
   }),
-  persist: true,
+  persist: {
+    storage: persistedState.cookiesWithOptions({
+      // https://prazdevs.github.io/pinia-plugin-persistedstate/frameworks/nuxt-3.html
+      // https://nuxt.com/docs/api/composables/use-cookie#options
+      // in seconds
+      // useRuntimeConfig().public.appCookieExpire,
+      path: "/",
+      secure: true,
+      maxAge: 60 * 60 * 24 * 90,
+      expires: new Date(new Date().getTime() + 60 * 60 * 24 * 90),
+    }),
+  },
   getters: {
     isAdmin: (state) => {
         return (

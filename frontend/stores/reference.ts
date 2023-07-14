@@ -11,16 +11,7 @@ export const useReferenceStore = defineStore("referenceStore", {
     facets: {} as IReferenceFilters,
   }),
   persist: {
-    storage: persistedState.cookiesWithOptions({
-      // https://prazdevs.github.io/pinia-plugin-persistedstate/frameworks/nuxt-3.html
-      // https://nuxt.com/docs/api/composables/use-cookie#options
-      // in seconds
-      // useRuntimeConfig().public.appCookieExpire,
-      path: "/",
-      secure: true,
-      maxAge: 60 * 60 * 24 * 90,
-      expires: new Date(new Date().getTime() + 60 * 60 * 24 * 90),
-    }),
+    storage: persistedState.localStorage,
   },
   getters: {
     multi: (state) => state.board,

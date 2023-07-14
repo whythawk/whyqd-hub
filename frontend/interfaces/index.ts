@@ -5,6 +5,12 @@ import {
   IUserOpenProfileCreate
 } from "./profile"
 import {
+  IOgunCreate,
+  IOgunUser,
+  IOgunToken,
+  IOgunFilters,
+} from "./ogun"
+import {
   IPageStatusType,
   ITokenResponse,
   IWebToken,
@@ -87,6 +93,10 @@ export {
   IUserProfileUpdate,
   IUserProfileCreate,
   IUserOpenProfileCreate,
+  IOgunCreate,
+  IOgunUser,
+  IOgunToken,
+  IOgunFilters,
   IPageStatusType,
   ITokenResponse,
   IWebToken,

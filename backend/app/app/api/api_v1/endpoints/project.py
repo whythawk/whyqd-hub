@@ -3,10 +3,14 @@ from typing import Any, Optional, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from uuid import UUID
+import json
+import whyqd as qd
 
 from app import crud, models, schemas, schema_types
 from app.api import deps
 from app.core.config import settings
+from app.core.celery_app import celery_app
 
 router = APIRouter()
 
@@ -124,6 +128,42 @@ def add_task(
             detail="Either of project or task do not exist, or user does not have the rights for this request.",
         )
     return crud.project.add_task(db=db, db_obj=project_obj, task_obj=task_obj)
+
+
+@router.post("/{project_id}/multi/{field_id}", response_model=schemas.Msg)
+def create_multi_tasks_with_project(
+    *,
+    db: Session = Depends(deps.get_db),
+    models_in: list[schemas.TaskCreate],
+    project_id: str,
+    field_id: str,
+    ogun_token: models.User = Depends(deps.get_ogun_token),
+) -> Any:
+    """
+    Create multiple tasks for a project, with a template crosswalk. This is an ogun task.
+    """
+    field_name = None
+    if ogun_token.responsibility == schema_types.RoleType.CURATOR:
+        project_obj = crud.project.get(
+            db=db, id=project_id, user=ogun_token.authenticates, responsibility=schema_types.RoleType.CURATOR
+        )
+        if project_obj and project_obj.schema:
+            schema_model = crud.reference.get_model(db_obj=project_obj.schema)
+            schema_dfn = qd.SchemaDefinition(source=schema_model)
+            field_name = schema_dfn.fields.get(name=UUID(field_id))
+        if not project_obj or not field_name:
+            raise HTTPException(
+                status_code=400,
+                detail="Either of project or field name, or user does not have the rights for this request.",
+            )
+    models_in = [json.loads(model_in.json(by_alias=True)) for model_in in models_in]
+    celery_app.send_task(
+        "app.worker.process_create_multi_tasks_from_project",
+        args=[ogun_token.authenticates.id, project_id, models_in, field_id],
+    )
+    return {
+        "msg": "New task list successfully imported. Check your activity log to see when they're ready to process further."
+    }
 
 
 @router.delete("/{project_id}/task/{task_id}", response_model=schemas.Project)

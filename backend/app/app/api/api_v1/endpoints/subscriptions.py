@@ -145,7 +145,6 @@ def redirect_to_stripe_account(
 
 @router.post("/webhook", status_code=201)
 async def webhook_received(*, db: Session = Depends(deps.get_db), request: Request) -> Any:
-    # secret = "whsec_5b3fc08d6652f99518b1d23f2a69d52bc45a4c2b727291536534020f4f17ff66"
     secret = settings.STRIPE_WEBHOOK
     data = await request.body()
     stripe_signature = request.headers.get("stripe-signature")

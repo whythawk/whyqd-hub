@@ -1,6 +1,6 @@
 <template>
-  <div class="shadow sm:overflow-hidden sm:rounded-md max-w-lg">
-    <Form @submit="submit" :validation-schema="schema">
+  <div class="flex-auto p-3">
+    <Form @submit="submit" :validation-schema="schema" class="shadow rounded-md">
       <div class="space-y-6 bg-white py-6 px-4 sm:p-6">
         <div>
           <h3 class="text-lg font-medium leading-6 text-gray-900">{{ title }}</h3>

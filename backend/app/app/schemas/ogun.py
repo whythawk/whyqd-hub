@@ -34,5 +34,8 @@ class OgunUserUpdate(OgunUserCreate):
 
 
 class OgunUser(OgunUserBase):
+    created: datetime = Field(..., description="Automatically generated date reference was created.")
+    access_key: UUID = Field(..., description="Automatically generated access key.")
+
     class Config:
         orm_mode = True

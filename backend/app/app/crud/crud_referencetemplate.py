@@ -14,7 +14,6 @@ from app.schemas.reference_template import ReferenceTemplateCreate, ReferenceTem
 from app.schemas.templates import DataSourceAttributeModel, CrosswalkTemplateModel
 from app.schema_types import RoleType, ReferenceType
 
-# from app.crud.crud_task import task as crud_task
 from app.crud.crud_files import files as crud_files
 from app.crud.crud_role import role as crud_role
 from app.core.config import settings
@@ -171,7 +170,7 @@ class CRUDReferenceTemplate(CRUDWhyqdBase[ReferenceTemplate, ReferenceTemplateCr
         self,
         *,
         schema_in: SchemaModel,
-    ) -> ReferenceTemplate:
+    ) -> qd.CrosswalkDefinition:
         crosswalk = qd.CrosswalkDefinition()
         # We need it to validate, but aren't especially worried about much else
         crosswalk.set(schema_source=schema_in, schema_destination=schema_in)

@@ -13,6 +13,9 @@ export const useResourceStore = defineStore("resourceStore", {
     edit: {} as IResourceManager,
     facets: {} as IResourceFilters,
   }),
+  persist: {
+    storage: persistedState.localStorage,
+  },
   getters: {
     multi: (state) => state.board,
     term: (state) => state.one,

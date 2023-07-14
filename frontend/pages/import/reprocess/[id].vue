@@ -49,6 +49,7 @@ onMounted(async () => {
       appSettings.setPageState("loading")
       const { data: response } = await apiResource.getTermTemplate(resourceStore.authTokens.token, route.params.id as string)
       if (response.value) {
+        // @ts-ignore
         response.value.mime = IMimeReference[response.value.mime]
         resourceTemplate.value = response.value
       }

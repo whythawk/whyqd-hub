@@ -9,7 +9,7 @@
           class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white/75 shadow-sm sm:gap-x-6">
           <div class="flex w-full items-center justify-between gap-x-6 pb-2">
             <div class="flex flex-inline space-x-4">
-              <Squares2X2Icon
+              <ArrowsRightLeftIcon
                 class="relative h-7 w-7 flex-none rounded-lg bg-gray-50 ring-1 ring-offset-4 ring-ochre-200 text-gray-700"
                 aria-hidden="true" />
               <h1 class="truncate text-lg font-semibold leading-7 text-gray-900">
@@ -109,11 +109,12 @@
               <h2 class="sr-only" id="section-2-title">Section title</h2>
               <div class="w-full flex-auto rounded-lg  py-2 px-3 ring-1 ring-inset ring-gray-200 mt-2">
                 <TabGroup>
-                  <TabList class="flex space-x-8 border-b border-gray-200 text-xs">
+                  <TabList class="flex space-x-8 border-b border-gray-200 text-xs focus:ring-0 focus:ring-offset-0">
                     <!-- Use the `selected` state to conditionally style the selected tab. -->
-                    <Tab v-for="tab in tabs" :key="`tab-${tab.name}`" as="template" v-slot="{ selected }">
+                    <Tab v-for="tab in tabs" :key="`tab-${tab.name}`" as="template" v-slot="{ selected }"
+                      class="focus:ring-0 focus:ring-offset-0">
                       <button
-                        :class="[selected ? 'border-ochre-500 text-ochre-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'group inline-flex items-center border-b-2 py-4 px-1 font-medium']">
+                        :class="[selected ? 'border-ochre-500 text-ochre-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'group inline-flex items-center border-b-2 py-4 px-1 font-medium focus:ring-0 focus:ring-offset-0']">
                         <component :is="tab.icon"
                           :class="[selected ? 'text-ochre-500' : 'text-gray-400 group-hover:text-gray-500', '-ml-0.5 mr-2 h-5 w-5']"
                           aria-hidden="true" />
@@ -188,13 +189,13 @@ import WebSocketAsPromised from "websocket-as-promised"
 import { storeToRefs } from "pinia"
 import { Menu, MenuButton, MenuItems, MenuItem, TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue"
 import {
-  ArrowPathIcon, ArrowUpTrayIcon, Bars3BottomLeftIcon, BoltIcon, ChevronDownIcon, ExclamationCircleIcon, QuestionMarkCircleIcon, Squares2X2Icon, TableCellsIcon,
-  XMarkIcon
+  ArrowsRightLeftIcon, ArrowPathIcon, ArrowUpTrayIcon, Bars3BottomLeftIcon, BoltIcon, ChevronDownIcon,
+  ExclamationCircleIcon, QuestionMarkCircleIcon, Squares2X2Icon, TableCellsIcon, XMarkIcon
 } from "@heroicons/vue/24/outline"
 import { IResourceCrosswalkManager, IActionModel, IActionType, IKeyable, ISocketRequest, ISocketResponse, } from "@/interfaces"
 import { apiCrosswalk } from "@/api"
 import { useSettingStore, useToastStore, useCrosswalkStore } from "@/stores"
-import { getAvatar, convertActionModelList, convertActionModelToScript, generateUUID } from "@/utilities"
+import { getAvatar, convertActionModelList, convertActionModelToScript } from "@/utilities"
 
 definePageMeta({
   layout: "crosswork",

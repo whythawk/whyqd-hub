@@ -13,6 +13,9 @@ export const useProjectStore = defineStore("projectStore", {
     edit: {} as IProject,
     facets: {} as IProjectFilters,
   }),
+  persist: {
+    storage: persistedState.localStorage,
+  },
   getters: {
     multi: (state) => state.board,
     term: (state) => state.one,

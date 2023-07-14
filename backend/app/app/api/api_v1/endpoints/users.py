@@ -149,11 +149,3 @@ def create_user(
     if settings.EMAILS_ENABLED and user_in.email:
         send_new_account_email(email_to=user_in.email, username=user_in.email, password=user_in.password)
     return user
-
-
-@router.get("/tester", response_model=schemas.Msg)
-def test_endpoint() -> Any:
-    """
-    Test current endpoint.
-    """
-    return {"msg": "Message returned ok."}

@@ -13,6 +13,9 @@ export const useTaskStore = defineStore("taskStore", {
     edit: {} as ITask,
     facets: {} as ITaskFilters,
   }),
+  persist: {
+    storage: persistedState.localStorage,
+  },
   getters: {
     multi: (state) => state.board,
     term: (state) => state.one,

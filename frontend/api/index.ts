@@ -1,5 +1,6 @@
 import { apiCore } from "./core"
 import { apiAuth } from "./auth"
+import { apiOgun } from "./ogun"
 import { apiService } from "./services"
 import { apiActivity } from "./activity"
 import { apiData } from "./data"
@@ -14,6 +15,7 @@ import { apiProject } from "./project"
 export {
   apiCore,
   apiAuth,
+  apiOgun,
   apiService,
   apiActivity,
   apiData,

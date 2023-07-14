@@ -21,6 +21,7 @@ from app.models.reference import Reference
 from app.models.resource import Resource
 from app.models.task import Task
 from app.models.project import Project
+from app.schemas.task import TaskCreate
 from app.schemas.crosswalk import ActionModel
 from app.schemas.reference import ReferenceCreate, ReferenceUpdate
 from app.schemas.resource import (
@@ -38,7 +39,7 @@ from app.schema_types import ReferenceType, RoleType, StateType, MimeType
 from app.crud.crud_resource import resource as crud_resource
 
 # from app.crud.crud_project import project as crud_project
-# from app.crud.crud_task import task as crud_task
+from app.crud.crud_task import task as crud_task
 from app.crud.crud_activity import activity as crud_activity
 from app.crud.crud_files import files as crud_files
 from app.crud.crud_subscription import subscription as crud_subscription
@@ -143,6 +144,50 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             # Because we need the id
             crud_files.save_data_summary(obj_id=db_obj.id, obj_in=reference_in)
         return db_obj
+
+    def create_multi_tasks_from_project(
+        self,
+        db: Session,
+        *,
+        user: User,
+        project_obj: Project,
+        tasks_in: list[TaskCreate],
+        field_name: str | None = None,
+    ):
+        # If project_obj.schema and field_name, we're creating a crosswalk template
+        # If only a schema, then Task has a schema template
+        schema_model = None
+        if project_obj.schema:
+            schema_model = self.get_model(db_obj=project_obj.schema)
+            schema_dfn = qd.SchemaDefinition(source=schema_model)
+            if field_name:
+                field_name = schema_dfn.fields.get(name=UUID(field_name))
+            if not field_name:
+                schema_model = None
+            else:
+                field_name = field_name.name
+        for task_in in tasks_in:
+            task_in.project_id = project_obj.id
+            # 1. Create the crosswalk or schema templates
+            if schema_model:
+                script = f"NEW > '{field_name}' < ['{task_in.name}']"
+                crosswalk_dfn = crud_referencetemplate.get_crosswalk_definition(schema_in=schema_model)
+                crosswalk_dfn.actions.add(term=script)
+                crosswalk_dfn.get.name = task_in.name
+                crosswalk_dfn.get.title = task_in.title
+                crosswalk_dfn.get.description = task_in.description
+                template_obj = crud_referencetemplate.create_crosswalk(
+                    db=db,
+                    user=user,
+                    crosswalk_in=crosswalk_dfn.get,
+                    schema_id=project_obj.schema.id,
+                    schema_hash=project_obj.schema.hash,
+                )
+                task_in.crosswalk_id = template_obj.id
+            if not schema_model and project_obj.schema:
+                task_in.schema_id = project_obj.schema.id
+            # 2. Create the task
+            crud_task.create(db=db, obj_in=task_in, user=user)
 
     def update(
         self,

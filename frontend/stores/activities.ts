@@ -8,6 +8,9 @@ export const useActivityStore = defineStore("activityStore", {
     board: [] as IActivity[],
     facets: {} as IActivityFilters,
   }),
+  persist: {
+    storage: persistedState.localStorage,
+  },
   getters: {
     first: (state) => state.board.length > 0 && state.board[0],
     multi: (state) => state.board,

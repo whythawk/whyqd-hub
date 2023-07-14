@@ -11,6 +11,7 @@ from app.core.config import settings
 from app.db.session import SessionLocal
 
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/login/oauth")
+reusable_ogun_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/ogun/oauth")
 
 
 def get_db() -> Generator:
@@ -113,6 +114,31 @@ def get_current_active_superuser(
     return current_user
 
 
+###################################################################################################
+# OGUN TOKEN
+###################################################################################################
+def get_ogun_token(db: Session = Depends(get_db), token: str = Depends(reusable_ogun_oauth2)) -> models.OgunToken:
+    token_data = get_token_payload(token)
+    if not token_data.ogun:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Could not validate credentials",
+        )
+    user = crud.user.get(db, id=token_data.sub)
+    token_obj = None
+    if user and crud.user.is_active(user):
+        token_obj = crud.oguntoken.get(token=token, user=user)
+    if not token_obj:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Could not validate credentials",
+        )
+    return token_obj
+
+
+###################################################################################################
+# WEBSOCKETS
+###################################################################################################
 def get_active_websocket_user(*, db: Session, token: str) -> models.User:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGO])
