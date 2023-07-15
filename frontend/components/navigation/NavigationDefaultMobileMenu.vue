@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- TOP BAR -->
-    <div class="fixed top-0 z-40 w-full flex items-center gap-x-6 bg-white/90 px-4 py-4 sm:px-6 md:hidden">
+    <div class="fixed top-0 z-30 w-full flex items-center gap-x-6 bg-white/90 px-4 py-4 sm:px-6 md:hidden">
       <div v-if="headingTerm && Object.keys(headingTerm).length !== 0"
         class="group inline-flex gap-x-3 flex-1 text-md font-semibold leading-6 text-ochre-600">
         <component :is="headingTerm.icon" class="text-ochre-600 h-6 w-6 shrink-0" aria-hidden="true" />
@@ -13,7 +13,7 @@
       <AuthenticationNavigation />
     </div>
     <!-- BOTTOM BAR -->
-    <Menu as="div" class="z-40 fixed md:hidden inset-x-0 bottom-0 w-full bg-white">
+    <Menu as="div" class="z-30 fixed md:hidden inset-x-0 bottom-0 w-full bg-white">
       <div class="max-w-full mx-auto">
         <nav class="relative grid grid-cols-5 gap-4 justify-center py-1" aria-label="Global">
           <NuxtLink v-for="(item, i) in baseNavigation" :key="`basenav-${i}`" :to="item.to"

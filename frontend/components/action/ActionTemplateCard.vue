@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-auto rounded-lg  py-2 px-3 ring-1 ring-inset ring-gray-200 text-xs bg-gray-50/75">
+  <div class="flex-auto rounded-lg py-2 px-3 ring-1 ring-inset ring-gray-200 text-xs bg-gray-50/75">
     <h3 class="flex border-b border-gray-200 text-xs items-center py-2 px-1 font-medium">
       <CursorArrowRippleIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
       <span class="mx-1 text-gray-500">Actions</span>
@@ -16,7 +16,7 @@
         </div>
       </li>
     </ul>
-    <div class="col-span-full">
+    <div class="col-span-full align-bottom">
       <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 bg-gray-100 p-6"
         @dragstart="handleRemoveDragStart" @dragenter="handleRemoveDragEnter" @dragover="handleRemoveDragOver"
         @dragleave="handleRemoveDragLeave" @drop="handleRemoveDrop" @dragend="handleRemoveDragEnd">

@@ -81,7 +81,7 @@
                           <BoltIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                           <span class="mx-1 text-gray-500">Workspace</span>
                         </h2>
-                        <div v-if="draftActions" class="space-y-4 max-h-[700px] 2xl:max-h-[1100px] overflow-y-auto mt-2">
+                        <div v-if="draftActions" class="space-y-4 max-h-[650px] 2xl:max-h-[1100px] overflow-y-auto mt-2">
                           <div class="mx-2">
                             <ul v-if="draftActions && draftActions.length" role="list">
                               <li v-for="(action, aIdx) in draftActions"

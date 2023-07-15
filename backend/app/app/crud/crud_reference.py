@@ -184,6 +184,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
                     schema_hash=project_obj.schema.hash,
                 )
                 task_in.crosswalk_id = template_obj.id
+                task_in.schema_id = project_obj.schema.id
             if not schema_model and project_obj.schema:
                 task_in.schema_id = project_obj.schema.id
             # 2. Create the task

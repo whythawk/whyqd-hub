@@ -63,7 +63,7 @@ def process_create_multi_tasks_from_project(
     user_obj = crud.user.get(db=db, id=user_id)
     project_obj = crud.project.get(db=db, id=project_id, user=user_obj, responsibility=schema_types.RoleType.WRANGLER)
     # PROCESS
-    tasks_in = [schemas.TaskCreate(model_in) for model_in in models_in]
+    tasks_in = [schemas.TaskCreate(**model_in) for model_in in models_in]
     crud.reference.create_multi_tasks_from_project(
         db=db, user=user_obj, project_obj=project_obj, tasks_in=tasks_in, field_name=field_name
     )
