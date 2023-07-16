@@ -66,12 +66,13 @@ export const useTaskStore = defineStore("taskStore", {
       await this.authTokens.refreshTokens()
       if (this.authTokens.token) {
         try {
+          this.setTerm({} as ITask)
           this.settings.setPageState("loading")
           const { data: response } = await apiTask.getTerm(this.authTokens.token, key)
           if (response.value) this.setTerm(response.value)
           this.settings.setPageState("done")
         } catch (error) {
-          this.one = {} as ITask
+          this.settings.setPageState("error")
         }
       }
     },
@@ -158,8 +159,15 @@ export const useTaskStore = defineStore("taskStore", {
     setFilters(payload: ITaskFilters) {
       this.facets = payload
     },
+    setPage(payload: string) {
+      if (!isNaN(+payload)) {
+        this.facets.page = +payload 
+      }
+    },
     resetFilters() {
+      const page = this.facets.page
       this.facets = {}
+      this.setPage("" + page)
     },
     // reset state using `$reset`
     resetState () {

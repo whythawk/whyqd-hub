@@ -168,8 +168,13 @@ class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
             .first()
         )
 
-    def get_multi_orders(self, db: Session, *, user: User, skip: int = 0, limit: int = 100) -> List[Order]:
-        return user.orders.order_by(desc("created"), desc("subscription_type")).offset(skip).limit(limit).all()
+    def get_multi_orders(self, db: Session, *, user: User, page: int = 0, page_break: bool = False) -> List[Order]:
+        db_objs = user.orders.order_by(desc("created"), desc("subscription_type"))
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
+        return db_objs.all()
 
 
 order = CRUDOrder(Order)

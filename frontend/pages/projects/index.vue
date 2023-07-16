@@ -20,6 +20,7 @@
           <ProjectCard :project="project" :last-card="i === projectStore.multi.length - 1" />
         </li>
       </ul>
+      <CommonPagination />
     </div>
   </div>
 </template>
@@ -32,12 +33,22 @@ definePageMeta({
   middleware: ["authenticated"],
 });
 
+const route = useRoute()
 const appSettings = useSettingStore()
 const projectStore = useProjectStore()
 
+watch(() => [route.query], () => {
+  updateMulti()
+})
+
+async function updateMulti() {
+  if (route.query && route.query.page) projectStore.setPage(route.query.page as string)
+  await projectStore.getMulti()
+}
+
 onMounted(async () => {
   appSettings.setPageName("Projects")
-  await projectStore.getMulti()
+  updateMulti()
 })
 
 // METADATA - START

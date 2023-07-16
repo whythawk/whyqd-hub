@@ -26,12 +26,12 @@ class CRUDToken(CRUDBase[Token, RefreshTokenCreate, RefreshTokenUpdate]):
     def get(self, *, user: User, token: str) -> Token:
         return user.refresh_tokens.filter(self.model.token == token).first()
 
-    def get_multi(self, *, user: User, skip: int = 0, limit: int = None) -> list[Token]:
+    def get_multi(self, *, user: User, page: int = 0, page_break: bool = False) -> list[Token]:
         db_objs = user.refresh_tokens
-        if skip:
-            db_objs = db_objs.offset(skip)
-        if limit and (limit <= settings.MULTI_MAX):
-            db_objs = db_objs.limit(limit)
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
         return db_objs.all()
 
     def remove(self, db: Session, *, db_obj: Token) -> None:

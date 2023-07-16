@@ -42,15 +42,15 @@ class CRUDOgunUser(CRUDBase[OgunUser, OgunUserCreate, OgunUserUpdate]):
         return db_obj
 
     def get_multi(
-        self, *, user: User, skip: int = 0, limit: int = None, responsibility: RoleType | None = None
+        self, *, user: User, page: int = 0, page_break: bool = False, responsibility: RoleType | None = None
     ) -> list[OgunUser]:
         db_objs = user.ogun_users
         if responsibility:
             db_objs = db_objs.filter(self.model.responsibility == responsibility)
-        if skip:
-            db_objs = db_objs.offset(skip)
-        if limit and (limit <= settings.MULTI_MAX):
-            db_objs = db_objs.limit(limit)
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
         return db_objs.all()
 
     def remove(self, db: Session, *, user: User, access_key: str) -> None:

@@ -56,13 +56,14 @@ export const useReferenceStore = defineStore("referenceStore", {
     async getTerm(key: string) {
       await this.authTokens.refreshTokens()
       if (this.authTokens.token) {
+        this.setTerm({} as IReference)
         try {
           this.settings.setPageState("loading")
           const { data: response } = await apiReference.getTerm(this.authTokens.token, key)
           if (response.value) this.setTerm(response.value)
           this.settings.setPageState("done")
         } catch (error) {
-          this.one = {} as IReference
+          this.settings.setPageState("error")
         }
       }
     },
@@ -91,8 +92,15 @@ export const useReferenceStore = defineStore("referenceStore", {
     setFilters(payload: IReferenceFilters) {
       this.facets = payload
     },
+    setPage(payload: string) {
+      if (!isNaN(+payload)) {
+        this.facets.page = +payload 
+      }
+    },
     resetFilters() {
+      const page = this.facets.page
       this.facets = {}
+      this.setPage("" + page)
     },
     // reset state using `$reset`
     resetState () {

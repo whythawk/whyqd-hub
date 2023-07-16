@@ -7,7 +7,6 @@ from whyqd.parsers.datasource import DataSourceParser
 
 from app import crud, models, schemas, schema_types
 from app.api import deps
-from app.core.config import settings
 
 router = APIRouter()
 
@@ -21,8 +20,7 @@ def read_all_references(
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     descending: bool = True,
-    skip: int = 0,
-    limit: Optional[int] = settings.MULTI_MAX,
+    page: int = 0,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
@@ -45,8 +43,7 @@ def read_all_references(
         date_from=date_from,
         date_to=date_to,
         descending=descending,
-        skip=skip,
-        limit=limit,
+        page=page,
     )
 
 

@@ -11,6 +11,7 @@
           <ActivityCard :activity="activity" :last-card="i === activityStore.multi.length - 1" />
         </li>
       </ul>
+      <CommonPagination />
     </div>
   </div>
 </template>
@@ -19,6 +20,7 @@
 import { useSettingStore, useAuthStore, useActivityStore } from "@/stores"
 import { tokenIsTOTP } from "@/utilities"
 
+const route = useRoute()
 const appSettings = useSettingStore()
 const auth = useAuthStore()
 const activityStore = useActivityStore()
@@ -30,9 +32,17 @@ definePageMeta({
 const redirectTOTP = "/totp"
 const redirectAfterLogin = "/"
 
+watch(() => [route.query], () => {
+  updateMulti()
+})
+
+async function updateMulti() {
+  if (route.query && route.query.page) activityStore.setPage(route.query.page as string)
+  await activityStore.getMulti()
+}
+
 onMounted(async () => {
   // Check if email is being validated
-  const route = useRoute()
   if (route.query && route.query.magic) {
     // No idea: https://stackoverflow.com/q/74759799/295606
     await new Promise((resolve) => {
@@ -45,7 +55,7 @@ onMounted(async () => {
     else await navigateTo(redirectAfterLogin)
   }
   appSettings.setPageName("Home")
-  await activityStore.getMulti()
+  updateMulti()
 })
 
 // METADATA - START

@@ -51,14 +51,14 @@ class CRUDSubscription(CRUDBase[Subscription, SubscriptionCreate, SubscriptionUp
             raise ValueError(e)
         return response
 
-    def get_multi(self, db: Session, *, skip: int = 0, limit: int = 100) -> List[Subscription]:
+    def get_multi(self, db: Session, *, page: int = 0, page_break: bool = False) -> List[Subscription]:
         # https://stackoverflow.com/questions/41079196/using-sqlalchemy-how-do-i-get-last-inventory-entry-with-distinct-values-for-prod
         subquery = (
             db.query(self.model.subscriber_id, func.max(self.model.created).label("created")).group_by(
                 self.model.subscriber_id,
             )
         ).subquery("subquery")
-        return (
+        db_objs = (
             db.query(self.model)
             .join(
                 subquery,
@@ -68,10 +68,12 @@ class CRUDSubscription(CRUDBase[Subscription, SubscriptionCreate, SubscriptionUp
                 ),
             )
             .order_by(self.model.created.desc())
-            .offset(skip)
-            .limit(limit)
-            .all()
         )
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
+        return db_objs.all()
 
 
 subscription = CRUDSubscription(Subscription)

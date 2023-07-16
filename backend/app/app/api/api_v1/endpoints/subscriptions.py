@@ -22,14 +22,13 @@ stripe.api_key = settings.STRIPE_API_KEY
 @router.get("/", response_model=List[schemas.Order])
 def read_orders(
     db: Session = Depends(deps.get_db),
-    skip: int = 0,
-    limit: int = 100,
+    page: int = 0,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Retrieve all member orders.
     """
-    orders = crud.order.get_multi_orders(db=db, user=current_user, skip=skip, limit=limit)
+    orders = crud.order.get_multi_orders(db=db, user=current_user, page=page)
     return orders
 
 
@@ -37,14 +36,13 @@ def read_orders(
 def read_current_subscribers(
     *,
     db: Session = Depends(deps.get_db),
-    skip: int = 0,
-    limit: int = 100,
+    page: int = 0,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Retrieve all current subscribers.
     """
-    return crud.subscription.get_multi(db=db, skip=skip, limit=limit)
+    return crud.subscription.get_multi(db=db, page=page)
 
 
 @router.post("/create", response_model=schemas.Subscription)

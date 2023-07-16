@@ -50,13 +50,14 @@ export const useResourceStore = defineStore("resourceStore", {
     async getTerm(key: string) {
       await this.authTokens.refreshTokens()
       if (this.authTokens.token) {
+        this.setTerm({} as IResourceManager)
         try {
           this.settings.setPageState("loading")
           const { data: response } = await apiResource.getTerm(this.authTokens.token, key)
           if (response.value) this.setTerm(response.value)
           this.settings.setPageState("done")
         } catch (error) {
-          this.one = {} as IResourceManager
+          this.settings.setPageState("error")
         }
       }
     },
@@ -91,8 +92,15 @@ export const useResourceStore = defineStore("resourceStore", {
     setFilters(payload: IResourceFilters) {
       this.facets = payload
     },
+    setPage(payload: string) {
+      if (!isNaN(+payload)) {
+        this.facets.page = +payload 
+      }
+    },
     resetFilters() {
+      const page = this.facets.page
       this.facets = {}
+      this.setPage("" + page)
     },
     // reset state using `$reset`
     resetState () {

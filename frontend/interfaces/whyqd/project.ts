@@ -34,8 +34,7 @@ export interface IProjectFilters {
   date_from?: string
   date_to?: string
   descending?: boolean
-  skip?: number
-  limit?: number
+  page?: number
 }
 
 

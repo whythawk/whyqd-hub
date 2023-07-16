@@ -52,8 +52,8 @@ class CRUDWhyqdBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         date_from: datetime | str | None = None,
         date_to: datetime | str | None = None,
         descending: bool = True,
-        skip: int = 0,
-        limit: int = None,
+        page: int = 0,
+        page_break: bool = False,
     ) -> list[ModelType]:
         db_objs = db.query(self.model)
         if not user.is_superuser:
@@ -81,10 +81,10 @@ class CRUDWhyqdBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if descending:
             order_by = order_by.desc()
         db_objs = db_objs.distinct().order_by(order_by)
-        if skip:
-            db_objs = db_objs.offset(skip)
-        if limit and (limit <= settings.MULTI_MAX):
-            db_objs = db_objs.limit(limit)
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
         return db_objs.all()
 
     def create(self, db: Session, *, obj_in: CreateSchemaType, user: User) -> ModelType:

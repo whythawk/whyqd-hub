@@ -11,6 +11,7 @@
           <ReferenceCard :reference="reference" :last-card="i === referenceStore.multi.length - 1" />
         </li>
       </ul>
+      <CommonPagination />
     </div>
   </div>
 </template>
@@ -22,12 +23,22 @@ definePageMeta({
   middleware: ["authenticated"],
 });
 
+const route = useRoute()
 const appSettings = useSettingStore()
 const referenceStore = useReferenceStore()
 
+watch(() => [route.query], () => {
+  updateMulti()
+})
+
+async function updateMulti() {
+  if (route.query && route.query.page) referenceStore.setPage(route.query.page as string)
+  await referenceStore.getMulti()
+}
+
 onMounted(async () => {
   appSettings.setPageName("References")
-  await referenceStore.getMulti()
+  updateMulti()
 })
 
 // METADATA - START

@@ -66,6 +66,5 @@ export interface IReferenceFilters {
   version_from?: string
   version_to?: string
   descending?: boolean
-  skip?: number
-  limit?: number
+  page?: number
 }

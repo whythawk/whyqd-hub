@@ -25,6 +25,5 @@ export interface IOgunToken {
 }
 
 export interface IOgunFilters {
-  skip?: number
-  limit?: number
+  page?: number
 }

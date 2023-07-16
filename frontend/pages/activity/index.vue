@@ -11,6 +11,7 @@
           <ActivityCard :activity="activity" :last-card="i === activityStore.multi.length - 1" />
         </li>
       </ul>
+      <CommonPagination />
     </div>
   </div>
 </template>
@@ -22,12 +23,22 @@ definePageMeta({
   middleware: ["authenticated"],
 });
 
+const route = useRoute()
 const appSettings = useSettingStore()
 const activityStore = useActivityStore()
 
+watch(() => [route.query], () => {
+  updateMulti()
+})
+
+async function updateMulti() {
+  if (route.query && route.query.page) activityStore.setPage(route.query.page as string)
+  await activityStore.getMulti()
+}
+
 onMounted(async () => {
   appSettings.setPageName("Activity")
-  await activityStore.getMulti()
+  updateMulti()
 })
 
 // METADATA - START

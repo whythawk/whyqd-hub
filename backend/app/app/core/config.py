@@ -43,7 +43,7 @@ class Settings(BaseSettings):
 
     # GENERAL SETTINGS
 
-    MULTI_MAX: int = 50
+    MULTI_MAX: int = 20
 
     # COMPONENT SETTINGS
 

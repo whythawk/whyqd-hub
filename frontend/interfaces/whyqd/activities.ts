@@ -21,8 +21,7 @@ export interface IActivityFilters {
   alert?: boolean
   custodian?: boolean
   descending?: boolean
-  skip?: number
-  limit?: number
+  page?: number
 }
 
 // REVIEW

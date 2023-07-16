@@ -34,8 +34,8 @@ class CRUDReferenceTemplate(CRUDWhyqdBase[ReferenceTemplate, ReferenceTemplateCr
         responsibility: RoleType = RoleType.SEEKER,
         reference_type: ReferenceType | None = None,
         match: str | None = None,
-        skip: int = 0,
-        limit: int | None = None,
+        page: int = 0,
+        page_break: bool = False,
     ) -> list[ReferenceTemplate]:
         db_objs = db.query(self.model)
         if not user.is_superuser:
@@ -51,10 +51,10 @@ class CRUDReferenceTemplate(CRUDWhyqdBase[ReferenceTemplate, ReferenceTemplateCr
                     | self.model.description_vector.match(str(match))
                 )
             )
-        if skip:
-            db_objs = db_objs.offset(skip)
-        if limit and (limit <= settings.MULTI_MAX):
-            db_objs = db_objs.limit(limit)
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
         return db_objs.all()
 
     def create(

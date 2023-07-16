@@ -11,6 +11,7 @@
           <TaskCard :task="task" :last-card="i === taskStore.multi.length - 1" />
         </li>
       </ul>
+      <CommonPagination />
     </div>
   </div>
 </template>
@@ -22,12 +23,22 @@ definePageMeta({
   middleware: ["authenticated"],
 });
 
+const route = useRoute()
 const appSettings = useSettingStore()
 const taskStore = useTaskStore()
 
+watch(() => [route.query], () => {
+  updateMulti()
+})
+
+async function updateMulti() {
+  if (route.query && route.query.page) taskStore.setPage(route.query.page as string)
+  await taskStore.getMulti()
+}
+
 onMounted(async () => {
   appSettings.setPageName("Tasks")
-  await taskStore.getMulti()
+  updateMulti()
 })
 
 // METADATA - START

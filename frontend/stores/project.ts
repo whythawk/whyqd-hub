@@ -50,13 +50,14 @@ export const useProjectStore = defineStore("projectStore", {
     async getTerm(key: string) {
       await this.authTokens.refreshTokens()
       if (this.authTokens.token) {
+        this.setTerm({} as IProject)
         try {
           this.settings.setPageState("loading")
           const { data: response } = await apiProject.getTerm(this.authTokens.token, key)
           if (response.value) this.setTerm(response.value)
           this.settings.setPageState("done")
         } catch (error) {
-          this.one = {} as IProject
+          this.settings.setPageState("error")
         }
       }
     },
@@ -165,8 +166,15 @@ export const useProjectStore = defineStore("projectStore", {
     setFilters(payload: IProjectFilters) {
       this.facets = payload
     },
+    setPage(payload: string) {
+      if (!isNaN(+payload)) {
+        this.facets.page = +payload 
+      }
+    },
     resetFilters() {
+      const page = this.facets.page
       this.facets = {}
+      this.setPage("" + page)
     },
     // reset state using `$reset`
     resetState () {

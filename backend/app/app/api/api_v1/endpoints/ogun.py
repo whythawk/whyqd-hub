@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from app import crud, models, schemas, schema_types
 from app.api import deps
 from app.core import security
-from app.core.config import settings
 
 router = APIRouter()
 
@@ -24,14 +23,13 @@ Ogun users and API token are issued by specific researchers for programmatic use
 @router.get("/", response_model=List[schemas.OgunUser])
 def read_all_terms(
     *,
-    skip: int = 0,
-    limit: Optional[int] = settings.MULTI_MAX,
+    page: int = 0,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Retrieve all current ogun users for a user.
     """
-    return crud.ogun.get_multi(user=current_user, skip=skip, limit=limit)
+    return crud.ogun.get_multi(user=current_user, page=page)
 
 
 @router.post("/create/{role}", response_model=schemas.OgunUserCreate)

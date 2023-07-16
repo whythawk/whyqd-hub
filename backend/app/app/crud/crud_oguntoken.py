@@ -26,12 +26,12 @@ class CRUDOgunToken(CRUDBase[OgunToken, OgunTokenCreate, OgunTokenUpdate]):
         db_obj = self.get(token=token, user=user)
         return db_obj.responsibility
 
-    def get_multi(self, *, user: User, skip: int = 0, limit: int = None) -> list[OgunToken]:
+    def get_multi(self, *, user: User, page: int = 0, page_break: bool = False) -> list[OgunToken]:
         db_objs = user.ogun_tokens
-        if skip:
-            db_objs = db_objs.offset(skip)
-        if limit and (limit <= settings.MULTI_MAX):
-            db_objs = db_objs.limit(limit)
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
         return db_objs.all()
 
     def remove(self, db: Session, *, db_obj: OgunToken) -> None:

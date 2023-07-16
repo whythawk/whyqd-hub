@@ -28,12 +28,12 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def get(self, db: Session, id: Any) -> Optional[ModelType]:
         return db.query(self.model).filter(self.model.id == id).first()
 
-    def get_multi(self, db: Session, *, skip: int = 0, limit: int = None) -> list[ModelType]:
+    def get_multi(self, db: Session, *, page: int = 0, page_break: bool = False) -> list[ModelType]:
         db_objs = db.query(self.model)
-        if skip:
-            db_objs = db_objs.offset(skip)
-        if limit and (limit <= settings.MULTI_MAX):
-            db_objs = db_objs.limit(limit)
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
         return db_objs.all()
 
     def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:

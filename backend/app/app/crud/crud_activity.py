@@ -27,8 +27,8 @@ class CRUDActivity(CRUDBase[Activity, ActivityCreate, ActivityUpdate]):
         alert: bool = False,
         custodian: bool = False,
         descending: bool = True,
-        skip: int = 0,
-        limit: int | None = None,
+        page: int = 0,
+        page_break: bool = False,
     ) -> list[Activity]:
         db_objs = db.query(self.model)
         responsibilities = crud_role._get_responsibility(responsibility=responsibility)
@@ -65,10 +65,10 @@ class CRUDActivity(CRUDBase[Activity, ActivityCreate, ActivityUpdate]):
         if descending:
             order_by = order_by.desc()
         db_objs = db_objs.distinct().order_by(order_by)
-        if skip:
-            db_objs = db_objs.offset(skip)
-        if limit and (limit <= settings.MULTI_MAX):
-            db_objs = db_objs.limit(limit)
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
         return db_objs.all()
 
     def get_by_researcher(
@@ -84,8 +84,8 @@ class CRUDActivity(CRUDBase[Activity, ActivityCreate, ActivityUpdate]):
         alert: bool = False,
         custodian: bool = False,
         descending: bool = True,
-        skip: int = 0,
-        limit: int | None = None,
+        page: int = 0,
+        page_break: bool = False,
     ) -> list[Activity]:
         db_objs = db.query(self.model)
         responsibilities = crud_role._get_responsibility(responsibility=responsibility)
@@ -125,10 +125,10 @@ class CRUDActivity(CRUDBase[Activity, ActivityCreate, ActivityUpdate]):
         if descending:
             order_by = order_by.desc()
         db_objs = db_objs.distinct().order_by(order_by)
-        if skip:
-            db_objs = db_objs.offset(skip)
-        if limit and (limit <= settings.MULTI_MAX):
-            db_objs = db_objs.limit(limit)
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
         return db_objs.all()
 
 

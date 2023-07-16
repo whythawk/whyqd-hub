@@ -11,6 +11,7 @@
           <ResourceCard :resource="resource" :last-card="i === resourceStore.multi.length - 1" />
         </li>
       </ul>
+      <CommonPagination />
     </div>
   </div>
 </template>
@@ -22,12 +23,22 @@ definePageMeta({
   middleware: ["authenticated"],
 });
 
+const route = useRoute()
 const appSettings = useSettingStore()
 const resourceStore = useResourceStore()
 
+watch(() => [route.query], () => {
+  updateMulti()
+})
+
+async function updateMulti() {
+  if (route.query && route.query.page) resourceStore.setPage(route.query.page as string)
+  await resourceStore.getMulti()
+}
+
 onMounted(async () => {
   appSettings.setPageName("Resources")
-  await resourceStore.getMulti()
+  updateMulti()
 })
 
 // METADATA - START

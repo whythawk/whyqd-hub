@@ -43,8 +43,15 @@ export const useActivityStore = defineStore("activityStore", {
     setFilters(payload: IActivityFilters) {
       this.facets = payload
     },
+    setPage(payload: string) {
+      if (!isNaN(+payload)) {
+        this.facets.page = +payload 
+      }
+    },
     resetFilters() {
+      const page = this.facets.page
       this.facets = {}
+      this.setPage("" + page)
     },
     // reset state using `$reset`
     resetState () {
