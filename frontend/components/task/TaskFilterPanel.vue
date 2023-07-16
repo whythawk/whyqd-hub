@@ -20,7 +20,7 @@
               <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
               </div>
-              <input id="search" name="search"
+              <input id="search" name="search" v-model="searchTerm" @keydown="watchSearchTerm"
                 class="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ochre-600 sm:text-sm sm:leading-6"
                 placeholder="Search" type="search" />
             </div>
@@ -63,6 +63,7 @@ import { ITaskFilters } from "@/interfaces"
 
 const taskStore = useTaskStore()
 const filters = ref({} as ITaskFilters)
+const searchTerm = ref("")
 const dateFrom = ref("")
 const dateTo = ref("")
 const formatter = ref({
@@ -70,7 +71,12 @@ const formatter = ref({
   month: "MMM"
 })
 
+function watchSearchTerm(event: any) {
+  if (event.key === "Enter") refreshActivities()
+}
+
 async function refreshActivities() {
+  filters.value.match = searchTerm.value
   if (dateFrom.value && dateTo.value && dateFrom.value >= dateTo.value) dateTo.value = ""
   if (dateFrom.value) filters.value.date_from = dateFrom.value
   if (dateTo.value) filters.value.date_to = dateTo.value
@@ -85,6 +91,7 @@ function getFilters() {
   dateTo.value = ""
   if (filters.value.date_from) dateFrom.value = filters.value.date_from
   if (filters.value.date_to) dateTo.value = filters.value.date_to
+  if (filters.value.match) searchTerm.value = filters.value.match
 }
 
 async function resetFilters() {

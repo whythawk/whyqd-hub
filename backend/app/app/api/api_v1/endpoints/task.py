@@ -14,6 +14,7 @@ router = APIRouter()
 def read_all_tasks(
     *,
     db: Session = Depends(deps.get_db),
+    match: Optional[str] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     descending: bool = True,
@@ -26,6 +27,7 @@ def read_all_tasks(
     return crud.task.get_multi(
         db=db,
         user=current_user,
+        match=match,
         date_from=date_from,
         date_to=date_to,
         descending=descending,
@@ -38,6 +40,7 @@ def read_all_project_tasks(
     *,
     db: Session = Depends(deps.get_db),
     project_id: str,
+    match: Optional[str] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     descending: bool = True,
@@ -57,6 +60,7 @@ def read_all_project_tasks(
         db=db,
         user=current_user,
         project_obj=project_obj,
+        match=match,
         date_from=date_from,
         date_to=date_to,
         descending=descending,

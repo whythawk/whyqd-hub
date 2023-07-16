@@ -31,7 +31,7 @@ export const useSchemaStore = defineStore("schemaStore", {
     async getMulti() {
       this.reference.facets.reference_type = "SCHEMA"
       await this.reference.getMulti()
-      if (this.reference.multi) this.setMulti(this.reference.multi)
+      if (this.reference.multi && this.reference.multi.length) this.setMulti(this.reference.multi)
       else this.setMulti([])
     },
     setMulti(payload: IReference[]) {

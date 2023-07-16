@@ -18,6 +18,7 @@ router = APIRouter()
 def read_all_projects(
     *,
     db: Session = Depends(deps.get_db),
+    match: Optional[str] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     descending: bool = True,
@@ -30,6 +31,7 @@ def read_all_projects(
     return crud.project.get_multi(
         db=db,
         user=current_user,
+        match=match,
         date_from=date_from,
         date_to=date_to,
         descending=descending,

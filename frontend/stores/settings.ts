@@ -3,7 +3,8 @@ import { IPageStatusType } from "@/interfaces"
 export const useSettingStore = defineStore("settingStore", {
   state: () => ({
     pageName: "" as string,
-    pageState: "idle" as IPageStatusType
+    pageState: "idle" as IPageStatusType,
+    pageNext: true as boolean
   }),
   persist: {
     storage: persistedState.cookiesWithOptions({
@@ -26,6 +27,9 @@ export const useSettingStore = defineStore("settingStore", {
     },
     setPageState (payload: IPageStatusType) {
       this.pageState = payload
+    },
+    setPageNext(payload: boolean) {
+      this.pageNext = payload
     },
     // reset state using `$reset`
     resetState () {

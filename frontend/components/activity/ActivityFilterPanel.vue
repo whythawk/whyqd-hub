@@ -13,19 +13,6 @@
             <button type="button" @click="resetFilters" class="text-gray-500 hover:text-ochre-600">Clear</button>
           </div>
         </div>
-        <div class="flex items-center justify-center sm:mx-4 px-2 w-full">
-          <div class="w-full">
-            <label for="search" class="sr-only">Search</label>
-            <div class="relative">
-              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </div>
-              <input id="search" name="search"
-                class="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ochre-600 sm:text-sm sm:leading-6"
-                placeholder="Search" type="search" />
-            </div>
-          </div>
-        </div>
         <button type="button" @click="refreshActivities" class="group inline-flex justify-center">
           <ArrowPathIcon class="-mr-1 ml-1 mt-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-ochre-600"
             aria-hidden="true" />

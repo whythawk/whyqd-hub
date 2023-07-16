@@ -15,6 +15,7 @@ router = APIRouter()
 def read_all_references(
     *,
     db: Session = Depends(deps.get_db),
+    match: Optional[str] = None,
     reference_type: Optional[schema_types.ReferenceType] = None,
     mime_type: Optional[str] = None,
     date_from: Optional[str] = None,
@@ -39,6 +40,7 @@ def read_all_references(
         db=db,
         user=current_user,
         reference_type=reference_type,
+        match=match,
         mime_type=mime_type,
         date_from=date_from,
         date_to=date_to,

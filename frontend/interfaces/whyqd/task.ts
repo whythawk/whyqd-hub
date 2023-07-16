@@ -38,6 +38,7 @@ export interface ITask {
 }
 
 export interface ITaskFilters {
+  match?: string
   date_from?: string
   date_to?: string
   descending?: boolean

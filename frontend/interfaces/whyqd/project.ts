@@ -31,6 +31,7 @@ export interface IProject {
 }
 
 export interface IProjectFilters {
+  match?: string
   date_from?: string
   date_to?: string
   descending?: boolean

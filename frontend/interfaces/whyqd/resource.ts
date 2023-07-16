@@ -97,6 +97,7 @@ export interface IResourceCrosswalkManager {
 }
 
 export interface IResourceFilters {
+  match?: string
   state?: IStatusType
   date_from?: string
   date_to?: string

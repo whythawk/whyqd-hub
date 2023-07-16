@@ -15,6 +15,7 @@ router = APIRouter()
 def read_all_resources(
     *,
     db: Session = Depends(deps.get_db),
+    match: Optional[str] = None,
     state: Optional[schema_types.StateType] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
@@ -28,6 +29,7 @@ def read_all_resources(
     return crud.resource.get_multi(
         db=db,
         user=current_user,
+        match=match,
         state=state,
         date_from=date_from,
         date_to=date_to,
@@ -41,6 +43,7 @@ def read_all_task_resources(
     *,
     db: Session = Depends(deps.get_db),
     task_id: str,
+    match: Optional[str] = None,
     state: Optional[schema_types.StateType] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
@@ -61,6 +64,7 @@ def read_all_task_resources(
         db=db,
         user=current_user,
         task_obj=task_obj,
+        match=match,
         state=state,
         date_from=date_from,
         date_to=date_to,
