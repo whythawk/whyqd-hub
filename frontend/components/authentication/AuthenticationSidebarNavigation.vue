@@ -55,7 +55,20 @@
 <script setup lang="ts">
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue"
 import { ArrowLeftOnRectangleIcon, EllipsisVerticalIcon } from "@heroicons/vue/24/outline"
-import { useAuthStore } from "@/stores"
+import {
+  useAuthStore,
+  useToastStore,
+  useOgunStore,
+  useActivityStore,
+  useReferenceStore,
+  useSchemaStore,
+  useCrosswalkStore,
+  useTemplateStore,
+  useResourceStore,
+  useTaskStore,
+  useProjectStore,
+  useSubscriptionsStore,
+} from "@/stores"
 import { getAvatar } from "@/utilities"
 
 // With credit to DiceBear https://dicebear.com/styles/bottts
@@ -70,6 +83,28 @@ const navigation = [
 const redirectRoute = "/"
 
 async function logout() {
+  const toastStore = useToastStore()
+  const ogunStore = useOgunStore()
+  const activityStore = useActivityStore()
+  const referenceStore = useReferenceStore()
+  const schemaStore = useSchemaStore()
+  const crosswalkStore = useCrosswalkStore()
+  const templateStore = useTemplateStore()
+  const resourceStore = useResourceStore()
+  const taskStore = useTaskStore()
+  const projectStore = useProjectStore()
+  const subscriptionStore = useSubscriptionsStore()
+  toastStore.resetState()
+  ogunStore.resetState()
+  activityStore.resetState()
+  referenceStore.resetState()
+  schemaStore.resetState()
+  crosswalkStore.resetState()
+  templateStore.resetState()
+  resourceStore.resetState()
+  taskStore.resetState()
+  projectStore.resetState()
+  subscriptionStore.resetState()
   authStore.logOut()
   await navigateTo(redirectRoute)
 }

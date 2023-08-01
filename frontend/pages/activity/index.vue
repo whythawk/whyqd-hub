@@ -27,8 +27,8 @@ const route = useRoute()
 const appSettings = useSettingStore()
 const activityStore = useActivityStore()
 
-watch(() => [route.query], () => {
-  updateMulti()
+watch(() => [route.query], async () => {
+  await updateMulti()
 })
 
 async function updateMulti() {
@@ -39,6 +39,11 @@ async function updateMulti() {
 onMounted(async () => {
   appSettings.setPageName("Activity")
   updateMulti()
+})
+
+onBeforeUnmount(() => {
+  const router = useRouter()
+  router.replace({ query: {} })
 })
 
 // METADATA - START

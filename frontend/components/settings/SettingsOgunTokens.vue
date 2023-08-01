@@ -42,6 +42,7 @@
         </div>
       </div>
     </div>
+    <CommonPagination />
   </div>
 </template>
 
@@ -50,18 +51,33 @@ import { ExclamationTriangleIcon, TrashIcon } from "@heroicons/vue/24/outline"
 import { useSettingStore, useAuthStore, useOgunStore } from "@/stores"
 import { readableDate } from "@/utilities"
 
+const route = useRoute()
 const authStore = useAuthStore()
 const appSettings = useSettingStore()
 const ogunStore = useOgunStore()
 const title = "API settings"
 const description = "Manage your API users and keys for programmatic access to the Whyqd (/wɪkɪd/) Hub."
 
+watch(() => [route.query], async () => {
+  await updateMulti()
+})
+
+async function updateMulti() {
+  if (route.query && route.query.page) ogunStore.setPage(route.query.page as string)
+  await ogunStore.getMulti()
+}
+
 onMounted(async () => {
   appSettings.setPageName("Settings")
-  await ogunStore.getMulti()
+  await updateMulti()
 })
 
 async function removeOgun(key: string) {
   await ogunStore.removeTerm(key)
 }
+
+onBeforeUnmount(() => {
+  const router = useRouter()
+  router.replace({ query: {} })
+})
 </script>

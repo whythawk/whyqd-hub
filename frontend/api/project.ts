@@ -1,4 +1,4 @@
-import { IProject, IProjectFilters } from "@/interfaces"
+import { IProject, IProjectFilters, IProjectRole, IProjectInvitation, IResearcherRoleType } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiProject = {
@@ -73,6 +73,59 @@ export const apiProject = {
       {
         method: "DELETE",
         headers: apiCore.headers(token),
+      }
+    )
+  },
+  // MANAGE PROJECT MEMBERS
+  async getAllMembers(token: string, key: string, payload: IProjectFilters = {}) {
+    return await useFetch<IProjectRole[]>(`${apiCore.url()}/project/${key}/members`, 
+      {
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async updateMember(token: string, key: string, member_key: string, role_type: IResearcherRoleType, payload: IProjectFilters = {}) {
+    return await useFetch<IProjectRole[]>(`${apiCore.url()}/project/${key}/members/${member_key}/${role_type}`, 
+      {
+        method: "POST",
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async removeMember(token: string, key: string, member_key: string, payload: IProjectFilters = {}) {
+    return await useFetch<IProjectRole[]>(`${apiCore.url()}/project/${key}/members/${member_key}`, 
+      {
+        method: "DELETE",
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async getAllInvitations(token: string, key: string, payload: IProjectFilters = {}) {
+    return await useFetch<IProjectInvitation[]>(`${apiCore.url()}/project/${key}/invitations`, 
+      {
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async createInvitation(token: string, key: string, email: string, payload: IProjectFilters = {}) {
+    return await useFetch<IProjectInvitation[]>(`${apiCore.url()}/project/${key}/invitations/${email}`, 
+      {
+        method: "POST",
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async removeInvitation(token: string, key: string, invitation_key: string, payload: IProjectFilters = {}) {
+    return await useFetch<IProjectInvitation[]>(`${apiCore.url()}/project/${key}/invitations/${invitation_key}`, 
+      {
+        method: "DELETE",
+        headers: apiCore.headers(token),
+        query: payload,
       }
     )
   },

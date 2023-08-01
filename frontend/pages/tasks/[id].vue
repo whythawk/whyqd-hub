@@ -1,33 +1,11 @@
 <template>
   <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-3xl mx-auto">
-    <div class="flex w-full items-center justify-between gap-x-6 pb-2">
-      <div class="flex flex-inline space-x-4">
-        <img class="relative h-8 w-8 flex-none rounded-lg ring-1 ring-offset-2 ring-ochre-200 text-gray-700" :src="avatar"
-          :alt="heading" />
-        <h1 class="truncate text-lg font-semibold leading-7 text-gray-900">
-          Task: {{ heading }}
-        </h1>
-      </div>
-      <div class="flex flex-inline space-x-2">
-        <button @click.prevent="showDelete = !showDelete">
-          <ExclamationCircleIcon
-            :class="[showDelete ? 'text-sienna-600' : 'text-cerulean-600', 'h-6 w-6  hover:text-ochre-600']" />
-        </button>
-        <NuxtLink :to="`/tasks/edit/${route.params.id}`" type="button"
-          class="text-sm leading-6 text-gray-900 rounded-lg px-2 py-1 ring-1 ring-inset ring-gray-200 hover:bg-gray-100">
-          Edit
-        </NuxtLink>
-      </div>
+    <div v-if="appSettings.current.pageState === 'loading'">
+      <LoadingCardSkeleton />
     </div>
-    <div v-if="showDelete"
-      class="flex gap-x-3 items-center text-sm leading-6 text-gray-900 rounded-lg p-3 ring-1 ring-inset ring-gray-200">
-      <button type="button" @click.prevent="removeTask"
-        class="text-sm leading-6 text-gray-900 rounded-lg px-2 py-1 ring-1 ring-inset ring-sienna-200 hover:bg-sienna-200">
-        Delete
-      </button>
-      <span class="italic">Zero history deletion.</span>
-    </div>
-    <div>
+    <div v-else>
+      <CommonHeadingView v-if="taskStore.term.name" purpose="Task" :name="taskStore.term.name"
+        :title="taskStore.term.title" @set-edit-request="watchHeadingRequest" />
       <dl class="divide-y divide-gray-100">
         <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Name</dt>
@@ -126,7 +104,8 @@
       </dl>
     </div>
     <div class="space-y-2 mx-2">
-      <h2 class="text-sm font-semibold leading-7 text-gray-900 pt-2">Project, resources, templates and schema object</h2>
+      <h2 class="text-sm font-semibold leading-7 text-gray-900 pt-2">Project, resources, templates and schema object
+      </h2>
       <div v-if="taskStore.term.project && Object.keys(taskStore.term.project).length !== 0" class="space-y-6">
         <NuxtLink :to="`/projects/${taskStore.term.project.id}`">
           <CommonSummaryCard :summary="taskStore.term.project" :show-state="false" />
@@ -196,14 +175,12 @@
 import {
   ArrowsRightLeftIcon,
   BeakerIcon,
-  ExclamationCircleIcon,
   RectangleGroupIcon,
-  Squares2X2Icon,
   SquaresPlusIcon,
   TableCellsIcon,
   TrashIcon
 } from "@heroicons/vue/24/outline"
-import { readableDate, getAvatar } from "@/utilities"
+import { readableDate } from "@/utilities"
 import { ICitation, IReferenceFilters } from "@/interfaces"
 import { useSettingStore, useTaskStore, useReferenceStore } from "@/stores"
 
@@ -214,14 +191,16 @@ definePageMeta({
 const appSettings = useSettingStore()
 const route = useRoute()
 const taskStore = useTaskStore()
-const heading = ref("")
-const avatar = ref("")
 const citation = ref({} as ICitation)
-const showDelete = ref(false)
 
-async function removeTask() {
-  await taskStore.removeTerm(route.params.id as string)
-  return await navigateTo("/tasks")
+async function watchHeadingRequest(request: string) {
+  switch (request) {
+    case "remove":
+      await taskStore.removeTerm(route.params.id as string)
+      return await navigateTo("/tasks")
+    case "edit":
+      return await navigateTo(`/tasks/edit/${route.params.id}`)
+  }
 }
 
 function setCitation() {
@@ -258,10 +237,7 @@ onMounted(async () => {
   await taskStore.getTerm(route.params.id as string)
   if (!taskStore.term || Object.keys(taskStore.term).length === 0)
     throw createError({ statusCode: 404, statusMessage: "Page Not Found", fatal: true })
-  if (taskStore.term.title) heading.value = taskStore.term.title
-  else heading.value = taskStore.term.name
   appSettings.setPageName("Tasks")
-  avatar.value = await getAvatar(taskStore.term.id as string)
   setCitation()
 })
 

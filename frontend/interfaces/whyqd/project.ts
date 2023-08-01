@@ -1,4 +1,8 @@
-import { IAccrualPolicyType, IAccrualType, IFrequencyType, IModelSummary } from "./"
+import {
+  IAccrualPolicyType, IAccrualType, IFrequencyType,
+  IModelSummary, InvitationResponseType, IResearcherRoleType
+} from "./"
+import { IProfileSummary } from "../"
 
 export interface IProject {
   // https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3
@@ -28,6 +32,7 @@ export interface IProject {
   conformsTo?: string
   schema?: IModelSummary
   schema_id?: string
+  auths: IProjectRoleSummary[]
 }
 
 export interface IProjectFilters {
@@ -38,4 +43,31 @@ export interface IProjectFilters {
   page?: number
 }
 
+export interface IProjectRole {
+  id: string
+  created: string
+  researcher: IProfileSummary
+  responsibility: IResearcherRoleType
+  project: IModelSummary
+  task?: IModelSummary
+  resource?: IModelSummary
+  reference?: IModelSummary
+  referencetemplate?: IModelSummary
+}
 
+export interface IProjectRoleSummary {
+  id: string
+  created: string
+  researcher: IProfileSummary
+  responsibility: IResearcherRoleType
+}
+
+export interface IProjectInvitation {
+  id: string
+  created: string
+  fullName?: string
+  email: string
+  response: InvitationResponseType
+  sender: IProfileSummary
+  project?: IModelSummary
+}

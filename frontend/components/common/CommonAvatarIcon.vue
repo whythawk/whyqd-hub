@@ -1,6 +1,6 @@
 <template>
   <div class="relative flex-none">
-    <img class="h-10 w-10" :src="avatar" :alt="props.alt" />
+    <img class="h-10 w-10" :src="avatar" :alt="props.alt" aria-hidden="true" />
   </div>
 </template>
 

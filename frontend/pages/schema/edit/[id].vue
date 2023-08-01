@@ -1,44 +1,10 @@
 <template>
   <div>
     <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-3xl mx-auto">
-      <div class="flex w-full items-center justify-between gap-x-6 pb-2">
-        <div class="flex flex-inline space-x-4">
-          <Squares2X2Icon
-            class="relative h-7 w-7 flex-none rounded-lg bg-gray-50 ring-1 ring-offset-4 ring-ochre-200 text-gray-700"
-            aria-hidden="true" />
-          <h1 class="truncate text-lg font-semibold leading-7 text-gray-900">
-            Schema definition: {{ heading }}
-          </h1>
-        </div>
-        <div class="flex flex-inline space-x-2">
-          <button @click.prevent="showReset = !showReset">
-            <ExclamationCircleIcon
-              :class="[showReset ? 'text-sienna-600' : 'text-cerulean-600', 'h-6 w-6  hover:text-ochre-600']" />
-          </button>
-          <NuxtLink :to="route.params.id !== 'create' ? `/schema/${route.params.id}` : '/'"
-            class="text-sm leading-6 text-gray-900 rounded-lg px-2 py-1 ring-1 ring-inset ring-gray-200 hover:bg-gray-100">
-            Cancel
-          </NuxtLink>
-          <button type="button" @click.prevent="saveSchema"
-            class="text-sm leading-6 text-gray-900 rounded-lg px-2 py-1 ring-1 ring-inset ring-gray-200 hover:bg-gray-100">
-            {{ saveApproach }}
-          </button>
-        </div>
-      </div>
-      <div v-if="showReset"
-        class="flex gap-x-3 items-center text-sm leading-6 text-gray-900 rounded-lg p-3 ring-1 ring-inset ring-gray-200">
-        <button v-if="referenceID" type="button" @click.prevent="resetSchema"
-          class="text-sm leading-6 text-gray-900 rounded-lg px-2 py-1 ring-1 ring-inset ring-sienna-200 hover:bg-sienna-200">
-          Reload
-        </button>
-        <button type="button" @click.prevent="newSchema"
-          class="text-sm leading-6 text-gray-900 rounded-lg px-2 py-1 ring-1 ring-inset ring-sienna-200 hover:bg-sienna-200">
-          New
-        </button>
-        <span class="italic">Will delete your current work and reset.</span>
-      </div>
+      <CommonHeadingEditView v-if="schemaStore.term.name" purpose="Schema" :name="schemaStore.draft.name"
+        :title="schemaStore.draft.title" :approach="saveApproach" @set-edit-request="watchEditHeadingRequest" />
       <div class="space-y-4">
-        <p class="text-sm leading-6 text-gray-600">A whyqd (/wɪkɪd/) schema definition describes the
+        <p class="text-sm leading-6 text-gray-600 pt-2">A whyqd (/wɪkɪd/) schema definition describes the
           structural
           organisation of tabular data. Each column is identified by a field name and defined by conformance to
           technical specifications. These, along with field constraints and sensible defaults, ensure interoperability.
@@ -124,6 +90,20 @@ onMounted(async () => {
   await initialiseSocket()
   resetFields()
 })
+
+async function watchEditHeadingRequest(request: string) {
+  switch (request) {
+    case "reset":
+      resetSchema()
+      break
+    case "save":
+      saveSchema()
+      break
+    case "cancel":
+      const link = route.params.id !== 'create' ? `/schema/${route.params.id}` : '/'
+      return await navigateTo(link)
+  }
+}
 
 onBeforeRouteLeave((to, from, next) => {
   closeSocket()

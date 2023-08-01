@@ -25,7 +25,7 @@ class Role(Base):
     created: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     # WHO
     researcher_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("user.id"))
-    researcher: Mapped["User"] = relationship(back_populates="roles")
+    researcher: Mapped["User"] = relationship(back_populates="roles", order_by="User.email")
     is_validated: Mapped[bool] = mapped_column(default=False)
     # HAS RESPONSIBILITY
     responsibility: Mapped[ENUM[RoleType]] = mapped_column(ENUM(RoleType), nullable=False, default=RoleType.SEEKER)

@@ -30,8 +30,8 @@ const appSettings = useSettingStore()
 const referenceStore = useReferenceStore()
 const projectStore = useProjectStore()
 
-watch(() => [route.query], () => {
-  updateMulti()
+watch(() => [route.query], async () => {
+  await updateMulti()
 })
 
 async function updateMulti() {
@@ -43,6 +43,11 @@ onMounted(async () => {
   await projectStore.getTerm(route.params.id as string)
   appSettings.setPageName("References")
   updateMulti()
+})
+
+onBeforeUnmount(() => {
+  const router = useRouter()
+  router.replace({ query: {} })
 })
 
 // METADATA - START

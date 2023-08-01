@@ -10,7 +10,7 @@ from app.api import deps
 router = APIRouter()
 
 
-@router.post("/", response_model=list[schemas.Product])
+@router.post("/", response_model=list[schemas.ProductPricingView])
 def read_products(*, db: Session = Depends(deps.get_db), code: schemas.IPCode) -> Any:
     """
     Retrieve products.

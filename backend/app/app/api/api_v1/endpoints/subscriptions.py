@@ -32,6 +32,25 @@ def read_orders(
     return orders
 
 
+@router.put("/subscriber", response_model=schemas.User)
+def read_subscriber(
+    *,
+    db: Session = Depends(deps.get_db),
+    user_in: schemas.UserSearch,
+    current_user: models.User = Depends(deps.get_current_active_superuser),
+) -> Any:
+    """
+    Read a subscriber's profile & subscription rights.
+    """
+    user = crud.user.get_by_email(db, email=user_in.email)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this username does not exist in the system",
+        )
+    return user
+
+
 @router.get("/all", response_model=List[schemas.SubscriptionInView])
 def read_current_subscribers(
     *,
@@ -53,7 +72,7 @@ def create_subscription(
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
-    Retrieve all current subscribers.
+    Create a subscription for a site user.
     """
     user = crud.user.get_by_email(db=db, email=subscription_in.subscriber)
     if not user:
@@ -97,7 +116,7 @@ def create_subscription_order(
                     "price": price_obj.id,
                 }
             ],
-            success_url=f"{settings.SERVER_HOST}/profile/?session_id={{CHECKOUT_SESSION_ID}}",
+            success_url=f"{settings.SERVER_HOST}/settings/?session_id={{CHECKOUT_SESSION_ID}}",
             cancel_url=f"{settings.SERVER_HOST}/pricing/",
         )
     except Exception as e:
@@ -258,40 +277,3 @@ async def webhook_received(*, db: Session = Depends(deps.get_db), request: Reque
     #     print(str(e))
     #     print("-------------------------------------------------------------------")
     #     raise HTTPException(status_code=403, detail=str(e))
-
-
-# @router.put("/member", response_model=schemas.UserCustodialProfile)
-# def read_member_subscription(
-#     *,
-#     db: Session = Depends(deps.get_db),
-#     user_in: schemas.SearchEmail,
-#     current_user: models.User = Depends(deps.get_current_active_superuser),
-# ) -> Any:
-#     """
-#     Read a member's subscription rights.
-#     """
-#     user = crud.user.get_by_email(db, email=user_in.email)
-#     if not user:
-#         raise HTTPException(
-#             status_code=404, detail="The user with this username does not exist in the system",
-#         )
-#     return user
-
-
-# @router.post("/member", response_model=schemas.UserCustodialProfile)
-# def update_member_subscription(
-#     *,
-#     db: Session = Depends(deps.get_db),
-#     subscription_in: schemas.SubscriptionUpdate,
-#     current_user: models.User = Depends(deps.get_current_active_superuser),
-# ) -> Any:
-#     """
-#     Update a member's subscription rights.
-#     """
-#     subscription = crud.subscription.get(db, id=subscription_in.id)
-#     if not subscription:
-#         raise HTTPException(
-#             status_code=404, detail="This subscription does not exist in the system",
-#         )
-#     subscription = crud.subscription.update(db, db_obj=subscription, obj_in=subscription_in)
-#     return subscription.subscriber

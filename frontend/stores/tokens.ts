@@ -26,7 +26,7 @@ export const useTokenStore = defineStore("tokenStore", {
     refresh: (state) => state.refresh_token
   },
   actions: {
-    async getTokens(payload: { username: string; password?: string }) {
+    async getTokens(payload: { username: string; password?: string; query?: string }) {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
       let response
       try {
@@ -37,7 +37,8 @@ export const useTokenStore = defineStore("tokenStore", {
           ))
         else (
           { data: response } = await apiAuth.loginWithMagicLink(
-            payload.username
+            payload.username,
+            payload.query
           ))
         if (response.value) {
           if (response.value.hasOwnProperty("claim")) this.setMagicToken(response.value as unknown as IWebToken)

@@ -3,6 +3,7 @@ from typing import Any, Optional, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from uuid import UUID
 import json
 import whyqd as qd
@@ -236,3 +237,162 @@ def remove_schema(
             detail="Either of project or schema do not exist, or user does not have the rights for this request.",
         )
     return crud.project.remove_schema(db=db, db_obj=project_obj)
+
+
+@router.get("/{project_id}/members", response_model=List[schemas.Role])
+def read_members(
+    *,
+    db: Session = Depends(deps.get_db),
+    project_id: str,
+    page: int = 0,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get a list of current project members.
+    """
+    project_obj = crud.project.get(db=db, id=project_id, user=current_user, responsibility=schema_types.RoleType.SEEKER)
+    if not project_obj:
+        raise HTTPException(
+            status_code=400,
+            detail="Either project does not exist, or user does not have the rights for this request.",
+        )
+    return crud.role.get_multi_by_project(db=db, project_id=project_id, page=page)
+
+
+@router.post("/{project_id}/members/{role_id}/{role_type}", response_model=List[schemas.Role])
+def update_member_role(
+    *,
+    db: Session = Depends(deps.get_db),
+    project_id: str,
+    role_id: str,
+    role_type: str,
+    page: int = 0,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Update a project role for a member.
+    """
+    project_obj = crud.project.get(
+        db=db, id=project_id, user=current_user, responsibility=schema_types.RoleType.CUSTODIAN
+    )
+    role_obj = crud.role.get(db=db, id=role_id)
+    if (
+        not project_obj
+        or not role_obj.project_id
+        or role_obj.project_id != project_obj.id
+        or role_obj.researcher_id == current_user.id
+    ):
+        # Cannot change your own CUSTODIAN role on a project
+        raise HTTPException(
+            status_code=400,
+            detail="Either project does not exist, or user does not have the rights for this request.",
+        )
+    crud.role.update(db=db, db_obj=role_obj, responsibility=schema_types.RoleType(role_type))
+    return crud.role.get_multi_by_project(db=db, project_id=project_id, page=page)
+
+
+@router.delete("/{project_id}/members/{role_id}", response_model=List[schemas.Role])
+def remove_member(
+    *,
+    db: Session = Depends(deps.get_db),
+    project_id: str,
+    role_id: str,
+    page: int = 0,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Remove a project member.
+    """
+    project_obj = crud.project.get(
+        db=db, id=project_id, user=current_user, responsibility=schema_types.RoleType.CUSTODIAN
+    )
+    role_obj = crud.role.get(db=db, id=role_id)
+    if (
+        not project_obj
+        or not role_obj.project_id
+        or role_obj.project_id != project_obj.id
+        or role_obj.researcher_id == current_user.id
+    ):
+        # Cannot remove yourself from a project
+        raise HTTPException(
+            status_code=400,
+            detail="Either project does not exist, or user does not have the rights for this request.",
+        )
+    crud.role.remove_member_from_project(db=db, researcher_id=role_obj.researcher_id, project_obj=project_obj)
+    return crud.role.get_multi_by_project(db=db, project_id=project_id, page=page)
+
+
+@router.get("/{project_id}/invitations", response_model=List[schemas.Invitation])
+def read_invitations(
+    *,
+    db: Session = Depends(deps.get_db),
+    project_id: str,
+    page: int = 0,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Invite a team member to a project.
+    """
+    project_obj = crud.project.get(
+        db=db, id=project_id, user=current_user, responsibility=schema_types.RoleType.CUSTODIAN
+    )
+    if not project_obj:
+        raise HTTPException(
+            status_code=400,
+            detail="Either project does not exist, or user does not have the rights for this request.",
+        )
+    return crud.invitation.get_multi_by_project(db=db, project_id=project_obj.id, page=page)
+
+
+@router.post("/{project_id}/invitations/{email_id}", response_model=List[schemas.Invitation])
+def add_invitation(
+    *,
+    db: Session = Depends(deps.get_db),
+    project_id: str,
+    email_id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Invite a team member to a project.
+    """
+    project_obj = crud.project.get(
+        db=db, id=project_id, user=current_user, responsibility=schema_types.RoleType.CUSTODIAN
+    )
+    if not project_obj:
+        raise HTTPException(
+            status_code=400,
+            detail="Either project does not exist, or user does not have the rights for this request.",
+        )
+    obj_in = schemas.InvitationCreate(**{"email": email_id, "sender_id": current_user.id, "project_id": project_obj.id})
+    try:
+        crud.invitation.create(db=db, obj_in=obj_in)
+    except IntegrityError:
+        raise HTTPException(
+            status_code=400,
+            detail=f"You have already invited {obj_in.email}.",
+        )
+    return crud.invitation.get_multi_by_project(db=db, project_id=project_obj.id)
+
+
+@router.delete("/{project_id}/invitations/{invitation_id}", response_model=List[schemas.Invitation])
+def remove_invitation(
+    *,
+    db: Session = Depends(deps.get_db),
+    project_id: str,
+    invitation_id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Remove an invitation from a project.
+    """
+    project_obj = crud.project.get(
+        db=db, id=project_id, user=current_user, responsibility=schema_types.RoleType.CUSTODIAN
+    )
+    invitation_obj = crud.invitation.get(db=db, id=invitation_id)
+    if not project_obj or invitation_obj.project_id != project_obj.id:
+        raise HTTPException(
+            status_code=400,
+            detail="Either of project or invitation do not exist, or user does not have the rights for this request.",
+        )
+    crud.invitation.remove(db=db, id=invitation_id)
+    return crud.invitation.get_multi_by_project(db=db, project_id=project_obj.id)

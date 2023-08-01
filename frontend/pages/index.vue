@@ -1,29 +1,21 @@
 <template>
-  <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-3xl mx-auto">
-    <CommonLaunchCard />
+  <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-7xl mx-auto">
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
     <div v-else>
-      <ActivityFilterPanel />
-      <ul role="list" class="space-y-6">
-        <li v-for="(activity, i) in activityStore.multi" :key="`activity-${i}`">
-          <ActivityCard :activity="activity" :last-card="i === activityStore.multi.length - 1" />
-        </li>
-      </ul>
-      <CommonPagination />
+      Starter
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useSettingStore, useAuthStore, useActivityStore } from "@/stores"
+import { useSettingStore, useAuthStore } from "@/stores"
 import { tokenIsTOTP } from "@/utilities"
 
 const route = useRoute()
 const appSettings = useSettingStore()
 const auth = useAuthStore()
-const activityStore = useActivityStore()
 
 definePageMeta({
   layout: "home",
@@ -32,14 +24,6 @@ definePageMeta({
 const redirectTOTP = "/totp"
 const redirectAfterLogin = "/"
 
-watch(() => [route.query], () => {
-  updateMulti()
-})
-
-async function updateMulti() {
-  if (route.query && route.query.page) activityStore.setPage(route.query.page as string)
-  await activityStore.getMulti()
-}
 
 onMounted(async () => {
   // Check if email is being validated
@@ -55,7 +39,6 @@ onMounted(async () => {
     else await navigateTo(redirectAfterLogin)
   }
   appSettings.setPageName("Home")
-  updateMulti()
 })
 
 // METADATA - START

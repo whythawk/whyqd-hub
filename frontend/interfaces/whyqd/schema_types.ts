@@ -69,3 +69,8 @@ export type IStatusType =
   | "TRANSFORM_ERROR"
   | "ERROR"
   | "COMPLETE"
+
+export type InvitationResponseType =
+| "WAITING"
+| "ACCEPTED"
+| "REFUSED"

@@ -111,12 +111,7 @@ class Settings(BaseSettings):
 
     @validator("USE_STRIPE", pre=True)
     def get_use_stripe(cls, v: bool, values: Dict[str, Any]) -> bool:
-        return bool(
-            values.get("STRIPE_API_KEY")
-            and values.get("SPACES_SECRET_KEY")
-            and values.get("STRIPE_PUBLIC_KEY")
-            and values.get("STRIPE_WEBHOOK")
-        )
+        return bool(values.get("STRIPE_API_KEY") and values.get("STRIPE_PUBLIC_KEY") and values.get("STRIPE_WEBHOOK"))
 
     # WORKING WITH REFERENCES
     WORKING_PATH: str = "/app/working"

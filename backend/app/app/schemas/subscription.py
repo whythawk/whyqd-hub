@@ -27,13 +27,6 @@ class SubscriptionBase(BaseSchema):
 class SubscriptionCreate(SubscriptionBase):
     pass
 
-    # @validator("ends", pre=True)
-    # def get_datetime_ends(cls, v, values, **kwargs):
-    #     if values["monthly"]:
-    #         return (values["started"] + DateOffset(months=1)).to_pydatetime()
-    #     else:
-    #         return (values["started"] + DateOffset(years=1)).to_pydatetime()
-
 
 class SubscriptionUpdate(SubscriptionBase):
     id: UUID = Field(..., description="Automatically generated unique identity for the fee.")

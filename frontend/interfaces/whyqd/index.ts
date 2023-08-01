@@ -7,6 +7,7 @@ import {
   IReferenceType,
   IFieldType,
   IStatusType,
+  InvitationResponseType,
 } from "./schema_types"
 
 import { IUserSummary, IModelSummary, ICitation } from "./utilities"
@@ -42,48 +43,7 @@ import {
   IResourceFilters
 } from "./resource"
 import { ITask, ITaskFilters } from "./task"
-import { IProject, IProjectFilters } from "./project"
-
-// import {
-//   IDublinCore,
-//   IDublinCoreTerms,
-//   IDublinCoreIdentifier,
-//   IDublinCoreInDB,
-// } from "./dublin_core"
-// import {
-//   IProjectCreate,
-//   IProject,
-//   ICollectionCreate,
-//   ICollection,
-//   IDatasetCreate,
-//   IDataset,
-//   IDatasource,
-//   IResearchResourceCreate,
-//   IResearchResource,
-//   IResearcherRoleCreate,
-//   IResearcherRole,
-//   IResearchTeamMemberCreate,
-//   IResearchTeamMember,
-//   IResearchTeamMemberInvitationCreate,
-//   IResearchTeamMemberInvitationUpdate,
-//   IResearchTeamMemberInvitation,
-//   IResearchMemberInvitation,
-//   IResearchTeamCreate,
-//   IResearchTeamUpdate,
-//   IResearchTeam,
-// } from "./custodian"
-// import {
-//   IColumnCreate,
-//   IColumn,
-//   IActionScriptCreate,
-//   IActionScript,
-//   IDataUpdate,
-//   IData,
-//   IMethodCreate,
-//   IMethodUpdate,
-//   IMethod,
-// } from "./method"
-// import { IDataUpload, IDatasourceUpload, IDataSummary } from "./works"
+import { IProject, IProjectFilters, IProjectRole, IProjectInvitation } from "./project"
 
 export {
   IAccrualPolicyType,
@@ -94,6 +54,7 @@ export {
   IReferenceType,
   IFieldType,
   IStatusType,
+  InvitationResponseType,
   IUserSummary,
   IModelSummary,
   ICitation,
@@ -131,40 +92,6 @@ export {
   ITaskFilters,
   IProject,
   IProjectFilters,
-  // IDublinCore,
-  // IDublinCoreTerms,
-  // IDublinCoreIdentifier,
-  // IDublinCoreInDB,
-  // IProjectCreate,
-  // IProject,
-  // ICollectionCreate,
-  // ICollection,
-  // IDatasetCreate,
-  // IDataset,
-  // IDatasource,
-  // IResearchResourceCreate,
-  // IResearchResource,
-  // IResearcherRoleCreate,
-  // IResearcherRole,
-  // IResearchTeamMemberCreate,
-  // IResearchTeamMember,
-  // IResearchTeamMemberInvitationCreate,
-  // IResearchTeamMemberInvitationUpdate,
-  // IResearchTeamMemberInvitation,
-  // IResearchMemberInvitation,
-  // IResearchTeamCreate,
-  // IResearchTeamUpdate,
-  // IResearchTeam,
-  // IColumnCreate,
-  // IColumn,
-  // IActionScriptCreate,
-  // IActionScript,
-  // IDataUpdate,
-  // IData,
-  // IMethodCreate,
-  // IMethodUpdate,
-  // IMethod,
-  // IDataUpload,
-  // IDatasourceUpload,
-  // IDataSummary,
+  IProjectRole,
+  IProjectInvitation,
 }

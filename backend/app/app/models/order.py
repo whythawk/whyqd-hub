@@ -22,12 +22,12 @@ class Order(Base):
     subscription_type: Mapped[ENUM[SubscriptionType]] = mapped_column(ENUM(SubscriptionType), nullable=False)
     currency: Mapped[ENUM[CurrencyType]] = mapped_column(ENUM(CurrencyType), nullable=False)
     amount: Mapped[int]
-    checkout_id: Mapped[str] = mapped_column(index=True)
-    subscription_id: Mapped[str] = mapped_column(index=True)
-    charge_id: Mapped[str]
-    invoice_url: Mapped[str]
-    country_code: Mapped[str] = mapped_column(String(3))
-    country_name: Mapped[str]
+    checkout_id: Mapped[str] = mapped_column(index=True, nullable=True)
+    subscription_id: Mapped[str] = mapped_column(index=True, nullable=True)
+    charge_id: Mapped[str] = mapped_column(nullable=True)
+    invoice_url: Mapped[str] = mapped_column(nullable=True)
+    country_code: Mapped[str] = mapped_column(String(3), nullable=True)
+    country_name: Mapped[str] = mapped_column(nullable=True)
     product_id: Mapped[str] = mapped_column(index=True)
     price_id: Mapped[str]
     # https://docs.sqlalchemy.org/en/14/orm/join_conditions.html#handling-multiple-join-paths

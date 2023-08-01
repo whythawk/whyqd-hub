@@ -4,30 +4,9 @@
       <LoadingCardSkeleton />
     </div>
     <div v-else>
-      <div class="flex w-full items-center justify-between gap-x-6 pb-2">
-        <div class="flex flex-inline space-x-4">
-          <img class="relative h-8 w-8 flex-none rounded-lg ring-1 ring-offset-2 ring-ochre-200 text-gray-700"
-            :src="avatar" :alt="heading" />
-          <h1 class="truncate text-lg font-semibold leading-7 text-gray-900">
-            Resource: {{ heading }}
-          </h1>
-        </div>
-        <div class="flex flex-inline space-x-2">
-          <button @click.prevent="showDelete = !showDelete">
-            <ExclamationCircleIcon
-              :class="[showDelete ? 'text-sienna-600' : 'text-cerulean-600', 'h-6 w-6  hover:text-ochre-600']" />
-          </button>
-        </div>
-      </div>
-      <div v-if="showDelete"
-        class="flex gap-x-3 items-center text-sm leading-6 text-gray-900 rounded-lg p-3 ring-1 ring-inset ring-gray-200">
-        <button type="button" @click.prevent="removeResource"
-          class="text-sm leading-6 text-gray-900 rounded-lg px-2 py-1 ring-1 ring-inset ring-sienna-200 hover:bg-sienna-200">
-          Delete
-        </button>
-        <span class="italic">Zero history deletion.</span>
-      </div>
-      <div class="my-6 border-b border-t border-gray-200 py-3 md:px-8">
+      <CommonHeadingView v-if="resourceStore.term.name" purpose="Resource" :name="resourceStore.term.name"
+        :title="resourceStore.term.title" @set-edit-request="watchHeadingRequest" />
+      <div class="mb-6 border-b border-gray-200 py-3 md:px-8">
         <div class="flex w-full items-center justify-between">
           <div class="group flex flex-row text-xs font-medium text-gray-700">
             <MapPinIcon class="text-gray-700 h-4 w-4 shrink-0" aria-hidden="true" />
@@ -93,8 +72,8 @@
 
 <script setup lang="ts">
 import { useSettingStore, useResourceStore } from "@/stores"
-import { ExclamationCircleIcon, MapPinIcon, } from "@heroicons/vue/24/outline"
-import { readableDate, getAvatar } from "@/utilities"
+import { MapPinIcon, } from "@heroicons/vue/24/outline"
+import { readableDate } from "@/utilities"
 
 definePageMeta({
   middleware: ["authenticated"],
@@ -103,24 +82,21 @@ definePageMeta({
 const route = useRoute()
 const appSettings = useSettingStore()
 const resourceStore = useResourceStore()
-const heading = ref("")
-const avatar = ref("")
-const showDelete = ref(false)
+
+async function watchHeadingRequest(request: string) {
+  switch (request) {
+    case "remove":
+      await resourceStore.removeTerm(route.params.id as string)
+      return await navigateTo("/resources")
+  }
+}
 
 onMounted(async () => {
-  appSettings.setPageName("Resources")
   await resourceStore.getTerm(route.params.id as string)
   if (!resourceStore.term || Object.keys(resourceStore.term).length === 0)
     throw createError({ statusCode: 404, statusMessage: "Page Not Found", fatal: true })
-  if (resourceStore.term.title) heading.value = resourceStore.term.title
-  else heading.value = resourceStore.term.name
-  avatar.value = await getAvatar(resourceStore.term.id)
+  appSettings.setPageName("Resources")
 })
-
-async function removeResource() {
-  await resourceStore.removeTerm(route.params.id as string)
-  return await navigateTo("/resources")
-}
 
 // METADATA - START
 // https://nuxt.com/docs/getting-started/seo-meta

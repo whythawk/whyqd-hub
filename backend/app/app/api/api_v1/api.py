@@ -15,6 +15,8 @@ from app.api.api_v1.endpoints import (
     resource,
     task,
     project,
+    subscriptions,
+    products,
 )
 
 api_router = APIRouter()
@@ -32,3 +34,5 @@ api_router.include_router(template.router, prefix="/template", tags=["template"]
 api_router.include_router(resource.router, prefix="/resource", tags=["resource"])
 api_router.include_router(task.router, prefix="/task", tags=["task"])
 api_router.include_router(project.router, prefix="/project", tags=["project"])
+api_router.include_router(subscriptions.router, prefix="/subscriptions", tags=["subscriptions"])
+api_router.include_router(products.router, prefix="/products", tags=["products"])

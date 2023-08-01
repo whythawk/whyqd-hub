@@ -39,6 +39,7 @@ const siteName: String = "Whythawk"
 const footerNavigation = {
   main: [
     { name: "About", to: "/about", dot: true },
+    { name: "Pricing", to: "/pricing", dot: true },
     { name: "Developers", to: "https://whyqd.readthedocs.io/", dot: true },
     { name: "Privacy", to: "/privacy", dot: true },
     { name: "Contact", to: "/contact", dot: false },

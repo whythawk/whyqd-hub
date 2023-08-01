@@ -19,6 +19,7 @@ class IPCode(BaseSchema):
 class PriceBase(BaseSchema):
     id: str = Field(..., description="Stripe price id generated from dashboard.")
     currency: CurrencyType = Field(..., description="Currency for the fee.")
+    per_month: Optional[int] = Field(None, description="Monthly fee.")
     per_annum: Optional[int] = Field(None, description="Annual fee.")
 
 

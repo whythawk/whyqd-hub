@@ -11,7 +11,7 @@ export interface IModelSummary {
   id?: string
   created?: string
   modified?: string
-  isPrivate: boolean
+  is_private: boolean
   name?: string
   title?: string
   description?: string

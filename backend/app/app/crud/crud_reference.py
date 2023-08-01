@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from datetime import datetime
 from uuid import UUID, uuid4
-from sqlalchemy.orm import Session, Query, aliased
+from sqlalchemy.orm import Session, Query  # , aliased
 import hashlib
 import whyqd as qd
 from whyqd.parsers import CoreParser
@@ -542,15 +542,51 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
     # ROLES AND RIGHTS
     ###################################################################################################
     def _get_query(self, *, db_query: Query, user: User, responsibilities: list[RoleType]) -> Query:
-        resource_alias = aliased(Resource)
-        task_alias = aliased(Task)
-        project_alias = aliased(Project)
         db_filter = (
             ~(self.model.is_private)
             | (self._get_filter(db_model=self.model, user=user, responsibilities=responsibilities))
-            | (self._get_filter(db_model=resource_alias, user=user, responsibilities=responsibilities))
-            | (self._get_filter(db_model=task_alias, user=user, responsibilities=responsibilities))
-            | (self._get_filter(db_model=project_alias, user=user, responsibilities=responsibilities))
+            | (
+                self.model.datasource.any(Resource.datasource)
+                & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
+            )
+            | (
+                self.model.data.any(Resource.data)
+                & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
+            )
+            | (
+                self.model.schema_subjects.any(Resource.schema_subject)
+                & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
+            )
+            | (
+                self.model.crosswalks.any(Resource.crosswalk)
+                & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
+            )
+            | (
+                self.model.schema_objects.any(Resource.schema_object)
+                & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
+            )
+            | (
+                self.model.transforms.any(Resource.transform)
+                & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
+            )
+            | (
+                self.model.transformdata.any(Resource.transformdata)
+                & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
+            )
+            | (
+                self.model.transformdatasource.any(Resource.transformdatasource)
+                & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
+            )
+            | (
+                self.model.task_schema.any(Task.schema).where(
+                    self._get_filter(db_model=Task, user=user, responsibilities=responsibilities)
+                )
+            )
+            | (
+                self.model.project_schema.any(Project.schema).where(
+                    self._get_filter(db_model=Project, user=user, responsibilities=responsibilities)
+                )
+            )
         )
         return db_query.filter(db_filter)
 
@@ -677,12 +713,13 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
                     source_name=datasource_in.name,
                     source_sheet=dsm.sheet_name,
                     sources=existing_sources,
-                ) and not self.record_excess_row_count(
+                ) and not self.record_exceeds_limits(
                     db=db,
                     user=user,
                     source_name=datasource_in.name,
                     source_sheet=dsm.sheet_name,
                     source_count=dsm.index,
+                    source_import=True,
                 ):
                     data_models.append(dsm)
         else:
@@ -691,8 +728,12 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             )
             if not self.record_existing_source(
                 db=db, user=user, source_name=datasource_in.name, sources=existing_sources
-            ) and not self.record_excess_row_count(
-                db=db, user=user, source_name=datasource_in.name, source_count=datasource.model.index
+            ) and not self.record_exceeds_limits(
+                db=db,
+                user=user,
+                source_name=datasource_in.name,
+                source_count=datasource.model.index,
+                source_import=True,
             ):
                 data_models.append(datasource.model)
         # Save the data models, data source models and data source #####################################################
@@ -1091,18 +1132,28 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         self._record_activity(db=db, user=user, db_obj=sources[0], alert=True, message=message)
         return True
 
-    def record_excess_row_count(
-        self, db: Session, *, user: User, source_name: str, source_sheet: str | None = None, source_count: int
+    def record_exceeds_limits(
+        self,
+        db: Session,
+        *,
+        user: User,
+        source_name: str,
+        source_sheet: str | None = None,
+        source_count: int,
+        source_import: bool = True,
     ) -> bool:
-        if crud_subscription.within_row_limit(user=user, row_count=source_count):
-            return False
-        message = (
-            f"Imported data source ({source_name}) exceeds your subscription row-limit (uploaded {source_count} rows)."
-        )
-        if source_sheet:
-            message = f"Imported data source ({source_name}, {source_sheet}) exceeds your subscription row-limit (uploaded {source_count} rows)."
-        self._record_activity(db=db, user=user, alert=True, message=message)
-        return True
+        try:
+            if crud_subscription.within_limits(db=db, user=user, row_count=source_count, data_import=True):
+                return False
+        except ValueError as e:
+            if source_import:
+                message = f"For data import ({source_name}): - {e}"
+                if source_sheet:
+                    message = f"For data import ({source_name}, {source_sheet}): - {e}"
+            else:
+                message = f"For data transform ({source_name}): - {e}"
+            self._record_activity(db=db, user=user, alert=True, message=message)
+            return True
 
     def record_error(
         self, db: Session, *, user: User, db_obj: Resource | None = None, error: str, state: StateType

@@ -11,6 +11,7 @@ import { useTemplateStore } from "./template"
 import { useResourceStore } from "./resource"
 import { useTaskStore } from "./task"
 import { useProjectStore } from "./project"
+import { useSubscriptionsStore } from "./subscriptions"
 
 export {
   useSettingStore,
@@ -26,4 +27,5 @@ export {
   useResourceStore,
   useTaskStore,
   useProjectStore,
+  useSubscriptionsStore,
 }

@@ -10,10 +10,10 @@ from app.core.config import settings
 
 
 class CRUDInvitation(CRUDBase[Invitation, InvitationCreate, InvitationUpdate]):
-    def get_multi_by_team(
-        self, db: Session, *, page: int = 0, page_break: bool = False, team_id: UUID
+    def get_multi_by_project(
+        self, db: Session, *, project_id: UUID, page: int = 0, page_break: bool = False
     ) -> List[Invitation]:
-        db_objs = db.query(self.model).filter(Invitation.team_id == team_id)
+        db_objs = db.query(self.model).filter(Invitation.project_id == project_id)
         if not page_break:
             if page > 0:
                 db_objs = db_objs.offset(page * settings.MULTI_MAX)
@@ -21,7 +21,7 @@ class CRUDInvitation(CRUDBase[Invitation, InvitationCreate, InvitationUpdate]):
         return db_objs.all()
 
     def get_multi_by_email(
-        self, db: Session, *, page: int = 0, page_break: bool = False, email: str
+        self, db: Session, *, email: str, page: int = 0, page_break: bool = False
     ) -> List[Invitation]:
         db_objs = db.query(self.model).filter(Invitation.email == email)
         if not page_break:

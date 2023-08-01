@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from app.models.role import Role  # noqa: F401
     from app.models.activity import Activity  # noqa: F401
     from app.models.order import Order  # noqa: F401
-    from app.models.subscription import Subscription  # noqa: F401
+    from app.models.subscription import Subscription, TransformActivity  # noqa: F401
 
 
 class User(Base):
@@ -56,6 +56,9 @@ class User(Base):
         back_populates="sender", cascade="all, delete", lazy="dynamic"
     )
     activities: Mapped[list["Activity"]] = relationship(back_populates="researcher", lazy="dynamic")
+    transform_activities: Mapped[list["TransformActivity"]] = relationship(
+        foreign_keys="[TransformActivity.researcher_id]", back_populates="researcher", lazy="dynamic"
+    )
     # SUBSCRIPTIONS AND PAYMENTS
     customer_id: Mapped[str] = mapped_column(unique=True, index=True, nullable=True)
     orders: Mapped[list["Order"]] = relationship(foreign_keys="Order.payer_id", back_populates="payer", lazy="dynamic")

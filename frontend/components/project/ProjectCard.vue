@@ -8,7 +8,7 @@
       class="relative mt-3 h-6 w-6 flex-none rounded-full bg-gray-50 ring-1 ring-offset-4 ring-ochre-200 text-gray-700"
       aria-hidden="true" />
     <NuxtLink :to="`/projects/${props.project.id}`"
-      class="flex-auto rounded-lg  py-2 px-3 ring-1 ring-inset ring-gray-200">
+      class="flex-auto rounded-lg py-2 px-3 ring-1 ring-inset ring-gray-200">
       <div class="flex w-full items-center">
         <div class="flex-1">
           <div class="flex justify-between gap-x-4">
@@ -17,10 +17,18 @@
                 props.project.title }}</h2>
               <h2 v-else class="font-bold text-gray-900">{{ props.project.name }}</h2>
             </div>
-            <div class="truncate py-0.5 text-xs text-gray-500 text-right">
-              <time :datetime="props.project.modified" class="flex-none py-0.5 text-xs text-gray-500">{{
-                readableDate(props.project!.modified as string) }}</time>
-            </div>
+            <ul role="list" class="flex flex-row justify-end text-xs leading-5">
+              <li class="truncate py-0.5 text-xs text-gray-500 text-right">
+                <time :datetime="props.project.modified" class="flex-none py-0.5 text-xs text-gray-500">{{
+                  readableDate(props.project!.modified as string) }}</time>
+              </li>
+              <li class="relative group flex flex-row text-xs font-medium text-gray-500 gap-x-1 pl-2">
+                <UserGroupIcon class="text-gray-700 h-4 w-4 shrink-0" aria-hidden="true" />
+                {{ props.project.auths.length }}
+                <span v-if="props.project.auths.length === 1">member</span>
+                <span v-else>members</span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -30,6 +38,9 @@
           <TagIcon class="text-gray-700 h-4 w-4 shrink-0" aria-hidden="true" />
           <span v-if="props.project.subjects && props.project.subjects.length" class="ml-1">
             {{ props.project.subjects.join(", ") }}
+          </span>
+          <span v-else class="ml-1">
+            untagged
           </span>
         </div>
         <ul role="list" class="flex flex-row justify-end text-xs">
@@ -62,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { Square3Stack3DIcon, Squares2X2Icon, SquaresPlusIcon, TagIcon } from "@heroicons/vue/24/outline"
+import { Square3Stack3DIcon, Squares2X2Icon, SquaresPlusIcon, TagIcon, UserGroupIcon } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar } from "@/utilities"
 import { IProject, IReferenceFilters } from "@/interfaces"
 import { useReferenceStore } from "@/stores"

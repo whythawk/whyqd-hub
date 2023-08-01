@@ -13,6 +13,7 @@
           <TaskCard :task="task" :last-card="i === taskStore.multi.length - 1" />
         </li>
       </ul>
+      <CommonPagination />
     </div>
   </div>
 </template>
@@ -29,13 +30,27 @@ const appSettings = useSettingStore()
 const taskStore = useTaskStore()
 const projectStore = useProjectStore()
 
-onMounted(async () => {
-  await projectStore.getTerm(route.params.id as string)
-  appSettings.setPageName("Tasks")
+watch(() => [route.query], async () => {
+  await updateMulti()
+})
+
+async function updateMulti() {
+  if (route.query && route.query.page) taskStore.setPage(route.query.page as string)
   if (projectStore.term.id)
     await taskStore.getMultiByProject(projectStore.term.id)
   else
     throw createError({ statusCode: 404, statusMessage: "Page Not Found", fatal: true })
+}
+
+onMounted(async () => {
+  await projectStore.getTerm(route.params.id as string)
+  appSettings.setPageName("Tasks")
+  await updateMulti()
+})
+
+onBeforeUnmount(() => {
+  const router = useRouter()
+  router.replace({ query: {} })
 })
 
 // METADATA - START

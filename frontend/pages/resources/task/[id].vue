@@ -30,8 +30,8 @@ const appSettings = useSettingStore()
 const taskStore = useTaskStore()
 const resourceStore = useResourceStore()
 
-watch(() => [route.query], () => {
-  updateMulti()
+watch(() => [route.query], async () => {
+  await updateMulti()
 })
 
 async function updateMulti() {
@@ -45,6 +45,11 @@ onMounted(async () => {
   if (!taskStore.term || Object.keys(taskStore.term).length === 0)
     throw createError({ statusCode: 404, statusMessage: "Page Not Found", fatal: true })
   updateMulti()
+})
+
+onBeforeUnmount(() => {
+  const router = useRouter()
+  router.replace({ query: {} })
 })
 
 // METADATA - START

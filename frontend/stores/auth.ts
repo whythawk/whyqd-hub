@@ -2,6 +2,7 @@ import {
   IUserProfile,
   IUserProfileUpdate,
   IUserOpenProfileCreate,
+  ISubscriptionProfile,
   IEnableTOTP,
   IWebToken,
 } from "@/interfaces"
@@ -9,8 +10,6 @@ import { apiAuth } from "@/api"
 import { useTokenStore } from "./tokens"
 import { useToastStore } from "./toasts"
 import { tokenIsTOTP, tokenParser } from "@/utilities"
-
-// const toasts = useToastStore()
 
 export const useAuthStore = defineStore("authStore", {
   state: (): IUserProfile => ({
@@ -21,7 +20,8 @@ export const useAuthStore = defineStore("authStore", {
     is_superuser: false,
     full_name: "",
     password: false,
-    totp: false
+    totp: false,
+    subscriptions: {} as ISubscriptionProfile
   }),
   persist: {
     storage: persistedState.cookiesWithOptions({
@@ -45,13 +45,30 @@ export const useAuthStore = defineStore("authStore", {
     },
     profile: (state) => state,
     loggedIn: (state) => state.id !== "",
+    hasExplorerSubscription: (state) => {
+      return (
+        state.id &&
+        state.is_active &&
+        (["EXPLORER", "RESEARCHER", "INVESTIGATOR"].includes(state.subscriptions.membership)
+          || state.is_superuser)
+      )
+    },
+    hasResearcherSubscription: (state) => {
+      return (
+        state.id &&
+        state.is_active &&
+        (["RESEARCHER", "INVESTIGATOR"].includes(state.subscriptions.membership)
+          || state.is_superuser)
+      )
+    },
+    subscriptionState: (state) => state.subscriptions,
     authTokens: () => {
       return ( useTokenStore() )
     }
   },
   actions: {
     // AUTHENTICATION
-    async logIn(payload: { username: string; password?: string }) {
+    async logIn(payload: { username: string; password?: string; query?: string }) {
       try {
         await this.authTokens.getTokens(payload)
         if (this.authTokens.token && 
@@ -117,8 +134,8 @@ export const useAuthStore = defineStore("authStore", {
         })
       }
     },
-    async getUserProfile() {
-      if (!this.loggedIn) {
+    async getUserProfile(force: boolean = false) {
+      if (!this.loggedIn || force) {
         await this.authTokens.refreshTokens()
         if (this.authTokens.token) {
           try {
@@ -207,6 +224,7 @@ export const useAuthStore = defineStore("authStore", {
       this.full_name = payload.full_name
       this.password = payload.password
       this.totp = payload.totp
+      this.subscriptions = payload.subscriptions
     },
     async recoverPassword(email: string) {
       const toasts = useToastStore()

@@ -8,7 +8,7 @@ from app.core.config import settings
 from .base import CRUDBase
 from app.models.price import Price, Product
 from app.schemas.price import CountryCode, IPCode, PriceCreate, PriceUpdate
-from app.schemas.product import ProductCreate, ProductUpdate
+from app.schemas.product import ProductCreate, ProductUpdate, ProductPricingView
 from app.schema_types.currency import CurrencyType
 from app.schema_types.subscription import SubscriptionType
 
@@ -20,21 +20,29 @@ class CRUDPrice(CRUDBase[Price, PriceCreate, PriceUpdate]):
     def get_country(self, user_ip: str) -> CountryCode:
         return IP2_BASE.get_all(user_ip)
 
-    def get_by_ip(self, db: Session, code: IPCode) -> List[Product]:
-        iso_code = "UK"
-        currency = CurrencyType.GBP
+    def get_by_ip(self, db: Session, code: IPCode) -> List[ProductPricingView]:
+        iso_code = "US"
+        currency = CurrencyType.USD
         if code.ip:
             iso_code = IP2_BASE.get_country_short(code.ip)
         if iso_code == "US":
             currency = CurrencyType.USD
+        if iso_code == "UK":
+            currency = CurrencyType.GBP
         if iso_code in settings.EURO_CURRENCY:
             currency = CurrencyType.EUR
-        products = []
+        products = {}
         price_set = db.query(self.model).filter(self.model.currency == currency).all()
         for p in price_set:
-            p.product.prices = [p]
-            products.append(p.product)
-        return products
+            if p.product:
+                product = products.get(p.product.name, ProductPricingView.from_orm(p.product))
+                product.currency = currency
+                if p.per_annum > 0:
+                    product.per_annum = PriceUpdate(**{"id": p.id, "currency": currency, "per_annum": p.per_annum})
+                if p.per_month > 0:
+                    product.per_month = PriceUpdate(**{"id": p.id, "currency": currency, "per_month": p.per_month})
+                products[p.product.name] = product
+        return list(products.values())
 
 
 price = CRUDPrice(Price)
@@ -72,12 +80,16 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
                     "name": subscription.value.title(),
                     "description": subscription.value.title(),
                     "subscription": subscription,
-                    "row_limit": 500,
                 }
             )
             product_obj = self.create(db=db, obj_in=product_in)
             for currency in CurrencyType:
-                price_in = PriceCreate(**{"id": uuid4().hex, "currency": currency, "per_month": 4000})
+                # Per month
+                price_in = PriceCreate(**{"id": uuid4().hex, "currency": currency, "per_month": 1000, "per_annum": 0})
+                price_obj = price.create(db=db, obj_in=price_in)
+                product_obj = self._append_price(db=db, db_obj=product_obj, price_obj=price_obj)
+                # Per year
+                price_in = PriceCreate(**{"id": uuid4().hex, "currency": currency, "per_month": 0, "per_annum": 100000})
                 price_obj = price.create(db=db, obj_in=price_in)
                 product_obj = self._append_price(db=db, db_obj=product_obj, price_obj=price_obj)
 

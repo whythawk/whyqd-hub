@@ -11,6 +11,7 @@ import { apiCrosswalk } from "./crosswalk"
 import { apiResource } from "./resource"
 import { apiTask } from "./task"
 import { apiProject } from "./project"
+import { apiSubscriptions } from "./subscriptions"
 
 export {
   apiCore,
@@ -25,5 +26,6 @@ export {
   apiCrosswalk,
   apiResource,
   apiTask,
-  apiProject
+  apiProject,
+  apiSubscriptions
 }

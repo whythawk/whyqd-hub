@@ -41,6 +41,7 @@ export interface IStripePortalSessionIntent {
 export interface IPrice {
   id: string
   currency: ICurrencyTypes
+  per_month: number
   per_annum: number
 }
 
@@ -49,7 +50,21 @@ export interface IProduct {
   name: string
   description: string
   subscription: IProductTypes
+  rows: number
+  transforms: number
   prices: IPrice[]
+}
+
+export interface IProductPricing {
+  id: string
+  name: string
+  description: string
+  subscription: IProductTypes
+  currency: ICurrencyTypes
+  rows: number
+  transforms: number
+  per_month?: IPrice
+  per_annum?: IPrice
 }
 
 export interface IOrder {

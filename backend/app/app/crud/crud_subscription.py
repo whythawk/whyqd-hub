@@ -3,15 +3,13 @@ from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, or_
 from datetime import datetime, timedelta
-import stripe
 
 from app.crud.base import CRUDBase
 from app.models import User, Subscription
 from app.schemas import SubscriptionCreate, SubscriptionUpdate
 from app.schema_types import SubscriptionType
+from app.crud.crud_transform_activity import transform_activity as crud_transform_activity
 from app.core.config import settings
-
-stripe.api_key = settings.STRIPE_API_KEY
 
 
 class CRUDSubscription(CRUDBase[Subscription, SubscriptionCreate, SubscriptionUpdate]):
@@ -23,19 +21,14 @@ class CRUDSubscription(CRUDBase[Subscription, SubscriptionCreate, SubscriptionUp
             .first()
         )
 
-    def within_row_limit(self, *, user: User, row_count: int, raise_error: bool = False) -> bool:
-        if user.is_superuser or not settings.USE_STRIPE:
-            return True
-        response = False
+    def within_limits(self, db: Session, *, user: User, row_count: int, data_import: bool = True) -> bool:
+        # create a transform record
         subscription = self.current(user)
-        if subscription:
-            response = subscription.row_limit >= row_count
-        if not response and raise_error:
-            e = f"Subscription row-limit exceeded (uploaded {row_count} rows)."
-            if subscription:
-                e = f"Subscription row-limit ({subscription.row_limit}) exceeded (uploaded {row_count} rows)."
-            raise ValueError(e)
-        return response
+        crud_transform_activity.create(
+            db=db, user=user, row_count=row_count, data_import=data_import, subscription=subscription
+        )
+        # Will raise a ValueError if creation fails
+        return True
 
     def has_appropriate_membership(
         self, user: User, membership_in: List[SubscriptionType], raise_error: bool = False

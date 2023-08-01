@@ -18,7 +18,6 @@ def read_all_researcher_activities(
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     alert: bool = False,
-    custodian: bool = False,
     descending: bool = True,
     page: int = 0,
     current_user: models.User = Depends(deps.get_current_active_user),
@@ -33,7 +32,6 @@ def read_all_researcher_activities(
         date_from=date_from,
         date_to=date_to,
         alert=alert,
-        custodian=custodian,
         descending=descending,
         page=page,
     )

@@ -19,7 +19,7 @@ export default defineNuxtConfig({
         ],
         script: [
           // <script src="https://myawesome-lib.js"></script>
-          // { src: "@/assets/css/main.css" }
+          { src: "https://js.stripe.com/v3/" }
         ],
         noscript: [
           // <noscript>Javascript is required</noscript>
@@ -39,6 +39,7 @@ export default defineNuxtConfig({
       apiWS: process.env.VUE_APP_DOMAIN_WS,
       apiUrl: process.env.VUE_APP_DOMAIN_API,
       appCookieExpire: 60 * 60 * 24 * 90,
+      stripeKey: process.env.STRIPE_PUBLIC_KEY,
       // idbName: process.env.VUE_IDB_NAME,
       // idbVersion: process.env.VUE_IDB_VERSION,
     }
@@ -49,6 +50,7 @@ export default defineNuxtConfig({
         {
           autoImports: [
             // automatically imports `defineStore`
+            "definePiniaStore",
             "defineStore", // import { defineStore } from "pinia"
           ],
         },

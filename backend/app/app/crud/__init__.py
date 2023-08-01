@@ -6,6 +6,7 @@ from .crud_oguntoken import oguntoken  # noqa: F401
 from .crud_product import product, price  # noqa: F401
 from .crud_order import order  # noqa: F401
 from .crud_subscription import subscription  # noqa: F401
+from .crud_transform_activity import transform_activity  # noqa: F401
 
 from .crud_spaces import spaces  # noqa: F401
 from .crud_files import files  # noqa: F401

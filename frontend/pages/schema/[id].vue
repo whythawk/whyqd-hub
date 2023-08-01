@@ -1,33 +1,11 @@
 <template>
   <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-3xl mx-auto">
-    <div class="flex w-full items-center justify-between gap-x-6 pb-2">
-      <div class="flex flex-inline space-x-4">
-        <img class="relative h-8 w-8 flex-none rounded-lg ring-1 ring-offset-2 ring-ochre-200 text-gray-700" :src="avatar"
-          :alt="heading" />
-        <h1 class="truncate text-lg font-semibold leading-7 text-gray-900">
-          Schema: {{ heading }}
-        </h1>
-      </div>
-      <div class="flex flex-inline space-x-2">
-        <button @click.prevent="showDelete = !showDelete">
-          <ExclamationCircleIcon
-            :class="[showDelete ? 'text-sienna-600' : 'text-cerulean-600', 'h-6 w-6  hover:text-ochre-600']" />
-        </button>
-        <NuxtLink :to="`/schema/edit/${route.params.id}`" type="button"
-          class="text-sm leading-6 text-gray-900 rounded-lg px-2 py-1 ring-1 ring-inset ring-gray-200 hover:bg-gray-100">
-          Edit
-        </NuxtLink>
-      </div>
+    <div v-if="appSettings.current.pageState === 'loading'">
+      <LoadingCardSkeleton />
     </div>
-    <div v-if="showDelete"
-      class="flex gap-x-3 items-center text-sm leading-6 text-gray-900 rounded-lg p-3 ring-1 ring-inset ring-gray-200">
-      <button type="button" @click.prevent="removeReference"
-        class="text-sm leading-6 text-gray-900 rounded-lg px-2 py-1 ring-1 ring-inset ring-sienna-200 hover:bg-sienna-200">
-        Delete
-      </button>
-      <span class="italic">Zero history deletion.</span>
-    </div>
-    <div>
+    <div v-else>
+      <CommonHeadingView v-if="schemaStore.term.name" purpose="Schema" :name="schemaStore.term.name"
+        :title="schemaStore.term.title" @set-edit-request="watchHeadingRequest" />
       <dl class="divide-y divide-gray-100">
         <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Name</dt>
@@ -84,8 +62,6 @@
 
 <script setup lang="ts">
 import { useSettingStore, useSchemaStore, useReferenceStore } from "@/stores"
-import { ExclamationCircleIcon } from "@heroicons/vue/24/outline"
-import { getAvatar } from "@/utilities"
 
 definePageMeta({
   middleware: ["authenticated"],
@@ -95,24 +71,23 @@ const route = useRoute()
 const appSettings = useSettingStore()
 const schemaStore = useSchemaStore()
 const referenceStore = useReferenceStore()
-const heading = ref("")
-const avatar = ref("")
-const showDelete = ref(false)
+
+async function watchHeadingRequest(request: string) {
+  switch (request) {
+    case "remove":
+      await referenceStore.removeTerm(route.params.id as string)
+      return await navigateTo("/references")
+    case "edit":
+      return await navigateTo(`/schema/edit/${route.params.id}`)
+  }
+}
 
 onMounted(async () => {
   await schemaStore.getTerm(route.params.id as string)
   if (!schemaStore.term || Object.keys(schemaStore.term).length === 0)
     throw createError({ statusCode: 404, statusMessage: "Page Not Found", fatal: true })
-  if (schemaStore.term.title) heading.value = schemaStore.term.title
-  else heading.value = schemaStore.term.name
-  avatar.value = await getAvatar(schemaStore.term.uuid)
-  appSettings.setPageName("Schema definition")
+  appSettings.setPageName("Schema")
 })
-
-async function removeReference() {
-  await referenceStore.removeTerm(route.params.id as string)
-  return await navigateTo("/references")
-}
 
 // METADATA - START
 // https://nuxt.com/docs/getting-started/seo-meta

@@ -1,6 +1,6 @@
 <template>
   <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-3xl mx-auto">
-    <div class="mt-6 flex justify-center border-b border-t border-gray-200 py-6 md:px-12">
+    <div class="mt-6 flex justify-center space-x-10 border-b border-t border-gray-200 py-6 md:px-12">
       <NuxtLink to="/projects/edit" class="flex items-center space-x-2 rounded-lg hover:bg-gray-50 pr-1">
         <div class="bg-cerulean-500 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg">
           <BeakerIcon class="h-6 w-6 text-white" aria-hidden="true" />
@@ -37,8 +37,8 @@ const route = useRoute()
 const appSettings = useSettingStore()
 const projectStore = useProjectStore()
 
-watch(() => [route.query], () => {
-  updateMulti()
+watch(() => [route.query], async () => {
+  await updateMulti()
 })
 
 async function updateMulti() {
@@ -49,6 +49,11 @@ async function updateMulti() {
 onMounted(async () => {
   appSettings.setPageName("Projects")
   updateMulti()
+})
+
+onBeforeUnmount(() => {
+  const router = useRouter()
+  router.replace({ query: {} })
 })
 
 // METADATA - START

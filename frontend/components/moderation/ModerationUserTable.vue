@@ -41,25 +41,43 @@
         </tbody>
       </table>
     </div>
+    <CommonPagination />
   </div>
 </template>
 
 <script setup lang="ts">
 import { apiAuth } from "@/api"
-import { useTokenStore } from "@/stores"
-import { IUserProfile } from "@/interfaces"
+import { useTokenStore, useSettingStore } from "@/stores"
+import { IOgunFilters, IUserProfile } from "@/interfaces"
 
+const route = useRoute()
+const router = useRouter()
+const settingStore = useSettingStore()
 const tokenStore = useTokenStore()
-
 const userProfiles = ref([] as IUserProfile[])
+const payload = ref<IOgunFilters>({} as IOgunFilters)
+
+watch(() => [route.query], async () => {
+  await getAllUsers()
+})
 
 async function getAllUsers() {
+  if (route.query && route.query.page && !isNaN(+route.query.page)) payload.value = { page: +route.query.page }
   await tokenStore.refreshTokens()
-  const { data: response } = await apiAuth.getAllUsers(tokenStore.token)
-  if (response.value && response.value.length) userProfiles.value = response.value
+  const { data: response } = await apiAuth.getAllUsers(tokenStore.token, payload.value)
+  if (response.value && response.value.length) {
+    userProfiles.value = response.value
+    settingStore.setPageNext(true)
+  } else {
+    settingStore.setPageNext(false)
+  }
 }
 
 onMounted(async () => {
   await getAllUsers()
+})
+
+onBeforeUnmount(() => {
+  router.replace({ query: {} })
 })
 </script>

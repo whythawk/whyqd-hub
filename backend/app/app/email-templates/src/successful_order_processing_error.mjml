@@ -1,0 +1,20 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image width="60px" src="https://openlocal.uk/icon.png"></mj-image>
+        <mj-text font-size="20px" font-weight="bold" align="center" color="#635246">open<span style="color: #3A5C84;">Local</span></mj-text>
+        <mj-divider border-color="#3A5C84"></mj-divider>
+        <mj-text font-size="16px" color="#635246">Hi,</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">You recently placed an order at openLocal.uk. Unfortunately, despite it being successfully concluded, we have been unable to reconcile this with any order in our database.</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">Our systems administrators have been alerted simultaneously with you receiving this email and will try and sort it out directly.</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">If we cannot, we'll be in contact directly to ensure we sort this out for you.</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">Our apologies for the disruption and any distress this may cause you. We'll work to fix it as quickly as we can.</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">The below link will take you to our financial intermediary, Stripe.com, which processed your transaction, and you can review the current status.</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">{{ link_url }}</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">Kind regards</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">Symon</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

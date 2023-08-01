@@ -2,7 +2,9 @@ import {
   IUserProfile,
   IUserProfileUpdate,
   IUserProfileCreate,
-  IUserOpenProfileCreate
+  IUserOpenProfileCreate,
+  IUserEmail, 
+  IProfileSummary
 } from "./profile"
 import {
   IOgunCreate,
@@ -34,6 +36,7 @@ import {
   IStripePortalSessionIntent,
   IPrice,
   IProduct,
+  IProductPricing,
   IOrder,
   ISubscription,
   ISubscriptionProfile,
@@ -49,6 +52,7 @@ import {
   IReferenceType,
   IFieldType,
   IStatusType,
+  InvitationResponseType,
   IUserSummary,
   IModelSummary,
   ICitation,
@@ -86,6 +90,8 @@ import {
   ITaskFilters,
   IProject,
   IProjectFilters,
+  IProjectRole,
+  IProjectInvitation,
 } from "./whyqd"
   
 export {
@@ -93,6 +99,8 @@ export {
   IUserProfileUpdate,
   IUserProfileCreate,
   IUserOpenProfileCreate,
+  IUserEmail,
+  IProfileSummary,
   IOgunCreate,
   IOgunUser,
   IOgunToken,
@@ -118,6 +126,7 @@ export {
   IStripePortalSessionIntent,
   IPrice,
   IProduct,
+  IProductPricing,
   IOrder,
   ISubscription,
   ISubscriptionProfile,
@@ -131,6 +140,7 @@ export {
   IReferenceType,
   IFieldType,
   IStatusType,
+  InvitationResponseType,
   IUserSummary,
   IModelSummary,
   ICitation,
@@ -168,4 +178,6 @@ export {
   ITaskFilters,
   IProject,
   IProjectFilters,
+  IProjectRole,
+  IProjectInvitation
 }

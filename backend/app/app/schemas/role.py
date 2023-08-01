@@ -61,11 +61,25 @@ class Role(BaseSchema):
     id: UUID = Field(..., description="Automatically generated unique identity for the invitation.")
     created: datetime = Field(..., description="Automatically generated datetime of creation.")
     researcher: UserSummary = Field(..., description="Specified researcher with responsibility.")
+    responsibility: RoleType = Field(
+        default=RoleType.SEEKER,
+        description="Responsibility assigned to this researcher.",
+    )
     project: Optional[BaseSummarySchema] = Field(None, description="Project summary.")
     task: Optional[BaseSummarySchema] = Field(None, description="Task summary.")
     resource: Optional[BaseSummarySchema] = Field(None, description="Resource summary.")
     reference: Optional[BaseSummarySchema] = Field(None, alias="schema", description="Reference summary.")
     referencetemplate: Optional[BaseSummarySchema] = Field(None, description="Reference template summary.")
+
+    class Config:
+        orm_mode = True
+
+
+class RoleSummary(BaseSchema):
+    id: UUID = Field(..., description="Automatically generated unique identity for the invitation.")
+    created: datetime = Field(..., description="Automatically generated datetime of creation.")
+    researcher: UserSummary = Field(..., description="Specified researcher with responsibility.")
+    responsibility: RoleType = Field(..., description="Responsibility assigned to this researcher.")
 
     class Config:
         orm_mode = True

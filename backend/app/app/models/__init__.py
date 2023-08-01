@@ -13,4 +13,4 @@ from .activity import Activity  # noqa: F401
 
 from .price import Price, Product  # noqa: F401
 from .order import Order  # noqa: F401
-from .subscription import Subscription  # noqa: F401
+from .subscription import Subscription, TransformActivity  # noqa: F401

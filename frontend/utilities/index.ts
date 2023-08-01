@@ -9,6 +9,7 @@ import {
 } from "./generic"
 import {
   readableDate,
+  readableNumber,
   capitalizeFirst,
   splitWordify,
   nameSpace,
@@ -36,6 +37,7 @@ export {
   tokenParser,
   removeEmpty,
   readableDate,
+  readableNumber,
   capitalizeFirst,
   splitWordify,
   nameSpace,

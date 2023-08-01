@@ -11,7 +11,9 @@ class Product(Base):
     name: Mapped[str] = mapped_column(index=True)
     description: Mapped[str] = mapped_column(index=True)
     subscription: Mapped[ENUM[SubscriptionType]] = mapped_column(ENUM(SubscriptionType), nullable=False)
-    prices: Mapped["Price"] = relationship(back_populates="product", cascade="all, delete, delete-orphan")
+    rows: Mapped[int] = mapped_column(server_default="0")
+    transforms: Mapped[int] = mapped_column(server_default="0")
+    prices: Mapped[list["Price"]] = relationship(back_populates="product", cascade="all, delete, delete-orphan")
 
 
 class Price(Base):

@@ -1,14 +1,14 @@
-from typing import Optional, List
+from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel, Field, EmailStr, constr, validator
 from sqlalchemy.orm import Query
-from sqlalchemy import desc, or_
+from sqlalchemy import or_
 from datetime import datetime, timedelta
 
 
-# from app.schemas.subscription import Subscription, SubscriptionInProfile
-# from app.models.subscription import Subscription as SubscriptionMDL
-# from app.schema_types import SubscriptionEventType, SubscriptionType
+from app.schemas.subscription import SubscriptionInProfile
+from app.models.subscription import Subscription as SubscriptionMDL
+from app.schema_types import SubscriptionType
 
 
 class UserLogin(BaseModel):
@@ -31,6 +31,10 @@ class UserSummary(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserSearch(BaseModel):
+    email: EmailStr
 
 
 # Properties to receive via API on creation
@@ -56,6 +60,7 @@ class UserInDBBase(UserBase):
 class User(UserInDBBase):
     hashed_password: bool = Field(default=False, alias="password")
     totp_secret: bool = Field(default=False, alias="totp")
+    subscriptions: Optional[SubscriptionInProfile]
 
     class Config:
         allow_population_by_field_name = True
@@ -71,6 +76,21 @@ class User(UserInDBBase):
         if totp_secret:
             return True
         return False
+
+    @validator("subscriptions", pre=True)
+    def evaluate_lazy_subscriptions(cls, v):
+        # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
+        # Call PydanticModel.from_orm(dbQuery)
+        if isinstance(v, Query):
+            expires = datetime.utcnow() - timedelta(days=1)  # 1 day grace
+            v = (
+                v.filter(or_(SubscriptionMDL.ends > expires, SubscriptionMDL.override.is_(True)))
+                .order_by(SubscriptionMDL.created.desc())
+                .first()
+            )
+            if v:
+                return {"membership": v.subscription_type, "ends": v.ends, "override": v.override}
+        return {"membership": SubscriptionType.REVIEWER, "ends": datetime.max, "override": False}
 
 
 # Additional properties stored in DB

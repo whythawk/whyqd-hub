@@ -17,7 +17,7 @@ class Subscription(Base):
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
     created: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     # SUBSCRIPTION
-    subscription_id: Mapped[str] = mapped_column(index=True)
+    subscription_id: Mapped[str] = mapped_column(index=True, nullable=True)
     subscription_event_type: Mapped[ENUM[SubscriptionEventType]] = mapped_column(
         ENUM(SubscriptionEventType), nullable=False
     )
@@ -29,3 +29,13 @@ class Subscription(Base):
     # SUBSCRIBER
     subscriber_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("user.id"))
     subscriber: Mapped["User"] = relationship(back_populates="subscriptions")
+
+
+class TransformActivity(Base):
+    id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
+    created: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    rows: Mapped[int] = mapped_column(default=0)
+    data_import: Mapped[bool] = mapped_column(default=True)
+    # SUBSCRIBER
+    researcher_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("user.id"))
+    researcher: Mapped["User"] = relationship(back_populates="transform_activities", foreign_keys=[researcher_id])

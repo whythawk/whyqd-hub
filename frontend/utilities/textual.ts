@@ -16,6 +16,28 @@ function readableDate(term: Date | string, showYear: boolean = true) {
   return `${day} ${month}`
 }
 
+function readableNumber(term: string | number, trunc: boolean = false): string {
+  // https://stackoverflow.com/a/2901298/295606
+  // https://stackoverflow.com/a/10601315/295606
+  if (!term) return "n/a"
+  if (typeof term === "string") term = parseInt(term)
+  if (trunc && term >= 1000) {
+    const suffixes: string[] = ["k", "m", "b", "t"]
+    for (let suffixNum = suffixes.length - 1; suffixNum >= 0; suffixNum--) {
+      const scale = Math.pow(10, (suffixNum + 1) * 3)
+      if (scale <= term) {
+        term = Math.floor((term * 10) / scale) / 10
+        if (term === 1000 && suffixNum < suffixes.length - 1) {
+          term = 1
+          suffixNum++
+        }
+        return term + suffixes[suffixNum]
+      }
+    }
+  }
+  return term.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")
+}
+
 function capitalizeFirst(term: string): string {
   return term.charAt(0).toUpperCase() + term.slice(1).toLowerCase();
 }
@@ -52,5 +74,5 @@ async function getAvatar(term: string) {
 }
 
 export {
-  readableDate, capitalizeFirst, nameSpace, splitWordify, getMimeType, getAvatar
+  readableDate, readableNumber, capitalizeFirst, nameSpace, splitWordify, getMimeType, getAvatar
 }

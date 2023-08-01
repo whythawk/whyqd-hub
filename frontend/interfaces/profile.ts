@@ -1,4 +1,6 @@
 /* eslint-disable camelcase */
+import { ISubscriptionProfile } from "./subscriptions"
+
 export interface IUserProfile {
   id: string
   email: string
@@ -8,6 +10,7 @@ export interface IUserProfile {
   full_name: string
   password: boolean
   totp: boolean
+  subscriptions: ISubscriptionProfile
 }
 
 export interface IUserProfileUpdate {
@@ -33,4 +36,11 @@ export interface IUserOpenProfileCreate {
   password: string
 }
 
-  
+export interface IUserEmail {
+  email: string
+}
+
+export interface IProfileSummary {
+  email: string
+  full_name?: string
+}
