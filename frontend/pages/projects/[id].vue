@@ -3,9 +3,9 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
-      <CommonHeadingView v-if="projectStore.term.name" purpose="Project" :name="projectStore.term.name"
-        :title="projectStore.term.title" @set-edit-request="watchHeadingRequest" />
+    <div v-if="appSettings.current.pageState === 'done' && projectStore.term && projectStore.term.name">
+      <CommonHeadingView purpose="Project" :name="projectStore.term.name" :title="projectStore.term.title"
+        @set-edit-request="watchHeadingRequest" />
       <TabGroup>
         <TabList class="flex space-x-8 border-b border-gray-200 text-xs">
           <Tab v-for="tab in navigation" :key="`tab-${tab.id}`" as="template" v-slot="{ selected }">

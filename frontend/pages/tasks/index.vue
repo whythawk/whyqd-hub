@@ -4,7 +4,7 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
+    <div v-if="appSettings.current.pageState === 'done'">
       <TaskFilterPanel />
       <ul role="list" class="space-y-2">
         <li v-for="(task, i) in taskStore.multi" :key="`task-${i}`">

@@ -28,6 +28,7 @@ export const useOgunStore = defineStore("ogunStore", {
       if (this.authTokens.token) {
         try {
           this.settings.setPageState("loading")
+          this.setMulti([])
           if (!facets || Object.keys(facets).length === 0) facets = this.facets
           const { data: response } = await apiOgun.getMulti(this.authTokens.token, facets)
           if (response.value) {

@@ -3,9 +3,9 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
-      <CommonHeadingView v-if="resourceStore.term.name" purpose="Resource" :name="resourceStore.term.name"
-        :title="resourceStore.term.title" @set-edit-request="watchHeadingRequest" />
+    <div v-if="appSettings.current.pageState === 'done' && resourceStore.term && resourceStore.term.name">
+      <CommonHeadingView purpose="Resource" :name="resourceStore.term.name" :title="resourceStore.term.title"
+        @set-edit-request="watchHeadingRequest" />
       <div class="mb-6 border-b border-gray-200 py-3 md:px-8">
         <div class="flex w-full items-center justify-between">
           <div class="group flex flex-row text-xs font-medium text-gray-700">

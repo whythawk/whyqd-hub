@@ -3,10 +3,10 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
+    <div v-if="appSettings.current.pageState === 'done' && crosswalkStore.term && crosswalkStore.term.name">
       <div class="mx-auto min-w-full px-2 sm:px-3 lg:px-6">
-        <CommonHeadingEditView v-if="crosswalkStore.term.name" purpose="Crosswalk" :name="crosswalkStore.draft.name"
-          :title="crosswalkStore.draft.title" :approach="saveApproach" @set-edit-request="watchEditHeadingRequest" />
+        <CommonHeadingEditView purpose="Crosswalk" :name="crosswalkStore.draft.name" :title="crosswalkStore.draft.title"
+          :approach="saveApproach" @set-edit-request="watchEditHeadingRequest" />
         <!-- Main three-panel grid -->
         <div class="grid grid-cols-1 items-start gap-2 2xl:grid-cols-10">
           <!-- Action column -->
@@ -239,7 +239,7 @@ async function watchResponseSocket(response: ISocketResponse) {
         crosswalkStore.draft
         && Object.keys(crosswalkStore.draft).length !== 0
         && response.data
-        && [response.data.id, response.data.crosswalk.id].includes(response.data.id as string)
+        && [crosswalkStore.draft.id, crosswalkStore.draft.crosswalk.id].includes(response.data.id as string)
       ) {
         // if already have a saved draft, & response.data.
         initialiseDraft()

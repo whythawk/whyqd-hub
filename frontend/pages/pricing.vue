@@ -3,76 +3,89 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
-      <div class="mx-auto max-w-4xl text-center">
-        <h2 class="text-base font-semibold leading-7 text-ochre-600">Pricing</h2>
-        <p class="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">Pricing plans for research
-          at&nbsp;every&nbsp;scale</p>
-      </div>
-      <p class="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">Choose an affordable plan with the
-        best features for serving your research team, study needs, and scaled to the extent of your source data.</p>
-      <div class="mt-16 flex justify-center">
-        <RadioGroup v-model="frequency"
-          class="grid grid-cols-2 gap-x-1 rounded-full p-1 text-center text-xs font-semibold leading-5 ring-1 ring-inset ring-gray-200">
-          <RadioGroupLabel class="sr-only">Payment frequency</RadioGroupLabel>
-          <RadioGroupOption as="template" v-for="option in frequencies" :key="option.value" :value="option"
-            v-slot="{ checked }">
-            <div
-              :class="[checked ? 'bg-ochre-600 text-white' : 'text-gray-500', 'cursor-pointer rounded-full px-2.5 py-1']">
-              <span>{{ option.label }}</span>
-            </div>
-          </RadioGroupOption>
-        </RadioGroup>
-      </div>
-      <div
-        class="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 md:max-w-2xl md:grid-cols-2 lg:max-w-4xl xl:mx-0 xl:max-w-none xl:grid-cols-4">
-        <div v-for="tier in  tiers " :key="tier.id"
-          :class="[tier.mostPopular ? 'ring-2 ring-ochre-600' : 'ring-1 ring-gray-200', 'rounded-3xl p-8']">
-          <h3 :id="tier.id"
-            :class="[tier.mostPopular ? 'text-ochre-600' : 'text-gray-900', 'text-lg font-semibold leading-8']">{{
-              tier.name }}</h3>
-          <p class="mt-4 text-sm leading-6 text-gray-600">{{ tier.description }}</p>
-          <p v-if="['EXPLORER', 'RESEARCHER'].includes(tier.subscription)" class="mt-6 flex items-baseline gap-x-1">
-            <span class="text-4xl font-bold tracking-tight text-gray-900">
-              {{ getPrintablePrice(tier.subscription) }}
-            </span>
-            <span class="text-sm font-semibold leading-6 text-gray-600">{{ frequency.priceSuffix }}</span>
-          </p>
-          <p v-if="'REVIEWER' === tier.subscription" class="mt-6 flex items-baseline gap-x-1">
-            <span class="text-4xl font-bold tracking-tight text-gray-900">
-              Free
-            </span>
-            <span class="text-sm font-semibold leading-6 text-gray-600">always</span>
-          </p>
-          <p v-if="'INVESTIGATOR' === tier.subscription" class="mt-6 flex items-baseline gap-x-1">
-            <span class="text-4xl font-bold tracking-tight text-gray-900">
-              Hosted
-            </span>
-            <span class="text-sm font-semibold leading-6 text-gray-600">& scaled</span>
-          </p>
-          <form v-if="['EXPLORER', 'RESEARCHER'].includes(tier.subscription)">
-            <!-- @vue-ignore -->
-            <button id="checkout-and-portal-button" type="button" :aria-describedby="tier.id"
-              :class="[tier.mostPopular ? 'bg-ochre-600 text-white shadow-sm hover:bg-ochre-500' : 'text-ochre-600 ring-1 ring-inset ring-ochre-200 hover:ring-ochre-300', 'mt-6 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ochre-600 w-full']"
-              :disabled="isSubscribed(tier.subscription)" @click.prevent="subscribeWithCard(tier.subscription)">
-              Subscribe
-            </button>
-          </form>
-          <NuxtLink v-if="'REVIEWER' === tier.subscription" to="/login"
-            :class="[auth.loggedIn ? 'pointer-events-none' : '', 'text-ochre-600 ring-1 ring-inset ring-ochre-200 hover:ring-ochre-300 mt-6 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ochre-600 w-full']"
-            :disabled="auth.loggedIn">
-            Join us
-          </NuxtLink>
-          <NuxtLink v-if="'INVESTIGATOR' === tier.subscription" to="/contact"
-            :class="[tier.mostPopular ? 'bg-ochre-600 text-white shadow-sm hover:bg-ochre-500' : 'text-ochre-600 ring-1 ring-inset ring-ochre-200 hover:ring-ochre-300', 'mt-6 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ochre-600 w-full']">
-            Contact us
-          </NuxtLink>
-          <ul role="list" class="mt-8 space-y-3 text-sm leading-6 text-gray-600">
-            <li v-for=" feature  in  tier.features " :key="feature" class="flex gap-x-3">
-              <CheckIcon class="h-6 w-5 flex-none text-ochre-600" aria-hidden="true" />
-              {{ replaceWithTerms(feature, tier.subscription) }}
-            </li>
-          </ul>
+    <div v-if="appSettings.current.pageState === 'done'">
+      <div class="isolate mb-10">
+        <svg
+          class="absolute inset-0 -z-10 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+          aria-hidden="true">
+          <defs>
+            <pattern id="0787a7c5-978c-4f66-83c7-11c213f99cb7" width="90" height="30" x="50%" y="-1"
+              patternUnits="userSpaceOnUse">
+              <path d="M.5 200V.5H200" fill="none" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" stroke-width="0" fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)" />
+        </svg>
+        <div class="mx-auto max-w-4xl text-center">
+          <h2 class="text-base font-semibold leading-7 text-ochre-600">Pricing</h2>
+          <p class="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">Pricing plans for research
+            at&nbsp;every&nbsp;scale</p>
+        </div>
+        <p class="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">Choose an affordable plan with the
+          best features for serving your research team, study needs, and scaled to the extent of your source data.</p>
+        <div class="mt-16 flex justify-center">
+          <RadioGroup v-model="frequency"
+            class="grid grid-cols-2 gap-x-1 rounded-full p-1 text-center text-xs font-semibold leading-5 ring-1 ring-inset ring-gray-200">
+            <RadioGroupLabel class="sr-only">Payment frequency</RadioGroupLabel>
+            <RadioGroupOption as="template" v-for="option in frequencies" :key="option.value" :value="option"
+              v-slot="{ checked }">
+              <div
+                :class="[checked ? 'bg-ochre-600 text-white' : 'text-gray-500', 'cursor-pointer rounded-full px-2.5 py-1']">
+                <span>{{ option.label }}</span>
+              </div>
+            </RadioGroupOption>
+          </RadioGroup>
+        </div>
+        <div
+          class="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 md:max-w-2xl md:grid-cols-2 lg:max-w-4xl xl:mx-0 xl:max-w-none xl:grid-cols-4">
+          <div v-for="tier in  tiers " :key="tier.id"
+            :class="[tier.mostPopular ? 'ring-2 ring-ochre-600' : 'ring-1 ring-gray-200', 'rounded-3xl p-8']">
+            <h3 :id="tier.id"
+              :class="[tier.mostPopular ? 'text-ochre-600' : 'text-gray-900', 'text-lg font-semibold leading-8']">{{
+                tier.name }}</h3>
+            <p class="mt-4 text-sm leading-6 text-gray-600">{{ tier.description }}</p>
+            <p v-if="['EXPLORER', 'RESEARCHER'].includes(tier.subscription)" class="mt-6 flex items-baseline gap-x-1">
+              <span class="text-4xl font-bold tracking-tight text-gray-900">
+                {{ getPrintablePrice(tier.subscription) }}
+              </span>
+              <span class="text-sm font-semibold leading-6 text-gray-600">{{ frequency.priceSuffix }}</span>
+            </p>
+            <p v-if="'REVIEWER' === tier.subscription" class="mt-6 flex items-baseline gap-x-1">
+              <span class="text-4xl font-bold tracking-tight text-gray-900">
+                Free
+              </span>
+              <span class="text-sm font-semibold leading-6 text-gray-600">always</span>
+            </p>
+            <p v-if="'INVESTIGATOR' === tier.subscription" class="mt-6 flex items-baseline gap-x-1">
+              <span class="text-4xl font-bold tracking-tight text-gray-900">
+                Hosted
+              </span>
+              <span class="text-sm font-semibold leading-6 text-gray-600">& scaled</span>
+            </p>
+            <form v-if="['EXPLORER', 'RESEARCHER'].includes(tier.subscription)">
+              <!-- @vue-ignore -->
+              <button id="checkout-and-portal-button" type="button" :aria-describedby="tier.id"
+                :class="[tier.mostPopular ? 'bg-ochre-600 text-white shadow-sm hover:bg-ochre-500' : 'text-ochre-600 ring-1 ring-inset ring-ochre-200 hover:ring-ochre-300', 'mt-6 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ochre-600 w-full']"
+                :disabled="isSubscribed(tier.subscription)" @click.prevent="subscribeWithCard(tier.subscription)">
+                Subscribe
+              </button>
+            </form>
+            <NuxtLink v-if="'REVIEWER' === tier.subscription" to="/login"
+              :class="[auth.loggedIn ? 'pointer-events-none' : '', 'text-ochre-600 ring-1 ring-inset ring-ochre-200 hover:ring-ochre-300 mt-6 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ochre-600 w-full']"
+              :disabled="auth.loggedIn">
+              Join us
+            </NuxtLink>
+            <NuxtLink v-if="'INVESTIGATOR' === tier.subscription" to="/contact"
+              :class="[tier.mostPopular ? 'bg-ochre-600 text-white shadow-sm hover:bg-ochre-500' : 'text-ochre-600 ring-1 ring-inset ring-ochre-200 hover:ring-ochre-300', 'mt-6 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ochre-600 w-full']">
+              Contact us
+            </NuxtLink>
+            <ul role="list" class="mt-8 space-y-3 text-sm leading-6 text-gray-600">
+              <li v-for=" feature  in  tier.features " :key="feature" class="flex gap-x-3">
+                <CheckIcon class="h-6 w-5 flex-none text-ochre-600" aria-hidden="true" />
+                {{ replaceWithTerms(feature, tier.subscription) }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

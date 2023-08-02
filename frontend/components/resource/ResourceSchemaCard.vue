@@ -38,7 +38,9 @@
       <div v-if="props.reference && props.reference.fields && props.reference.fields.length" class="space-y-2 mx-2">
         <Disclosure as="div" v-slot="{ open }">
           <DisclosureButton class="flex w-full items-start justify-between text-left">
-            <h4 class="text-sm font-semibold leading-7 text-gray-500 pt-2">Fields</h4>
+            <h4 class="text-sm font-semibold leading-7 text-gray-500 pt-2">
+              Fields
+            </h4>
             <ChevronDownIcon :class="[open ? 'rotate-180 transform' : '', 'h-5 w-5']" aria-hidden="true" />
           </DisclosureButton>
           <DisclosurePanel>

@@ -3,7 +3,7 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
+    <div v-if="appSettings.current.pageState === 'done' && taskStore.term">
       <div class="mt-6 border-b border-t border-gray-200 py-3 md:px-8">
         <TaskCard :task="taskStore.term" :last-card="true" />
       </div>
@@ -36,7 +36,7 @@ watch(() => [route.query], async () => {
 
 async function updateMulti() {
   if (route.query && route.query.page) resourceStore.setPage(route.query.page as string)
-  await resourceStore.getMulti()
+  await resourceStore.getMultiByTask(taskStore.term.id)
 }
 
 onMounted(async () => {

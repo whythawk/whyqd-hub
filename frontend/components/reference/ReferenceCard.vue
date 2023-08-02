@@ -112,7 +112,7 @@ async function addToReference(addTo: string) {
       break
     case "RESOURCE":
       const resourceStore = useResourceStore()
-      // await resourceStore.addCrosswalk(route.params.id as string, props.reference.id)
+      await resourceStore.addSchemaObject(route.params.id as string, props.reference.id)
       break
   }
   await navigateTo(`/${addReference.value.toLowerCase()}s/${route.params.id}`)

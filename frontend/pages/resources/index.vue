@@ -4,7 +4,7 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
+    <div v-if="appSettings.current.pageState === 'done'">
       <ResourceFilterPanel />
       <ul role="list" class="space-y-6">
         <li v-for="(resource, i) in resourceStore.multi" :key="`resource-${i}`">

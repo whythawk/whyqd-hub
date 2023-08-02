@@ -105,6 +105,37 @@ def get_resource_source_template(
     return crud.reference.get_model(db_obj=resource_obj.datasource)
 
 
+@router.post("/{id}/schema/{term_id}", response_model=schemas.ResourceManager)
+def add_schema_object_to_resource(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: str,
+    term_id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Add a schema object to a resource and run a task to check for any potential crosswalks.
+    """
+    resource_obj = crud.resource.get(db=db, id=id, user=current_user, responsibility=schema_types.RoleType.WRANGLER)
+    schema_obj = crud.reference.get(db=db, id=term_id, user=current_user)
+    if (
+        not resource_obj
+        or not resource_obj.schema_subject_id
+        or not schema_obj
+        or not schema_obj.model_type == schema_types.ReferenceType.SCHEMA
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Either resource or schema do not exist, or user does not have the rights for this request.",
+        )
+    resource_obj = crud.reference.add_resource_schema_object(
+        db=db, db_obj=resource_obj, schema_obj=schema_obj, user=current_user
+    )
+    if not resource_obj.crosswalk_id:
+        resource_obj = crud.reference.add_new_resource_crosswalk(db=db, db_obj=resource_obj, user=current_user)
+    return resource_obj
+
+
 @router.post("/{id}/categorise/{field_id}/{term_type}", response_model=schemas.Msg)
 def create_resource_schema_categorisation_as_terms(
     *,
@@ -127,6 +158,31 @@ def create_resource_schema_categorisation_as_terms(
         "app.worker.process_schema_categorisation", args=[current_user.id, resource_obj.id, field_id, term_type]
     )
     return {"msg": "Field categorisation processing. Check your activity log to see when complete."}
+
+
+@router.post("/{id}/transform/{mimetype}", response_model=schemas.Msg)
+def process_resource_transform(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: str,
+    mimetype: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Process resource transform to complete a crosswalk.
+    """
+    resource_obj = crud.resource.get(db=db, id=id, user=current_user)
+    if (
+        not resource_obj
+        or not resource_obj.state == schema_types.StateType.TRANSFORM_READY
+        or not resource_obj.crosswalk_id
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Either resource does not exist, or user does not have the rights for this request.",
+        )
+    celery_app.send_task("app.worker.process_transform", args=[current_user.id, resource_obj.id, mimetype])
+    return {"msg": "Transformation processing. Check your activity log to see when complete."}
 
 
 # @router.put("/{id}", response_model=schemas.Resource)

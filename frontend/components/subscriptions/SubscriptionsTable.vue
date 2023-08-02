@@ -2,8 +2,8 @@
   <div v-if="appSettings.current.pageState === 'loading'">
     <LoadingCardSkeleton />
   </div>
-  <div v-else>
-    <div v-if="subscriptionStore.multi.length" class="flex-auto p-3">
+  <div v-if="appSettings.current.pageState === 'done' && subscriptionStore.multi.length">
+    <div class="flex-auto p-3">
       <div class="shadow sm:overflow-hidden sm:rounded-md min-w-max">
         <SubscriptionsUserSearch @set-request="watchSubscriberRequest" />
         <table class="min-w-full divide-y divide-gray-300">

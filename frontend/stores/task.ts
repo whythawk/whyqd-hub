@@ -34,6 +34,7 @@ export const useTaskStore = defineStore("taskStore", {
       if (this.authTokens.token) {
         try {
           this.settings.setPageState("loading")
+          this.setMulti([])
           if (!facets || Object.keys(facets).length === 0) facets = this.facets
           const { data: response } = await apiTask.getMulti(this.authTokens.token, facets)
           if (response.value) {
@@ -56,9 +57,17 @@ export const useTaskStore = defineStore("taskStore", {
       if (this.authTokens.token) {
         try {
           this.settings.setPageState("loading")
+          this.setMulti([])
           if (!facets || Object.keys(facets).length === 0) facets = this.facets
           const { data: response } = await apiTask.getMultiByProject(this.authTokens.token, project_key, facets)
-          if (response.value) this.setMulti(response.value)
+          if (response.value) {
+            if (response.value.length) {
+              this.setMulti(response.value)
+              this.settings.setPageNext(true)
+            } else {
+              this.settings.setPageNext(false)
+            }
+          }
           this.settings.setPageState("done")
         } catch (error) {
           this.settings.setPageState("error")
@@ -73,8 +82,8 @@ export const useTaskStore = defineStore("taskStore", {
       await this.authTokens.refreshTokens()
       if (this.authTokens.token) {
         try {
-          this.setTerm({} as ITask)
           this.settings.setPageState("loading")
+          this.setTerm({} as ITask)
           const { data: response } = await apiTask.getTerm(this.authTokens.token, key)
           if (response.value) this.setTerm(response.value)
           this.settings.setPageState("done")

@@ -3,7 +3,7 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
+    <div v-if="appSettings.current.pageState === 'done' && taskStore.term && taskStore.term.name">
       <TaskEditCard />
     </div>
   </div>

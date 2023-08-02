@@ -6,8 +6,8 @@ from uuid import UUID, uuid4
 from pathlib import Path
 import posixpath
 import urllib
+import modin.pandas as pd
 import numpy as np
-import json
 from io import BufferedReader
 from collections.abc import Iterator
 from botocore.response import StreamingBody
@@ -21,7 +21,6 @@ from app.crud.crud_spaces import spaces
 
 if TYPE_CHECKING:
     from app.models.user import User
-    import modin.pandas as pd
 
 
 class CRUDFiles:
@@ -295,12 +294,12 @@ class CRUDFiles:
         if isinstance(df, dict):
             for sheet_name, dfs in df.items():
                 dfs = dfs.fillna(np.nan).replace([np.nan], [None])
-                jsn_obj = json.dumps(dfs.to_dict("records"))
+                jsn_obj = dfs.to_json(path_or_buf=None, orient="records")
                 obj_name = f"{obj_id}-{sheet_name.lower()}.SUMMARY"
                 self.core.save_file(data=jsn_obj, source=str(self.summary / obj_name))
         else:
             df = df.fillna(np.nan).replace([np.nan], [None])
-            jsn_obj = json.dumps(df.to_dict("records"))
+            jsn_obj = df.to_json(path_or_buf=None, orient="records")
             obj_name = f"{obj_id}.SUMMARY"
             self.core.save_file(data=jsn_obj, source=str(self.summary / obj_name))
 

@@ -29,9 +29,9 @@ export const useCrosswalkStore = defineStore("crosswalkStore", {
     async getTerm(key: string) {
       await this.authTokens.refreshTokens()
       if (this.authTokens.token) {
-        this.setTerm({} as IResourceCrosswalkManager)
         try {
           this.settings.setPageState("loading")
+          this.setTerm({} as IResourceCrosswalkManager)
           const { data: response } = await apiCrosswalk.getTerm(this.authTokens.token, key)
           if (response.value) this.setTerm(response.value)
           this.settings.setPageState("done")

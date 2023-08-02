@@ -4,7 +4,7 @@
       <div v-if="appSettings.current.pageState === 'loading'">
         <LoadingCardSkeleton />
       </div>
-      <form v-else class="space-y-2">
+      <form v-if="appSettings.current.pageState === 'done'" class="space-y-2">
         <div class="flex w-full items-center justify-between gap-x-6 p-2">
           <div class="flex items-center justify-left w-full">
             <h1 class="text-lg leading-7 text-gray-900">

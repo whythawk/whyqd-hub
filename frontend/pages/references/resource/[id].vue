@@ -1,23 +1,16 @@
 <template>
   <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-3xl mx-auto">
-    <div class="mt-6 flex justify-center space-x-10 border-b border-t border-gray-200 py-6 md:px-12">
-      <NuxtLink to="/projects/edit" class="flex items-center space-x-2 rounded-lg hover:bg-gray-50 pr-1">
-        <div class="bg-cerulean-500 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg">
-          <BeakerIcon class="h-6 w-6 text-white" aria-hidden="true" />
-        </div>
-        <h3 class="text-sm font-bold text-gray-900">
-          Create a project
-        </h3>
-      </NuxtLink>
-    </div>
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-if="appSettings.current.pageState === 'done'">
-      <ProjectFilterPanel />
+    <div v-if="appSettings.current.pageState === 'done' && resourceStore.term">
+      <div class="mt-6 border-b border-t border-gray-200 py-3 md:px-8">
+        <ResourceCard :resource="resourceStore.term" :last-card="true" />
+      </div>
+      <ReferenceFilterPanel />
       <ul role="list" class="space-y-2">
-        <li v-for="(project, i) in projectStore.multi" :key="`project-${i}`">
-          <ProjectCard :project="project" :last-card="i === projectStore.multi.length - 1" />
+        <li v-for="(reference, i) in referenceStore.multi" :key="`reference-${i}`">
+          <ReferenceCard :reference="reference" :last-card="i === referenceStore.multi.length - 1" />
         </li>
       </ul>
       <CommonPagination />
@@ -26,8 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { BeakerIcon } from "@heroicons/vue/24/outline"
-import { useSettingStore, useProjectStore } from "@/stores"
+import { useSettingStore, useReferenceStore, useResourceStore } from "@/stores"
 
 definePageMeta({
   middleware: ["authenticated"],
@@ -35,19 +27,21 @@ definePageMeta({
 
 const route = useRoute()
 const appSettings = useSettingStore()
-const projectStore = useProjectStore()
+const referenceStore = useReferenceStore()
+const resourceStore = useResourceStore()
 
 watch(() => [route.query], async () => {
   await updateMulti()
 })
 
 async function updateMulti() {
-  if (route.query && route.query.page) projectStore.setPage(route.query.page as string)
-  await projectStore.getMulti()
+  if (route.query && route.query.page) referenceStore.setPage(route.query.page as string)
+  await referenceStore.getMulti()
 }
 
 onMounted(async () => {
-  appSettings.setPageName("Projects")
+  await resourceStore.getTerm(route.params.id as string)
+  appSettings.setPageName("References")
   updateMulti()
 })
 

@@ -28,6 +28,7 @@ export const useActivityStore = defineStore("activityStore", {
       if (this.authTokens.token) {
         try {
           this.settings.setPageState("loading")
+          this.setMulti([])
           const { data: response } = await apiActivity.getMulti(this.authTokens.token, this.facets)
           if (response.value) {
             if (response.value.length) {

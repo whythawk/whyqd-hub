@@ -30,6 +30,7 @@ export const useReferenceStore = defineStore("referenceStore", {
       if (this.authTokens.token) {
         try {
           this.settings.setPageState("loading")
+          this.setMulti([])
           if (!facets || Object.keys(facets).length === 0) facets = this.facets
           const { data: response } = await apiReference.getMulti(this.authTokens.token, facets)
           if (response.value) {
@@ -63,9 +64,9 @@ export const useReferenceStore = defineStore("referenceStore", {
     async getTerm(key: string) {
       await this.authTokens.refreshTokens()
       if (this.authTokens.token) {
-        this.setTerm({} as IReference)
         try {
           this.settings.setPageState("loading")
+          this.setTerm({} as IReference)
           const { data: response } = await apiReference.getTerm(this.authTokens.token, key)
           if (response.value) this.setTerm(response.value)
           this.settings.setPageState("done")

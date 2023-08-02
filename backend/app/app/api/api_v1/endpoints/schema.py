@@ -17,15 +17,6 @@ from app.api import deps, sockets
 router = APIRouter()
 
 
-@router.websocket("/test")
-async def testing_this(*, websocket: WebSocket):
-    await websocket.accept()
-    # await websocket.receive_json()
-    # response = {"state": "initialised", "data": {"name": randomname.get_name()}}
-    # await sockets.send_response(websocket=websocket, response=response)
-    await websocket.close(code=1000)
-
-
 @router.websocket("/edit")
 async def create_and_edit_schema(*, db: Session = Depends(deps.get_db), websocket: WebSocket):
     """

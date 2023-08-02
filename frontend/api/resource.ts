@@ -56,6 +56,14 @@ export const apiResource = {
       }
     )
   },
+  async addTermSchemaObject(token: string, key: string, schema_key: string) {
+    return await useFetch<IResourceManager>(`${apiCore.url()}/resource/${key}/schema/${schema_key}`, 
+      {
+        method: "POST",
+        headers: apiCore.headers(token),
+      }
+    )
+  },
   async removeTermSchemaObject(token: string, key: string) {
     return await useFetch<IResourceManager>(`${apiCore.url()}/resource/schema/${key}`, 
       {
@@ -66,6 +74,14 @@ export const apiResource = {
   },
   async postSchemaCategorisation(token: string, key: string, field_name: string, term_type: string) {
     return await useFetch<IMsg>(`${apiCore.url()}/resource/${key}/categorise/${field_name}/${term_type}`, 
+      {
+        method: "POST",
+        headers: apiCore.headers(token),
+      }
+    )
+  },
+  async postProcessTransform(token: string, key: string, mimetype: string) {
+    return await useFetch<IMsg>(`${apiCore.url()}/resource/${key}/transform/${mimetype}`, 
       {
         method: "POST",
         headers: apiCore.headers(token),

@@ -48,6 +48,7 @@ export const useProjectStore = defineStore("projectStore", {
       if (this.authTokens.token) {
         try {
           this.settings.setPageState("loading")
+          this.setMulti([])
           if (!facets || Object.keys(facets).length === 0) facets = this.facets
           const { data: response } = await apiProject.getMulti(this.authTokens.token, facets)
           if (response.value) {
@@ -71,9 +72,9 @@ export const useProjectStore = defineStore("projectStore", {
     async getTerm(key: string) {
       await this.authTokens.refreshTokens()
       if (this.authTokens.token) {
-        this.setTerm({} as IProject)
         try {
           this.settings.setPageState("loading")
+          this.setTerm({} as IProject)
           const { data: response } = await apiProject.getTerm(this.authTokens.token, key)
           if (response.value) this.setTerm(response.value)
           this.settings.setPageState("done")

@@ -7,7 +7,7 @@
       <div class="mt-4 flex text-sm leading-6 text-gray-600">
         <label for="file-upload"
           class="relative cursor-pointer rounded-md bg-white font-semibold text-ochre-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-ochre-600 focus-within:ring-offset-2 hover:text-ochre-500">
-          <span>Upload a {{ props.reference.toLowerCase() }}</span>
+          <span>Upload <span v-if="props.reference !== 'DATA'">a</span> {{ props.reference.toLowerCase() }}</span>
           <input id="file-upload" name="file-upload" type="file" class="sr-only" />
         </label>
         <p v-if="dragndrop" class="pl-1">or drag and drop</p>

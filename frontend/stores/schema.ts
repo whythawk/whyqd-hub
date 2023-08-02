@@ -40,9 +40,9 @@ export const useSchemaStore = defineStore("schemaStore", {
     async getTerm(key: string) {
       await this.authTokens.refreshTokens()
       if (this.authTokens.token) {
-        this.setTerm({} as ISchema)
         try {
           this.settings.setPageState("loading")
+          this.setTerm({} as ISchema)
           const { data: response } = await apiSchema.getTerm(this.authTokens.token, key)
           if (response.value) this.setTerm(response.value)
           this.settings.setPageState("done")

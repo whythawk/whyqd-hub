@@ -3,7 +3,7 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
+    <div v-if="appSettings.current.pageState === 'done'">
       <div class="shadow rounded-md">
         <div class="space-y-6 bg-white py-6 px-6">
           <div>

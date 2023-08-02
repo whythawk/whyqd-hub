@@ -39,6 +39,7 @@ export const useSubscriptionsStore = defineStore("subscriptionsStore", {
       if (this.authTokens.token) {
         try {
           this.settings.setPageState("loading")
+          this.setMulti([])
           if (!facets || Object.keys(facets).length === 0) facets = this.facets
           const { data: response } = await apiSubscriptions.getMulti(this.authTokens.token, facets)
           if (response.value) {

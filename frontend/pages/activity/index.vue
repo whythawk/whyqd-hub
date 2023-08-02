@@ -4,7 +4,7 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
+    <div v-if="appSettings.current.pageState === 'done'">
       <ActivityFilterPanel />
       <ul role="list" class="space-y-2">
         <li v-for="(activity, i) in activityStore.multi" :key="`activity-${i}`">

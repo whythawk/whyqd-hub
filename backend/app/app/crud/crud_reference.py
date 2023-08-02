@@ -340,13 +340,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         db_obj.crosswalk.crosswalks.remove(db_obj)
         db.commit()
         db.refresh(db_obj)
-        return crud_resource.update_state(
-            db=db,
-            db_obj=db_obj,
-            user=user,
-            state=StateType.CROSSWALK_READY,
-            responsibility=responsibility,
-        )
+        return self.add_new_resource_crosswalk(db=db, db_obj=db_obj, user=user)
 
     def remove_resource_schema_object(
         self,
@@ -368,6 +362,70 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             db_obj=db_obj,
             user=user,
             state=StateType.SCHEMA_READY,
+            responsibility=responsibility,
+        )
+
+    def add_resource_schema_object(
+        self,
+        db: Session,
+        *,
+        db_obj: Resource,
+        schema_obj: Reference,
+        user: User,
+        responsibility: RoleType = RoleType.WRANGLER,
+    ) -> Resource | None:
+        if db_obj.schema_object_id:
+            db_obj = self.remove_resource_schema_object(db=db, db_obj=db_obj, user=user, responsibility=responsibility)
+        schema_obj.schema_objects.append(db_obj)
+        state = StateType.CROSSWALK_READY
+        if db_obj.schema_object_id and db_obj.schema_subject_id:
+            crosswalk_prospects = self.find_crosswalk_prospects(
+                db=db,
+                schema_subject=db_obj.schema_subject,
+                schema_object=db_obj.schema_object,
+                user=user,
+                responsibility=responsibility,
+            )
+            if crosswalk_prospects:
+                # Just pick the first for now
+                crosswalk_obj = next(iter(crosswalk_prospects))
+                crosswalk_obj.crosswalks.append(db_obj)
+                state = StateType.TRANSFORM_READY
+        db.commit()
+        db.refresh(db_obj)
+        return crud_resource.update_state(
+            db=db,
+            db_obj=db_obj,
+            user=user,
+            state=state,
+            responsibility=responsibility,
+        )
+
+    def add_new_resource_crosswalk(
+        self,
+        db: Session,
+        *,
+        db_obj: Resource,
+        user: User,
+        responsibility: RoleType = RoleType.WRANGLER,
+    ) -> Resource | None:
+        crosswalk_dfn = self.get_crosswalk_definition(db_obj=db_obj)
+        if not crosswalk_dfn:
+            return db_obj
+        crosswalk_obj = self.create(
+            db=db,
+            user=user,
+            reference_in=crosswalk_dfn.get,
+            reference_type=ReferenceType.CROSSWALK,
+        )
+        crosswalk_obj.crosswalks.append(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return crud_resource.update_state(
+            db=db,
+            db_obj=db_obj,
+            user=user,
+            state=StateType.CROSSWALK_READY,
             responsibility=responsibility,
         )
 
@@ -678,6 +736,8 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             resource_in.task_id = task.id
             if task.schema:
                 schema_object_in = task.schema
+            elif task.project and task.project.schema:
+                schema_object_in = task.project.schema
             elif task.crosswalk:
                 crosswalk = crud_referencetemplate.get_model_from_task(task=task, obj_type=ReferenceType.CROSSWALK)
                 if crosswalk and crosswalk.schemaObject:
@@ -692,13 +752,13 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             obj_id=datasource_in.uuid, mimetype=datasource_in.mime, is_temporary=True
         )
         if datasource_in.header == 0:
-            datasource.derive_model(source=source_path, mimetype=datasource_in.mime, **datasource_in.attributes)
+            datasource.derive_model(source=source_path, mimetype=datasource_in.mime, **datasource_in.attributes.terms)
         else:
             datasource.derive_model(
                 source=source_path,
                 mimetype=datasource_in.mime,
                 header=datasource_in.header,
-                **datasource_in.attributes,
+                **datasource_in.attributes.terms,
             )
         # Check HASH duplicate AND User subscription row limit #########################################################
         data_models = []
@@ -762,7 +822,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             schema_prospects = self.get_multi_by_hash(db=db, hash=hash, user=user)
             schema_subject_in = None
             if len(schema_prospects) == 1:
-                schema_subject_in = schema_prospects[0]
+                schema_subject_in = next(iter(schema_prospects))
             if not schema_prospects:
                 data_in.path = str(source_path)  # use local path for operations
                 schema_subject = qd.SchemaDefinition()
@@ -782,8 +842,27 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             if schema_subject_in:
                 resource_in.schema_subject_id = schema_subject_in.id
                 resource_in.state = StateType.SCHEMA_READY
+            if resource_in.schema_object_id and resource_in.schema_subject_id:
+                resource_in.state = StateType.CROSSWALK_READY
+                # See if there is a crosswalk
+                db_schema_subject = self.get(db=db, id=resource_in.schema_subject_id, user=user)
+                db_schema_object = self.get(db=db, id=resource_in.schema_object_id, user=user)
+                crosswalk_prospects = self.find_crosswalk_prospects(
+                    db=db,
+                    schema_subject=db_schema_subject,
+                    schema_object=db_schema_object,
+                    user=user,
+                    responsibility=RoleType.SEEKER,
+                )
+                if crosswalk_prospects:
+                    # Just pick the first for now
+                    crosswalk_obj = next(iter(crosswalk_prospects))
+                    resource_in.crosswalk_id = crosswalk_obj.id
+                    resource_in.state = StateType.TRANSFORM_READY
             # And create the resource ##################################################################################
             resource_obj = crud_resource.create(db=db, obj_in=resource_in, user=user)
+            if not resource_obj.crosswalk_id:
+                resource_obj = self.add_new_resource_crosswalk(db=db, db_obj=resource_obj, user=user)
             message = f"Imported data source ({datasource_in.name}) successfully imported and ready for processing."
             if data_in.sheet_name:
                 message = f"Data source ({datasource_in.name}, {data_in.sheet_name}) successfully imported and ready for processing."

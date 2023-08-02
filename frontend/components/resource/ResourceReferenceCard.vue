@@ -49,6 +49,25 @@
             </li>
           </ul>
         </div>
+        <div v-if="!props.reference && props.modelType === 'SCHEMA'" class="flex items-center">
+          <h4 id="process-heading" class="sr-only">Add or create {{ props.modelType.toLowerCase() }}</h4>
+          <ul role="list" class="flex flex-row text-xs">
+            <li class="relative">
+              <button type="button" @click.prevent="createReferenceRedirect(props.modelType)"
+                class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
+                <BoltIcon class="text-sienna-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+                <span class="hidden lg:block">Create {{ modelTypes[props.modelType].title }}</span>
+              </button>
+            </li>
+            <li class="relative">
+              <button type="button" @click.prevent="addReferenceRedirect(props.modelType)"
+                class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
+                <PlusCircleIcon class="text-sienna-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+                <span class="hidden lg:block">Add {{ modelTypes[props.modelType].title }}</span>
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -58,16 +77,19 @@
 import {
   ArrowDownOnSquareStackIcon,
   ArrowsRightLeftIcon,
+  BoltIcon,
   CubeIcon,
+  PlusCircleIcon,
   Squares2X2Icon,
   TrashIcon,
 } from "@heroicons/vue/24/outline"
-import { IStatusType, IModelSummary, IKeyable, IReferenceType, IResourceManager } from "@/interfaces"
+import { IStatusType, IModelSummary, IKeyable, IReferenceType, IResourceManager, IReferenceFilters } from "@/interfaces"
 import { readableDate } from "@/utilities"
-import { useTokenStore, useToastStore, useResourceStore } from "@/stores"
+import { useTokenStore, useToastStore, useReferenceStore, useResourceStore } from "@/stores"
 import { apiData, apiResource } from "@/api"
 
 const tokenStore = useTokenStore()
+const referenceStore = useReferenceStore()
 const toasts = useToastStore()
 const heading = ref("")
 const modelTypes: IKeyable = {
@@ -127,6 +149,19 @@ async function getDownload(key: string, download: string) {
       }
     }
   }
+}
+
+async function addReferenceRedirect(reference_type: IReferenceType) {
+  let filters: IReferenceFilters = {}
+  filters.reference_type = reference_type
+  referenceStore.resetFilters()
+  referenceStore.setFilters(filters)
+  await navigateTo(`/references/resource/${props.resourceId}`)
+}
+
+async function createReferenceRedirect(reference_type: IReferenceType) {
+  if (reference_type === "SCHEMA") await navigateTo("/schema/edit")
+  else await navigateTo(`/references/resource/${props.resourceId}`)
 }
 
 async function removeReference() {

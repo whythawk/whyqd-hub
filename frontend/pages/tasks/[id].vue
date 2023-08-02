@@ -3,9 +3,9 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-else>
-      <CommonHeadingView v-if="taskStore.term.name" purpose="Task" :name="taskStore.term.name"
-        :title="taskStore.term.title" @set-edit-request="watchHeadingRequest" />
+    <div v-if="appSettings.current.pageState === 'done' && taskStore.term && taskStore.term.name">
+      <CommonHeadingView purpose="Task" :name="taskStore.term.name" :title="taskStore.term.title"
+        @set-edit-request="watchHeadingRequest" />
       <dl class="divide-y divide-gray-100">
         <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Name</dt>
