@@ -43,6 +43,14 @@
         </NuxtLink>
         <ul role="list" class="flex flex-row justify-end text-xs">
           <h3 id="detail-heading" class="sr-only">Project, templates and schema object</h3>
+          <li class="relative">
+            <NuxtLink :to="`/resources/task/${props.task.id}`"
+              class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
+              <RectangleGroupIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span class="hidden lg:block">Resources</span>
+              <span v-if="props.task.resources">({{ props.task.resources }})</span>
+            </NuxtLink>
+          </li>
           <li v-if="props.task.project && Object.keys(props.task.project).length !== 0" class="relative">
             <NuxtLink :to="`/projects/${props.task.project.id}`"
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">

@@ -49,6 +49,7 @@
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
               <RectangleGroupIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
               <span class="hidden lg:block">Resources</span>
+              <span v-if="props.task.resources">({{ props.task.resources }})</span>
             </NuxtLink>
           </li>
           <li v-if="props.task.schema" class="relative">

@@ -1,8 +1,9 @@
 from __future__ import annotations
 from typing import Optional  # , List
-from pydantic import Field  # , validator
+from pydantic import Field, validator
 
-# from sqlalchemy.orm import Query
+from sqlalchemy.orm import Query
+
 # from sqlalchemy import desc
 from uuid import UUID
 from datetime import datetime
@@ -10,7 +11,7 @@ from datetime import datetime
 from app.schemas.base_schema import BaseSchema, BaseSummarySchema
 
 # from app.schemas.resource import Resource
-from app.schema_types import DCAccrualType, DCFrequencyType, DCAccrualPolicyType
+from app.schema_types import DCAccrualType, DCFrequencyType, DCAccrualPolicyType, StateType
 
 
 class TaskBase(BaseSchema):
@@ -124,18 +125,18 @@ class Task(TaskBase):
     )
     skhema: Optional[BaseSummarySchema] = Field(None, alias="schema", description="Schema summary.")
     project: Optional[BaseSummarySchema] = Field(None, description="Project summary.")
-    # resources: Optional[List[Resource]] = Field([], description="List of resources for this task.")
+    resources: Optional[int] = Field(None, description="Count of incomplete resources.")
 
     class Config:
         orm_mode = True
 
-    # @validator("resources", pre=True)
-    # def evaluate_lazy_resources(cls, v):
-    #     # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
-    #     # Call PydanticModel.from_orm(dbQuery)
-    #     if isinstance(v, Query):
-    #         return v.order_by(desc("modified")).all()
-    #     return v
+    @validator("resources", pre=True)
+    def evaluate_lazy_resources(cls, v):
+        # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
+        # Call PydanticModel.from_orm(dbQuery)
+        if isinstance(v, Query):
+            return v.filter("state" != StateType.COMPLETE.value).count()
+        return None
 
 
 class ScheduledTask(TaskBase):
@@ -145,9 +146,18 @@ class ScheduledTask(TaskBase):
     name: str = Field(..., description="A machine-readable name given to the task.")
     last_completed: Optional[datetime] = Field(None, alias="lastCompleted", description="Last completed resource date.")
     latest_resource: Optional[BaseSummarySchema] = Field(None, alias="latestResource", description="Latest resource.")
+    resources: Optional[int] = Field(None, description="Count of incomplete resources.")
     skhema: Optional[BaseSummarySchema] = Field(None, alias="schema", description="Schema summary.")
     project: Optional[BaseSummarySchema] = Field(None, description="Project summary.")
 
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
+
+    @validator("resources", pre=True)
+    def evaluate_lazy_resources(cls, v):
+        # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
+        # Call PydanticModel.from_orm(dbQuery)
+        if isinstance(v, Query):
+            return v.filter("state" != StateType.COMPLETE.value).count()
+        return None

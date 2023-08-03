@@ -26,6 +26,7 @@ export interface ITask {
   accrualPolicy?: IAccrualPolicyType
   bibliographicCitation?: string
   conformsTo?: string
+  resources?: number
   schema?: IModelSummary
   datasource?: IModelSummary
   crosswalk?: IModelSummary
@@ -64,6 +65,7 @@ export interface IScheduledTask {
   conformsTo?: string
   lastCompleted?: string
   latestResource?: IModelSummary
+  resources?: number
   schema?: IModelSummary
   project?: IModelSummary
 }
