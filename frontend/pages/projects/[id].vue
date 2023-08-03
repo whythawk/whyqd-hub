@@ -139,7 +139,7 @@
                 class="space-y-6">
                 <div class="flex flex-row justify-between items-center">
                   <NuxtLink :to="`/schema/${projectStore.term.schema.id}`">
-                    <CommonSummaryCard :summary="projectStore.term.schema" :show-state="false" />
+                    <CommonSummaryCard :summary="projectStore.term.schema" :show-state="false" show-icon="SCHEMA" />
                   </NuxtLink>
                   <button type="button" @click.prevent="removeSchema"
                     class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-sm">

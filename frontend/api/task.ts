@@ -1,4 +1,4 @@
-import { ITask, ITaskFilters } from "@/interfaces"
+import { ITask, IScheduledTask, ITaskFilters } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiTask = {
@@ -13,6 +13,22 @@ export const apiTask = {
   },
   async getMultiByProject(token: string, project_key: string, payload: ITaskFilters = {}) {
     return await useFetch<ITask[]>(`${apiCore.url()}/task/project/${project_key}`, 
+      {
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async getScheduledMulti(token: string, payload: ITaskFilters = {}) {
+    return await useFetch<IScheduledTask[]>(`${apiCore.url()}/task/scheduled`, 
+      {
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async getScheduledMultiByProject(token: string, project_key: string, payload: ITaskFilters = {}) {
+    return await useFetch<IScheduledTask[]>(`${apiCore.url()}/task/scheduled/project/${project_key}`, 
       {
         headers: apiCore.headers(token),
         query: payload,

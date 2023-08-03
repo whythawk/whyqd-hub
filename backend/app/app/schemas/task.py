@@ -136,3 +136,17 @@ class Task(TaskBase):
     #     if isinstance(v, Query):
     #         return v.order_by(desc("modified")).all()
     #     return v
+
+
+class ScheduledTask(TaskBase):
+    id: UUID = Field(..., description="Automatically generated unique identity.")
+    created: datetime = Field(..., description="Automatically generated date reference was created.")
+    modified: datetime = Field(..., description="Automatically generated date reference was last modified.")
+    name: str = Field(..., description="A machine-readable name given to the task.")
+    last_completed: Optional[datetime] = Field(None, alias="lastCompleted", description="Last completed resource date.")
+    latest_resource: Optional[BaseSummarySchema] = Field(None, alias="latestResource", description="Latest resource.")
+    skhema: Optional[BaseSummarySchema] = Field(None, alias="schema", description="Schema summary.")
+    project: Optional[BaseSummarySchema] = Field(None, description="Project summary.")
+
+    class Config:
+        orm_mode = True

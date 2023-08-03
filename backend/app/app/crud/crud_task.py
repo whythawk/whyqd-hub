@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 from uuid import UUID
 from datetime import datetime
 
@@ -99,6 +100,74 @@ class CRUDTask(CRUDWhyqdBase[Task, TaskCreate, TaskUpdate]):
         page_break: bool = False,
     ) -> list[Task]:
         db_objs = db.query(self.model)
+        if not user.is_superuser:
+            responsibilities = crud_role._get_responsibility(responsibility=responsibility)
+            db_objs = self._get_query(db_query=db_objs, user=user, responsibilities=responsibilities)
+        if project_obj:
+            db_objs = db_objs.filter(self.model.project_id == project_obj.id)
+        if date_from and date_to and date_from > date_to:
+            date_to = None
+        if date_to:
+            if isinstance(date_to, str):
+                date_to = datetime.strptime(date_to, "%Y-%m-%d")
+            db_objs = db_objs.filter(self.model.created <= date_to)
+        if date_from:
+            if isinstance(date_from, str):
+                date_from = datetime.strptime(date_from, "%Y-%m-%d")
+            db_objs = db_objs.filter(self.model.created >= date_from)
+        if match:
+            db_objs = db_objs.filter(
+                (
+                    self.model.name_vector.match(str(match))
+                    | self.model.title_vector.match(str(match))
+                    | self.model.description_vector.match(str(match))
+                )
+            )
+        order_by = self.model.created
+        if descending:
+            order_by = order_by.desc()
+        db_objs = db_objs.distinct().order_by(order_by)
+        if not page_break:
+            if page > 0:
+                db_objs = db_objs.offset(page * settings.MULTI_MAX)
+            db_objs = db_objs.limit(settings.MULTI_MAX)
+        return db_objs.all()
+
+    def get_scheduled_multi(
+        self,
+        db: Session,
+        *,
+        user: User,
+        responsibility: RoleType = RoleType.SEEKER,
+        project_obj: Project | None = None,
+        match: str | None = None,
+        date_from: datetime | str | None = None,
+        date_to: datetime | str | None = None,
+        descending: bool = True,
+        page: int = 0,
+        page_break: bool = False,
+    ) -> list[Task]:
+        db_objs = db.query(self.model).filter(
+            (
+                (func.extract("EPOCH", func.now()) - func.extract("EPOCH", self.model.last_scheduled))
+                >= self.model.scheduled_period
+            )
+            | (
+                (self.model.last_scheduled == None)  # noqa: E711
+                & (
+                    (func.extract("EPOCH", func.now()) - func.extract("EPOCH", self.model.temporalStart))
+                    >= self.model.scheduled_period
+                )
+            )
+            | (
+                (self.model.last_scheduled == None)  # noqa: E711
+                & (self.model.temporalStart == None)  # noqa: E711
+                & (
+                    (func.extract("EPOCH", func.now()) - func.extract("EPOCH", self.model.created))
+                    >= self.model.scheduled_period
+                )
+            )
+        )
         if not user.is_superuser:
             responsibilities = crud_role._get_responsibility(responsibility=responsibility)
             db_objs = self._get_query(db_query=db_objs, user=user, responsibilities=responsibilities)

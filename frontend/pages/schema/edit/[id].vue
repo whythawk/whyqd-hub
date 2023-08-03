@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-3xl mx-auto">
-      <CommonHeadingEditView v-if="schemaStore.term.name" purpose="Schema" :name="schemaStore.draft.name"
-        :title="schemaStore.draft.title" :approach="saveApproach" @set-edit-request="watchEditHeadingRequest" />
+      <CommonHeadingEditView purpose="Schema" :name="schemaStore.draft.name" :title="schemaStore.draft.title"
+        :approach="saveApproach" @set-edit-request="watchEditHeadingRequest" />
       <div class="space-y-4">
         <p class="text-sm leading-6 text-gray-600 pt-2">A whyqd (/wɪkɪd/) schema definition describes the
           structural

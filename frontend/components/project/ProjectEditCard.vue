@@ -1,7 +1,7 @@
 <template>
   <div v-if="draft" class="mx-auto min-w-full">
-    <CommonHeadingEditView v-if="projectStore.term.name" purpose="Project" :name="projectStore.draft.name"
-      :title="projectStore.draft.title" :approach="saveApproach" @set-edit-request="watchEditHeadingRequest" />
+    <CommonHeadingEditView purpose="Project" :name="projectStore.draft.name" :title="projectStore.draft.title"
+      :approach="saveApproach" @set-edit-request="watchEditHeadingRequest" />
     <form class="flex-auto rounded-lg p-3">
       <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
         <div class="col-span-full">

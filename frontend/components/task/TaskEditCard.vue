@@ -1,7 +1,7 @@
 <template>
   <div v-if="draft" class="mx-auto min-w-full">
-    <CommonHeadingEditView v-if="taskStore.term.name" purpose="Task" :name="taskStore.draft.name"
-      :title="taskStore.draft.title" :approach="saveApproach" @set-edit-request="watchEditHeadingRequest" />
+    <CommonHeadingEditView purpose="Task" :name="taskStore.draft.name" :title="taskStore.draft.title"
+      :approach="saveApproach" @set-edit-request="watchEditHeadingRequest" />
     <form class="flex-auto rounded-lg p-3">
       <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
         <div class="col-span-full">
@@ -13,6 +13,61 @@
           <p v-if="draft.name" class="mt-2 text-xs leading-6 text-gray-500">
             <span class="font-bold">Machine-readable name: </span>{{ draft.name }}
           </p>
+        </div>
+        <div class="col-span-full sm:col-span-5">
+          <label for="task-accrual-periodicity-values" class="block text-sm font-semibold leading-6 text-sienna-700">
+            Accrual periodicity
+          </label>
+          <div class="mt-2">
+            <Listbox v-model="draft.accrualPeriodicity">
+              <div class="relative mt-1">
+                <ListboxButton
+                  class="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-ochre-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-ochre-300 sm:text-sm">
+                  <span v-if="draft.accrualPeriodicity" class="block truncate">{{
+                    capitalizeFirst(draft.accrualPeriodicity)
+                  }}</span>
+                  <span v-else class="block truncate">Select...</span>
+                  <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                    <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+                  </span>
+                </ListboxButton>
+                <transition leave-active-class="transition duration-100 ease-in" leave-from-class="opacity-100"
+                  leave-to-class="opacity-0">
+                  <ListboxOptions
+                    class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                    <ListboxOption v-slot="{ active, selected }" v-for="ftype in parameters.frequencyType"
+                      :key="`ftype-${ftype.value}`" :value="ftype.value" as="template">
+                      <li :class="[
+                        active ? 'bg-ochre-100 text-ochre-900' : 'text-gray-900',
+                        'relative cursor-default select-none py-2 pl-10 pr-4',
+                      ]">
+                        <span :class="[
+                          selected ? 'font-medium' : 'font-normal',
+                          'block truncate',
+                        ]">{{ capitalizeFirst(ftype.value) }}</span>
+                        <span v-if="selected" class="absolute inset-y-0 left-0 flex items-center pl-3 text-ochre-600">
+                          <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                        </span>
+                      </li>
+                    </ListboxOption>
+                  </ListboxOptions>
+                </transition>
+              </div>
+            </Listbox>
+          </div>
+          <p class="mt-2 text-sm leading-6 text-sienna-600">
+            Update <span class="font-bold">frequency</span> and <span class="font-bold">priority</span>. Priority
+            increases with integer value assigned.
+          </p>
+        </div>
+        <div class="col-span-full sm:col-span-1">
+          <label for="task-accrual-priority" class="block text-sm font-semibold leading-6 text-sienna-700">
+            Priority
+          </label>
+          <div class="mt-2">
+            <input type="text" name="task-accrual-priority" id="task-accrual-priority" v-model="draft.accrualPriority"
+              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-ochre-600 sm:text-sm sm:leading-6" />
+          </div>
         </div>
         <div class="col-span-full">
           <label for="description" class="block text-sm font-semibold leading-6 text-gray-900">Description</label>
@@ -189,51 +244,6 @@
           </div>
           <p class="mt-2 text-sm leading-6 text-gray-600">
             The method by which items are added to a resource.
-          </p>
-        </div>
-        <div class="col-span-full">
-          <label for="task-accrual-periodicity-values" class="block text-sm font-semibold leading-6 text-gray-900">
-            Accrual periodicity
-          </label>
-          <div class="mt-2">
-            <Listbox v-model="draft.accrualPeriodicity">
-              <div class="relative mt-1">
-                <ListboxButton
-                  class="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-ochre-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-ochre-300 sm:text-sm">
-                  <span v-if="draft.accrualPeriodicity" class="block truncate">{{
-                    capitalizeFirst(draft.accrualPeriodicity)
-                  }}</span>
-                  <span v-else class="block truncate">Select...</span>
-                  <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                    <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
-                  </span>
-                </ListboxButton>
-                <transition leave-active-class="transition duration-100 ease-in" leave-from-class="opacity-100"
-                  leave-to-class="opacity-0">
-                  <ListboxOptions
-                    class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                    <ListboxOption v-slot="{ active, selected }" v-for="ftype in parameters.frequencyType"
-                      :key="`ftype-${ftype.value}`" :value="ftype.value" as="template">
-                      <li :class="[
-                        active ? 'bg-ochre-100 text-ochre-900' : 'text-gray-900',
-                        'relative cursor-default select-none py-2 pl-10 pr-4',
-                      ]">
-                        <span :class="[
-                          selected ? 'font-medium' : 'font-normal',
-                          'block truncate',
-                        ]">{{ capitalizeFirst(ftype.value) }}</span>
-                        <span v-if="selected" class="absolute inset-y-0 left-0 flex items-center pl-3 text-ochre-600">
-                          <CheckIcon class="h-5 w-5" aria-hidden="true" />
-                        </span>
-                      </li>
-                    </ListboxOption>
-                  </ListboxOptions>
-                </transition>
-              </div>
-            </Listbox>
-          </div>
-          <p class="mt-2 text-sm leading-6 text-gray-600">
-            The frequency with which items are added to a resource.
           </p>
         </div>
         <div class="col-span-full">

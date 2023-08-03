@@ -751,14 +751,18 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         source_path = crud_files.get_source_path(
             obj_id=datasource_in.uuid, mimetype=datasource_in.mime, is_temporary=True
         )
+        # This seems to crash under weird circumstances
+        attributes = datasource_in.attributes
+        if not isinstance(attributes, dict):
+            attributes = attributes.terms
         if datasource_in.header == 0:
-            datasource.derive_model(source=source_path, mimetype=datasource_in.mime, **datasource_in.attributes.terms)
+            datasource.derive_model(source=source_path, mimetype=datasource_in.mime, **attributes)
         else:
             datasource.derive_model(
                 source=source_path,
                 mimetype=datasource_in.mime,
                 header=datasource_in.header,
-                **datasource_in.attributes.terms,
+                **attributes,
             )
         # Check HASH duplicate AND User subscription row limit #########################################################
         data_models = []

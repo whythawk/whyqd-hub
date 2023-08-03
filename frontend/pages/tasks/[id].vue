@@ -15,6 +15,18 @@
           <dt class="text-sm font-medium text-gray-900">Title</dt>
           <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ taskStore.term.title }}</dd>
         </div>
+        <div v-if="taskStore.term.accrualPriority" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-900">Accrual priority</dt>
+          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            {{ taskStore.term.accrualPriority }}
+          </dd>
+        </div>
+        <div v-if="taskStore.term.accrualPeriodicity" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-900">Accrual periodicity</dt>
+          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            {{ taskStore.term.accrualPeriodicity }}
+          </dd>
+        </div>
         <div v-if="taskStore.term.description" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Description</dt>
           <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ taskStore.term.description }}
@@ -79,12 +91,6 @@
           <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ taskStore.term.accrualMethod }}
           </dd>
         </div>
-        <div v-if="taskStore.term.accrualPeriodicity" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Accrual periodicity</dt>
-          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {{ taskStore.term.accrualPeriodicity }}
-          </dd>
-        </div>
         <div v-if="taskStore.term.accrualPolicy" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Accrual policy</dt>
           <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ taskStore.term.accrualPolicy }}
@@ -108,7 +114,7 @@
       </h2>
       <div v-if="taskStore.term.project && Object.keys(taskStore.term.project).length !== 0" class="space-y-6">
         <NuxtLink :to="`/projects/${taskStore.term.project.id}`">
-          <CommonSummaryCard :summary="taskStore.term.project" :show-state="false" />
+          <CommonSummaryCard :summary="taskStore.term.project" :show-state="false" show-icon="PROJECT" />
         </NuxtLink>
       </div>
       <div v-else class="space-y-6">
@@ -123,10 +129,8 @@
         <RectangleGroupIcon class="text-gray-700 group-hover:text-ochre-600 h-5 w-5 shrink-0" aria-hidden="true" />
         <span class="hidden lg:block">Resources</span>
       </NuxtLink>
-      <div v-if="taskStore.term.datasource && Object.keys(taskStore.term.datasource).length !== 0" class="space-y-6">
-        <NuxtLink :to="`/datasource/${taskStore.term.datasource.id}`">
-          <CommonSummaryCard :summary="taskStore.term.datasource" :show-state="false" />
-        </NuxtLink>
+      <!-- <div v-if="taskStore.term.datasource && Object.keys(taskStore.term.datasource).length !== 0" class="space-y-6">
+        <CommonSummaryCard :summary="taskStore.term.datasource" :show-state="false" show-icon="DATA" />
       </div>
       <div v-else class="space-y-6">
         <button class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-sm">
@@ -135,20 +139,18 @@
         </button>
       </div>
       <div v-if="taskStore.term.crosswalk && Object.keys(taskStore.term.crosswalk).length !== 0" class="space-y-6">
-        <NuxtLink :to="`/crosswalk/${taskStore.term.crosswalk.id}`">
-          <CommonSummaryCard :summary="taskStore.term.crosswalk" :show-state="false" />
-        </NuxtLink>
+        <CommonSummaryCard :summary="taskStore.term.crosswalk" :show-state="false" show-icon="CROSSWALK" />
       </div>
       <div v-else class="space-y-6">
         <button class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-sm">
           <ArrowsRightLeftIcon class="text-sienna-700 group-hover:text-ochre-600 h-5 w-5 shrink-0" aria-hidden="true" />
           <span class="hidden lg:block">Add crosswalk template</span>
         </button>
-      </div>
+      </div> -->
       <div v-if="taskStore.term.schema && Object.keys(taskStore.term.schema).length !== 0" class="space-y-6">
         <div class="flex flex-row justify-between items-center">
           <NuxtLink :to="`/schema/${taskStore.term.schema.id}`">
-            <CommonSummaryCard :summary="taskStore.term.schema" :show-state="false" />
+            <CommonSummaryCard :summary="taskStore.term.schema" :show-state="false" show-icon="SCHEMA" />
           </NuxtLink>
           <button type="button" @click.prevent="removeSchema"
             class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-sm">

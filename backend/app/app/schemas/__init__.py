@@ -30,7 +30,7 @@ from .resource import (  # noqa: F401
     ResourceCrosswalkManager,
 )
 from .crosswalk import CrosswalkBase, CrosswalkCreate, CrosswalkUpdate, Crosswalk, ActionModel  # noqa: F401
-from .task import TaskBase, TaskCreate, TaskUpdate, Task  # noqa: F401
+from .task import TaskBase, TaskCreate, TaskUpdate, Task, ScheduledTask  # noqa: F401
 from .project import ProjectBase, ProjectCreate, ProjectUpdate, Project  # noqa: F401
 from .invitation import InvitationBase, InvitationCreate, InvitationUpdate, Invitation  # noqa: F401
 from .templates import DataSourceTemplateModel, CrosswalkTemplateModel  # noqa: F401

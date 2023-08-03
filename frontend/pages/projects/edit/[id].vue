@@ -3,7 +3,7 @@
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-if="appSettings.current.pageState === 'done' && projectStore.term">
+    <div v-if="appSettings.current.pageState === 'done'">
       <ProjectEditCard />
     </div>
   </div>

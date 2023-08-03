@@ -22,7 +22,8 @@
                 <time :datetime="props.project.modified" class="flex-none py-0.5 text-xs text-gray-500">{{
                   readableDate(props.project!.modified as string) }}</time>
               </li>
-              <li class="relative group flex flex-row text-xs font-medium text-gray-500 gap-x-1 pl-2">
+              <li v-if="props.project.auths && props.project.auths.length"
+                class="relative group flex flex-row text-xs font-medium text-gray-500 gap-x-1 pl-2">
                 <UserGroupIcon class="text-gray-700 h-4 w-4 shrink-0" aria-hidden="true" />
                 {{ props.project.auths.length }}
                 <span v-if="props.project.auths.length === 1">member</span>
@@ -45,6 +46,13 @@
         </div>
         <ul role="list" class="flex flex-row justify-end text-xs">
           <h3 id="detail-heading" class="sr-only">Project tasks and schema object</h3>
+          <li class="relative">
+            <NuxtLink :to="`/schedule/project/${props.project.id}`"
+              class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
+              <CalendarIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span class="hidden lg:block">Schedule</span>
+            </NuxtLink>
+          </li>
           <li class="relative">
             <NuxtLink :to="`/tasks/project/${props.project.id}`"
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
@@ -73,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { Square3Stack3DIcon, Squares2X2Icon, SquaresPlusIcon, TagIcon, UserGroupIcon } from "@heroicons/vue/24/outline"
+import { CalendarIcon, Square3Stack3DIcon, Squares2X2Icon, SquaresPlusIcon, TagIcon, UserGroupIcon } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar } from "@/utilities"
 import { IProject, IReferenceFilters } from "@/interfaces"
 import { useReferenceStore } from "@/stores"

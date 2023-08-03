@@ -1,10 +1,12 @@
 <template>
   <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-3xl mx-auto">
-    <CommonLaunchCard />
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-if="appSettings.current.pageState === 'done'">
+    <div v-if="appSettings.current.pageState === 'done' && projectStore.term">
+      <div class="mt-6 border-b border-t border-gray-200 py-3 md:px-8">
+        <ProjectCard :project="projectStore.term" :last-card="true" />
+      </div>
       <TaskFilterPanel />
       <ul role="list" class="space-y-2">
         <li v-for="(task, i) in taskStore.scheduled" :key="`task-${i}`">
@@ -17,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSettingStore, useTaskStore } from "@/stores"
+import { useSettingStore, useTaskStore, useProjectStore } from "@/stores"
 
 definePageMeta({
   middleware: ["authenticated"],
@@ -26,6 +28,7 @@ definePageMeta({
 const route = useRoute()
 const appSettings = useSettingStore()
 const taskStore = useTaskStore()
+const projectStore = useProjectStore()
 
 watch(() => [route.query], async () => {
   await updateScheduledMulti()
@@ -33,12 +36,16 @@ watch(() => [route.query], async () => {
 
 async function updateScheduledMulti() {
   if (route.query && route.query.page) taskStore.setPage(route.query.page as string)
-  await taskStore.getScheduledMulti()
+  if (projectStore.term.id)
+    await taskStore.getScheduledMultiByProject(projectStore.term.id)
+  else
+    throw createError({ statusCode: 404, statusMessage: "Page Not Found", fatal: true })
 }
 
 onMounted(async () => {
+  await projectStore.getTerm(route.params.id as string)
   appSettings.setPageName("Schedule")
-  updateScheduledMulti()
+  await updateScheduledMulti()
 })
 
 onBeforeUnmount(() => {

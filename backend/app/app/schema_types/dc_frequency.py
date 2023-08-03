@@ -41,3 +41,25 @@ class DCFrequencyType(BaseEnum):
             "irregular": "Irregular",
         }
         return description[self.value]
+
+    def days(self):
+        day_count = {
+            "triennial": 1095,
+            "biennial": 730,
+            "annual": 365,
+            "semiannual": 183,
+            "threeTimesAYear": 122,
+            "quarterly": 92,
+            "bimonthly": 60,
+            "monthly": 30,
+            "semimonthly": 15,
+            "biweekly": 14,
+            "threeTimesAMonth": 10,
+            "weekly": 7,
+            "semiweekly": 3,
+            "threeTimesAWeek": 2,
+            "daily": 1,
+            "continuous": 1,
+            "irregular": 365,
+        }
+        return day_count[self.value]

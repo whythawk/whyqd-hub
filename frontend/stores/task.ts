@@ -1,5 +1,5 @@
 import {
-  ITask, ITaskFilters
+  ITask, IScheduledTask, ITaskFilters
 } from "@/interfaces"
 import { useTokenStore } from "./tokens"
 import { useSettingStore } from "./settings"
@@ -9,6 +9,7 @@ import { apiTask } from "@/api"
 export const useTaskStore = defineStore("taskStore", {
   state: () => ({
     board: [] as ITask[],
+    assigned: [] as IScheduledTask[],
     one: {} as ITask,
     edit: {} as ITask,
     facets: {} as ITaskFilters,
@@ -18,6 +19,7 @@ export const useTaskStore = defineStore("taskStore", {
   },
   getters: {
     multi: (state) => state.board,
+    scheduled: (state) => state.assigned,
     term: (state) => state.one,
     draft: (state) => state.edit,
     filters: (state) => state.facets,
@@ -77,6 +79,55 @@ export const useTaskStore = defineStore("taskStore", {
     },
     setMulti(payload: ITask[]) {
       this.board = payload
+    },
+    async getScheduledMulti(facets: ITaskFilters = {}) {
+      await this.authTokens.refreshTokens()
+      if (this.authTokens.token) {
+        try {
+          this.settings.setPageState("loading")
+          this.setScheduledMulti([])
+          if (!facets || Object.keys(facets).length === 0) facets = this.facets
+          const { data: response } = await apiTask.getScheduledMulti(this.authTokens.token, facets)
+          if (response.value) {
+            if (response.value.length) {
+              this.setScheduledMulti(response.value)
+              this.settings.setPageNext(true)
+            } else {
+              this.settings.setPageNext(false)
+            }
+          }
+          this.settings.setPageState("done")
+        } catch (error) {
+          this.settings.setPageState("error")
+          this.board = []
+        }
+      }
+    },
+    async getScheduledMultiByProject(project_key: string, facets: ITaskFilters = {}) {
+      await this.authTokens.refreshTokens()
+      if (this.authTokens.token) {
+        try {
+          this.settings.setPageState("loading")
+          this.setScheduledMulti([])
+          if (!facets || Object.keys(facets).length === 0) facets = this.facets
+          const { data: response } = await apiTask.getScheduledMultiByProject(this.authTokens.token, project_key, facets)
+          if (response.value) {
+            if (response.value.length) {
+              this.setScheduledMulti(response.value)
+              this.settings.setPageNext(true)
+            } else {
+              this.settings.setPageNext(false)
+            }
+          }
+          this.settings.setPageState("done")
+        } catch (error) {
+          this.settings.setPageState("error")
+          this.board = []
+        }
+      }
+    },
+    setScheduledMulti(payload: IScheduledTask[]) {
+      this.assigned = payload
     },
     async getTerm(key: string) {
       await this.authTokens.refreshTokens()

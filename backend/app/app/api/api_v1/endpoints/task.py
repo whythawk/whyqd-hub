@@ -68,6 +68,64 @@ def read_all_project_tasks(
     )
 
 
+@router.get("/scheduled", response_model=List[schemas.ScheduledTask])
+def read_all_scheduled_tasks(
+    *,
+    db: Session = Depends(deps.get_db),
+    match: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    descending: bool = True,
+    page: int = 0,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get all scheduled tasks available for this researcher.
+    """
+    return crud.task.get_scheduled_multi(
+        db=db,
+        user=current_user,
+        match=match,
+        date_from=date_from,
+        date_to=date_to,
+        descending=descending,
+        page=page,
+    )
+
+
+@router.get("/scheduled/project/{project_id}", response_model=List[schemas.ScheduledTask])
+def read_all_scheduled_project_tasks(
+    *,
+    db: Session = Depends(deps.get_db),
+    project_id: str,
+    match: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    descending: bool = True,
+    page: int = 0,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get all scheduled tasks associated with a project available for this researcher.
+    """
+    project_obj = crud.project.get(db=db, id=project_id, user=current_user)
+    if not project_obj:
+        raise HTTPException(
+            status_code=400,
+            detail="Either project does not exist, or user does not have the rights for this request.",
+        )
+    return crud.task.get_scheduled_multi(
+        db=db,
+        user=current_user,
+        project_obj=project_obj,
+        match=match,
+        date_from=date_from,
+        date_to=date_to,
+        descending=descending,
+        page=page,
+    )
+
+
 @router.post("/multi", response_model=List[schemas.Task])
 def create_multiple_tasks(
     *,
@@ -133,52 +191,6 @@ def remove_task(
     """
     crud.task.remove(db=db, id=id, user=current_user, responsibility=schema_types.RoleType.CUSTODIAN)
     return {"msg": "Task has been successfully removed."}
-
-
-# @router.post("/{task_id}/resource/{resource_id}", response_model=schemas.Task)
-# def add_resource(
-#     *,
-#     db: Session = Depends(deps.get_db),
-#     task_id: str,
-#     resource_id: str,
-#     current_user: models.User = Depends(deps.get_current_active_user),
-# ) -> Any:
-#     """
-#     Add a resource to a task.
-#     """
-#     task_obj = crud.task.get(db=db, id=task_id, user=current_user, responsibility=schema_types.RoleType.CURATOR)
-#     resource_obj = crud.resource.get(
-#         db=db, id=resource_id, user=current_user, responsibility=schema_types.RoleType.CURATOR
-#     )
-#     if not resource_obj or not task_obj:
-#         raise HTTPException(
-#             status_code=400,
-#             detail="Either of task or resource do not exist, or user does not have the rights for this request.",
-#         )
-#     return crud.task.add_resource(db=db, db_obj=task_obj, resource_obj=resource_obj)
-
-
-# @router.delete("/{task_id}/resource/{resource_id}", response_model=schemas.Task)
-# def remove_resource(
-#     *,
-#     db: Session = Depends(deps.get_db),
-#     task_id: str,
-#     resource_id: str,
-#     current_user: models.User = Depends(deps.get_current_active_user),
-# ) -> Any:
-#     """
-#     Remove a resource from a task.
-#     """
-#     task_obj = crud.task.get(db=db, id=task_id, user=current_user, responsibility=schema_types.RoleType.CURATOR)
-#     resource_obj = crud.resource.get(
-#         db=db, id=resource_id, user=current_user, responsibility=schema_types.RoleType.CURATOR
-#     )
-#     if not resource_obj or not task_obj:
-#         raise HTTPException(
-#             status_code=400,
-#             detail="Either of task or resource do not exist, or user does not have the rights for this request.",
-#         )
-#     return crud.task.remove_resource(db=db, db_obj=task_obj, resource_obj=resource_obj)
 
 
 @router.post("/{task_id}/template/{template_id}", response_model=schemas.Task)
