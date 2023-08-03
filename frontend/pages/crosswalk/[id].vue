@@ -40,8 +40,8 @@
               :state="crosswalkStore.term.state" :last-card="false" />
           </li>
           <li>
-            <ResourceSchemaCard :resource-id="crosswalkStore.term.id" :reference="crosswalkStore.term.schema_subject"
-              :state="crosswalkStore.term.state" :last-card="false" />
+            <ResourceSchemaCategoriseCard :resource-id="crosswalkStore.term.id"
+              :reference="crosswalkStore.term.schema_subject" :state="crosswalkStore.term.state" :last-card="false" />
           </li>
           <li>
             <ResourceSchemaCard :resource-id="crosswalkStore.term.id" :reference="crosswalkStore.term.schema_object"
