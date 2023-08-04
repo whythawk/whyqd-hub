@@ -7,14 +7,19 @@
       <div class="mt-6 border-b border-t border-gray-200 py-3 md:px-8">
         <TaskCard :task="taskStore.term" :last-card="true" />
       </div>
-      <CommonImportCard v-if="!showImportTemplate" reference="DATA" @set-import="watchSetUpload" />
+      <div v-if="!authStore.hasExplorerSubscription" class="my-2">
+        <SubscriptionsNeededCard needed="EXPLORER" />
+      </div>
       <div v-else>
-        <ul role="list" class="pt-1 space-y-2">
-          <li v-for="(source, sIdx) in dataSources" :key="`source-${sIdx}`" class="space-y-10">
-            <UploadTemplateCard v-if="!uploaded.includes(sIdx)" :source="source" :idx="sIdx"
-              :last-card="sIdx === dataSources.length - 1" @pop-request="watchUploadRequests" />
-          </li>
-        </ul>
+        <CommonImportCard v-if="!showImportTemplate" reference="DATA" @set-import="watchSetUpload" />
+        <div v-else>
+          <ul role="list" class="pt-1 space-y-2">
+            <li v-for="(source, sIdx) in dataSources" :key="`source-${sIdx}`" class="space-y-10">
+              <UploadTemplateCard v-if="!uploaded.includes(sIdx)" :source="source" :idx="sIdx"
+                :last-card="sIdx === dataSources.length - 1" @pop-request="watchUploadRequests" />
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -22,13 +27,14 @@
 
 <script setup lang="ts">
 import { FileWithHandle } from "browser-fs-access"
-import { useSettingStore, useTaskStore } from "@/stores"
+import { useSettingStore, useTaskStore, useAuthStore } from "@/stores"
 
 definePageMeta({
   middleware: ["authenticated"],
 });
 
 const appSettings = useSettingStore()
+const authStore = useAuthStore()
 const route = useRoute()
 const taskStore = useTaskStore()
 const showImportTemplate = ref(false)

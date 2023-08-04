@@ -12,7 +12,8 @@
           <span v-if="props.lastCard">Transform</span>
           <span v-else>Data</span>: {{ heading }}
         </h3>
-        <div v-if="!props.reference && props.state === 'TRANSFORM_READY' && props.lastCard"
+        <div
+          v-if="!props.reference && props.state === 'TRANSFORM_READY' && props.lastCard && authStore.hasExplorerSubscription"
           class="flex items-center justify-end">
           <h4 id="process-heading" class="sr-only">Process transform</h4>
           <ul role="list" class="flex flex-row text-xs">
@@ -61,6 +62,15 @@
         </Listbox>
         </li>
         </ul>
+      </div>
+      <div
+        v-if="!props.reference && props.state === 'TRANSFORM_READY' && props.lastCard && !authStore.hasExplorerSubscription"
+        class="flex items-center justify-end">
+        <NuxtLink to="/pricing"
+          class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-normal text-white bg-ochre-600 hover:bg-ochre-700">
+          <CreditCardIcon class="sm:-ml-0.5 h-4 w-4 text-white" aria-hidden="true" />
+          <span class="hidden sm:block">Subscribe</span>
+        </NuxtLink>
       </div>
     </div>
     <div v-if="props.reference" class="flex items-center">
@@ -163,6 +173,7 @@ import {
   ArrowDownOnSquareStackIcon,
   CheckIcon,
   ChevronUpDownIcon,
+  CreditCardIcon,
   CubeIcon,
   CubeTransparentIcon,
   TableCellsIcon,
@@ -170,10 +181,11 @@ import {
 } from "@heroicons/vue/24/outline"
 import { IStatusType, IResourceDataReference, IKeyable } from "@/interfaces"
 import { readableDate, getMimeType } from "@/utilities"
-import { useTokenStore, useToastStore, useResourceStore } from "@/stores"
+import { useTokenStore, useToastStore, useResourceStore, useAuthStore } from "@/stores"
 import { apiData, apiResource } from "@/api"
 
 const tokenStore = useTokenStore()
+const authStore = useAuthStore()
 const toasts = useToastStore()
 const heading = ref("")
 const isOpen = ref(false)

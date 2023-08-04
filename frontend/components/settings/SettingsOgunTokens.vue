@@ -6,6 +6,7 @@
           <h3 class="text-lg font-medium leading-6 text-gray-900">{{ title }}</h3>
           <p class="mt-1 text-sm text-gray-500">{{ description }}</p>
         </div>
+        <SubscriptionsNeededCard v-if="!authStore.hasResearcherSubscription" needed="RESEARCHER" />
         <div v-if="!authStore.password">
           <div class="flex items-start">
             <div class="flex-shrink-0">
@@ -18,7 +19,7 @@
             </div>
           </div>
         </div>
-        <div v-else>
+        <div v-if="authStore.password && authStore.hasResearcherSubscription">
           <SettingsOgunCreateModal />
           <ul v-if="ogunStore.multi && ogunStore.multi.length" role="list" class="divide-y divide-gray-100">
             <li v-for="ogun in ogunStore.multi " :key="ogun.id" class="flex justify-between gap-x-6 py-5">

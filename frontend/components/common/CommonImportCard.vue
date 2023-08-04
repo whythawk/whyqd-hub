@@ -1,5 +1,5 @@
 <template>
-  <div @click.prevent="testing"
+  <div @click.prevent="fileClickHandler"
     class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
     <div class="text-center">
       <!-- @vue-ignore -->
@@ -65,10 +65,6 @@ const emit = defineEmits<{ setImport: [response: any] }>()
 onMounted(async () => {
   dragndrop.value = determineDragAndDropCapable()
 })
-
-async function testing() {
-  await fileClickHandler()
-}
 
 // UTILITIES
 async function fileClickHandler() {
