@@ -166,7 +166,7 @@ def process_resource_transform(
     db: Session = Depends(deps.get_db),
     id: str,
     mimetype: str,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: models.User = Depends(deps.get_subscribed_user),
 ) -> Any:
     """
     Process resource transform to complete a crosswalk.
@@ -183,20 +183,6 @@ def process_resource_transform(
         )
     celery_app.send_task("app.worker.process_transform", args=[current_user.id, resource_obj.id, mimetype])
     return {"msg": "Transformation processing. Check your activity log to see when complete."}
-
-
-# @router.put("/{id}", response_model=schemas.Resource)
-# def update_resource(
-#     *,
-#     db: Session = Depends(deps.get_db),
-#     id: str,
-#     obj_in: schemas.ResourceUpdate,
-#     current_user: models.User = Depends(deps.get_current_active_user),
-# ) -> Any:
-#     """
-#     Update a resource.
-#     """
-#     return crud.resource.update(db=db, id=id, obj_in=obj_in, user=current_user)
 
 
 @router.delete("/{id}", response_model=schemas.Msg)

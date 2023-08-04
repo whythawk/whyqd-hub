@@ -37,7 +37,7 @@ def create_ogun_user(
     *,
     db: Session = Depends(deps.get_db),
     role: str,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: models.User = Depends(deps.get_elevated_subscribed_user),
 ) -> Any:
     """
     Create new Ogun user.

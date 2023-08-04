@@ -6,7 +6,7 @@ from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from app import crud, models, schemas
+from app import crud, models, schemas, schema_types
 from app.core.config import settings
 from app.db.session import SessionLocal
 
@@ -115,6 +115,33 @@ def get_current_active_superuser(
 
 
 ###################################################################################################
+# SUBSCRIBERS
+###################################################################################################
+def get_subscribed_user(
+    current_user: models.User = Depends(get_current_active_user),
+) -> models.User:
+    if current_user.is_superuser:
+        return current_user
+    if not crud.subscription.current(user=current_user):
+        raise HTTPException(status_code=400, detail="Unsubscribed user.")
+    return current_user
+
+
+def get_elevated_subscribed_user(
+    current_user: models.User = Depends(get_current_active_user),
+) -> models.User:
+    if current_user.is_superuser:
+        return current_user
+    subscription = crud.subscription.current(user=current_user)
+    if not subscription or subscription.subscription_type not in [
+        schema_types.SubscriptionType.RESEARCHER,
+        schema_types.SubscriptionType.INVESTIGATOR,
+    ]:
+        raise HTTPException(status_code=400, detail="Need a higher subscription tier.")
+    return current_user
+
+
+###################################################################################################
 # OGUN TOKEN
 ###################################################################################################
 def get_ogun_token(db: Session = Depends(get_db), token: str = Depends(reusable_ogun_oauth2)) -> models.OgunToken:
@@ -125,9 +152,14 @@ def get_ogun_token(db: Session = Depends(get_db), token: str = Depends(reusable_
             detail="Could not validate credentials",
         )
     user = crud.user.get(db, id=token_data.sub)
-    token_obj = None
-    if user and crud.user.is_active(user):
-        token_obj = crud.oguntoken.get(token=token, user=user)
+    if user and not user.is_superuser and crud.user.is_active(user):
+        subscription = crud.subscription.current(user=user)
+        if not subscription or subscription.subscription_type not in [
+            schema_types.SubscriptionType.RESEARCHER,
+            schema_types.SubscriptionType.INVESTIGATOR,
+        ]:
+            raise HTTPException(status_code=400, detail="Need a higher subscription tier.")
+    token_obj = crud.oguntoken.get(token=token, user=user)
     if not token_obj:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

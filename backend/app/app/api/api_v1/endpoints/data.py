@@ -37,7 +37,7 @@ async def create_upload_files(
     db: Session = Depends(deps.get_db),
     data: schemas.DataSourceTemplateModel = Depends(datasource_validator),
     files: List[UploadFile] = File(...),
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: models.User = Depends(deps.get_subscribed_user),
 ) -> Any:
     for source in files:
         try:
@@ -61,7 +61,7 @@ async def create_upload_files_for_task(
     id: str,
     files: List[UploadFile] = File(...),
     data: schemas.DataSourceTemplateModel = Depends(datasource_validator),
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: models.User = Depends(deps.get_subscribed_user),
 ) -> Any:
     task_obj = crud.task.get(db=db, id=id, user=current_user, responsibility=schema_types.RoleType.CURATOR)
     if not task_obj:
