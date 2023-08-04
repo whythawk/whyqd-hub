@@ -2,16 +2,16 @@
   <mj-body>
     <mj-section>
       <mj-column>
-        <mj-image width="60px" src="https://openlocal.uk/icon.png"></mj-image>
-        <mj-text font-size="20px" font-weight="bold" align="center" color="#635246">open<span style="color: #3A5C84;">Local</span></mj-text>
-        <mj-divider border-color="#3A5C84"></mj-divider>
+        <mj-image width="60px" src="https://whyqd.com/img/mark.svg" href="{{ server_host }}"></mj-image>
+        <mj-divider border-color="#c0651f"></mj-divider>
+        <mj-text font-size="16px" font-weight="bold" color="#635246">{{ project_name }} - Subscription issue</mj-text>
         <mj-text font-size="16px" color="#635246">Hi</mj-text>
-        <mj-text font-size="16px" color="#635246" font-family="helvetica">You recently placed an order at openLocal.uk. Unfortunately, it failed for some reason. You have not been charged.</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">You recently placed an order at whyqd.com. Unfortunately, it failed for some reason. You have not been charged.</mj-text>
         <mj-text font-size="16px" color="#635246" font-family="helvetica">If you would like to complete the processing of your order, please follow the below link.</mj-text>
-        <mj-text font-size="16px" color="#635246" font-family="helvetica">Our financial processing service is run by Stripe.com, so please don't be surprised if you see that as the url. If you prefer, you will also be able to find this link by logging in to your account at openLocal.uk.</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">Our financial processing service is run by Stripe.com, so please don't be surprised if you see that as the url. If you prefer, you will also be able to find this link by logging in to your account at whyqd.com.</mj-text>
         <mj-text font-size="16px" color="#635246" font-family="helvetica">{{ link_url }}</mj-text>
         <mj-text font-size="16px" color="#635246" font-family="helvetica">Kind regards</mj-text>
-        <mj-text font-size="16px" color="#635246" font-family="helvetica">Symon</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">{{ server_bot }} @ {{ server_name }}</mj-text>
       </mj-column>
     </mj-section>
   </mj-body>
