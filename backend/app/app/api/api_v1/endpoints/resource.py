@@ -83,7 +83,9 @@ def get_resource(
     """
     Get a resource.
     """
-    return crud.reference.get_resource_manager(db=db, id=id, user=current_user)
+    return crud.reference.get_resource_manager(
+        db=db, id=id, user=current_user, responsibility=schema_types.RoleType.SEEKER
+    )
 
 
 @router.get("/template/{id}", response_model=schemas.DataSourceTemplateModel)

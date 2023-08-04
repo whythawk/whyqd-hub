@@ -49,6 +49,19 @@ def read_all_references(
     )
 
 
+@router.get("/{id}", response_model=schemas.Reference)
+def read_reference(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get a reference.
+    """
+    return crud.reference.get(db=db, id=id, user=current_user)
+
+
 @router.delete("/{id}", response_model=schemas.Reference)
 def remove_reference(
     *,

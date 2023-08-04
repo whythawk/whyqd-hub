@@ -4,7 +4,7 @@ import {
 import { useTokenStore } from "./tokens"
 import { useSettingStore } from "./settings"
 import { useToastStore } from "./toasts"
-import { apiResource } from "@/api"
+import { apiResource, apiSchema } from "@/api"
 
 export const useResourceStore = defineStore("resourceStore", {
   state: () => ({
@@ -115,6 +115,46 @@ export const useResourceStore = defineStore("resourceStore", {
           toasts.addNotice({
             title: "Add schema object error",
             content: "Could not add schema object. Please check your details, or internet connection, and try again.",
+            icon: "error"
+          })
+        }
+      }
+    },
+    async createSchemaCrosswalk(subject_key: string, object_key: string) {
+      await this.authTokens.refreshTokens()
+      if (this.authTokens.token) {
+        try {
+          // this.settings.setPageState("loading")
+          this.setTerm({} as IResourceManager)
+          const { data: response } = await apiSchema.createSchemaCrosswalk(this.authTokens.token, subject_key, object_key)
+          if (response.value) this.setTerm(response.value)
+          this.settings.setPageState("done")
+        } catch (error) {
+          this.settings.setPageState("error")
+          const toasts = useToastStore()
+          toasts.addNotice({
+            title: "Create crosswalk error",
+            content: "Could create crosswalk. Please check your details, or internet connection, and try again.",
+            icon: "error"
+          })
+        }
+      }
+    },
+    async createTaskSchemaCrosswalk(task_key: string, subject_key: string) {
+      await this.authTokens.refreshTokens()
+      if (this.authTokens.token) {
+        try {
+          // this.settings.setPageState("loading")
+          this.setTerm({} as IResourceManager)
+          const { data: response } = await apiSchema.createTaskSchemaCrosswalk(this.authTokens.token, task_key, subject_key)
+          if (response.value) this.setTerm(response.value)
+          this.settings.setPageState("done")
+        } catch (error) {
+          this.settings.setPageState("error")
+          const toasts = useToastStore()
+          toasts.addNotice({
+            title: "Create crosswalk error",
+            content: "Could create crosswalk. Please check your details, or internet connection, and try again.",
             icon: "error"
           })
         }

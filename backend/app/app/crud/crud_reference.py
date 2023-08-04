@@ -438,7 +438,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         db_model = ResourceManager.from_orm(db_obj)
         # GET EACH REFERENCE MODEL
         # 1. Data source
-        if db_obj.datasource and db_obj.data:
+        if db_obj.datasource_id and db_obj.data_id:
             reference_model = self.get_model(db=db, id=db_obj.data.id, user=user, responsibility=responsibility)
             reference_in = ResourceDataReference.from_orm(db_obj.data)
             reference_in.links = [
@@ -463,7 +463,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             )
             db_model.data = reference_in
         # 2. Schema subject
-        if db_obj.schema_subject:
+        if db_obj.schema_subject_id:
             reference_model = self.get_model(
                 db=db, id=db_obj.schema_subject.id, user=user, responsibility=responsibility
             )
@@ -479,7 +479,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             reference_in.fields = reference_model.fields
             db_model.schema_subject = reference_in
         # 3. Transformed data
-        if db_obj.transform and db_obj.transformdatasource and db_obj.transformdata:
+        if db_obj.transform_id and db_obj.transformdatasource_id and db_obj.transformdata_id:
             reference_model = self.get_model(
                 db=db, id=db_obj.transformdata.id, user=user, responsibility=responsibility
             )
@@ -604,36 +604,124 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             ~(self.model.is_private)
             | (self._get_filter(db_model=self.model, user=user, responsibilities=responsibilities))
             | (
-                self.model.datasource.any(Resource.datasource)
+                (Resource.datasource_id == self.model.id)
                 & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
             )
             | (
-                self.model.data.any(Resource.data)
+                (Resource.datasource_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & self._get_filter(db_model=Task, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.datasource_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & self._get_filter(db_model=Project, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.data_id == self.model.id)
                 & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
             )
             | (
-                self.model.schema_subjects.any(Resource.schema_subject)
+                (Resource.data_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & self._get_filter(db_model=Task, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.data_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & self._get_filter(db_model=Project, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.schema_subject_id == self.model.id)
                 & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
             )
             | (
-                self.model.crosswalks.any(Resource.crosswalk)
+                (Resource.schema_subject_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & self._get_filter(db_model=Task, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.schema_subject_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & self._get_filter(db_model=Project, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.crosswalk_id == self.model.id)
                 & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
             )
             | (
-                self.model.schema_objects.any(Resource.schema_object)
+                (Resource.crosswalk_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & self._get_filter(db_model=Task, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.crosswalk_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & self._get_filter(db_model=Project, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.schema_object_id == self.model.id)
                 & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
             )
             | (
-                self.model.transforms.any(Resource.transform)
+                (Resource.schema_object_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & self._get_filter(db_model=Task, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.schema_object_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & self._get_filter(db_model=Project, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.transform_id == self.model.id)
                 & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
             )
             | (
-                self.model.transformdata.any(Resource.transformdata)
+                (Resource.transform_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & self._get_filter(db_model=Task, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.transform_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & self._get_filter(db_model=Project, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.transformdata_id == self.model.id)
                 & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
             )
             | (
-                self.model.transformdatasource.any(Resource.transformdatasource)
+                (Resource.transformdata_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & self._get_filter(db_model=Task, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.transformdata_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & self._get_filter(db_model=Project, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.transformdatasource_id == self.model.id)
                 & self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.transformdatasource_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & self._get_filter(db_model=Task, user=user, responsibilities=responsibilities)
+            )
+            | (
+                (Resource.transformdatasource_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & self._get_filter(db_model=Project, user=user, responsibilities=responsibilities)
             )
             | (
                 self.model.task_schema.any(Task.schema).where(
@@ -871,6 +959,43 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             if data_in.sheet_name:
                 message = f"Data source ({datasource_in.name}, {data_in.sheet_name}) successfully imported and ready for processing."
             self._record_activity(db=db, user=user, db_obj=resource_obj, message=message)
+
+    def create_schema_to_schema_crosswalk(
+        self,
+        *,
+        db: Session,
+        user: User,
+        schema_subject: Reference,
+        schema_object: Reference,
+        task: Task | None = None,
+    ) -> Resource:
+        # NO DATA ARE IMPORTED - PURELY SCHEMA-TO-SCHEMA ###############################################################
+        # 1. No validation required aside from creating a crosswalk and saving a resource
+        # Set resource metadata ########################################################################################
+        if task and task.name:
+            resource_in = {
+                "name": task.name,
+                "title": task.title,
+                "description": task.description,
+                "schema_subject_id": schema_subject.id,
+                "schema_object_id": schema_object.id,
+                "task_id": task.id,
+            }
+        else:
+            resource_in = {
+                "name": f"{schema_subject.name}-to-{schema_object.name}",
+                "title": f"{schema_subject.name} to {schema_object.name} crosswalk",
+                "schema_subject_id": schema_subject.id,
+                "schema_object_id": schema_object.id,
+            }
+        resource_in = ResourceCreate(**resource_in)
+        # And create the resource ##################################################################################
+        resource_obj = crud_resource.create(db=db, obj_in=resource_in, user=user)
+        if not resource_obj.crosswalk_id:
+            resource_obj = self.add_new_resource_crosswalk(db=db, db_obj=resource_obj, user=user)
+        message = f"New schema-to-schema crosswalk ({resource_obj.name}) successfully created and ready for processing."
+        self._record_activity(db=db, user=user, db_obj=resource_obj, message=message)
+        return resource_obj
 
     def derive_schema_subject(self, *, resource_obj: Resource) -> SchemaModel | None:
         data_in = self.get_data_model(resource_obj=resource_obj)

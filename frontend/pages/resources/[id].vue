@@ -44,12 +44,14 @@
       <div class="space-y-2 mx-2">
         <h2 class="text-sm font-semibold leading-7 text-gray-900 pt-2">Workflow</h2>
         <ul v-if="resourceStore.term" role="list" class="space-y-6">
-          <li>
+          <li v-if="resourceStore.term.data">
             <ResourceDataCard :resource-id="resourceStore.term.id" :reference="resourceStore.term.data"
               :state="resourceStore.term.state" :last-card="false" />
           </li>
           <li>
-            <ResourceSchemaCategoriseCard :resource-id="resourceStore.term.id"
+            <ResourceSchemaCard v-if="!resourceStore.term.data" :resource-id="resourceStore.term.id"
+              :reference="resourceStore.term.schema_subject" :state="resourceStore.term.state" :last-card="false" />
+            <ResourceSchemaCategoriseCard v-else :resource-id="resourceStore.term.id"
               :reference="resourceStore.term.schema_subject" :state="resourceStore.term.state" :last-card="false" />
           </li>
           <li>
@@ -60,7 +62,7 @@
             <ResourceReferenceCard :resource-id="resourceStore.term.id" model-type="SCHEMA"
               :reference="resourceStore.term.schema_object" :state="resourceStore.term.state" :last-card="false" />
           </li>
-          <li>
+          <li v-if="resourceStore.term.data">
             <ResourceDataCard :resource-id="resourceStore.term.id" :reference="resourceStore.term.transformdata"
               :state="resourceStore.term.state" :last-card="true" />
           </li>

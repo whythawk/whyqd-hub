@@ -11,7 +11,7 @@ import json
 from uuid import UUID
 from whyqd import models as qd_models
 
-from app import crud, models, schema_types
+from app import crud, models, schema_types, schemas
 from app.api import deps, sockets
 
 router = APIRouter()
@@ -180,3 +180,61 @@ def read_schema_model(
     if not response:
         raise HTTPException(status_code=404, detail="Maybe some things aren't meant to be found?")
     return response
+
+
+@router.post("/subject/{subject_id}/object/{object_id}", response_model=schemas.ResourceManager)
+def create_schema_to_schema_crosswalk(
+    *,
+    db: Session = Depends(deps.get_db),
+    subject_id: str,
+    object_id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Create a schema-to-schema crosswalk - no data required.
+    """
+    schema_subject = crud.reference.get(db=db, id=subject_id, user=current_user)
+    schema_object = crud.reference.get(db=db, id=object_id, user=current_user)
+    if (
+        not schema_subject
+        or not schema_subject.model_type == schema_types.ReferenceType.SCHEMA
+        or not schema_object
+        or not schema_object.model_type == schema_types.ReferenceType.SCHEMA
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Either of subject or object schemas do not exist.",
+        )
+    resource_obj = crud.reference.create_schema_to_schema_crosswalk(
+        db=db, schema_subject=schema_subject, schema_object=schema_object, user=current_user
+    )
+    return resource_obj
+
+
+@router.post("/task/{task_id}/schema/{subject_id}", response_model=schemas.ResourceManager)
+def create_task_based_schema_to_schema_crosswalk(
+    *,
+    db: Session = Depends(deps.get_db),
+    task_id: str,
+    subject_id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Create a schema-to-schema crosswalk - no data required. For a Task with an assigned object schema.
+    """
+    task_obj = crud.task.get(db=db, id=task_id, user=current_user)
+    schema_subject = crud.reference.get(db=db, id=subject_id, user=current_user)
+    if (
+        not task_obj
+        or not task_obj.schema_id
+        or not schema_subject
+        or not schema_subject.model_type == schema_types.ReferenceType.SCHEMA
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Either task or schema do not exist, or user does not have the rights for this request.",
+        )
+    resource_obj = crud.reference.create_schema_to_schema_crosswalk(
+        db=db, schema_subject=schema_subject, schema_object=task_obj.schema, task=task_obj, user=current_user
+    )
+    return resource_obj

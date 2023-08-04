@@ -40,7 +40,9 @@
               :state="crosswalkStore.term.state" :last-card="false" />
           </li>
           <li>
-            <ResourceSchemaCategoriseCard :resource-id="crosswalkStore.term.id"
+            <ResourceSchemaCard v-if="!crosswalkStore.term.data" :resource-id="crosswalkStore.term.id"
+              :reference="crosswalkStore.term.schema_subject" :state="crosswalkStore.term.state" :last-card="false" />
+            <ResourceSchemaCategoriseCard v-else :resource-id="crosswalkStore.term.id"
               :reference="crosswalkStore.term.schema_subject" :state="crosswalkStore.term.state" :last-card="false" />
           </li>
           <li>

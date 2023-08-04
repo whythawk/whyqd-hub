@@ -38,7 +38,7 @@
         </div>
         <div
           class="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 md:max-w-2xl md:grid-cols-2 lg:max-w-4xl xl:mx-0 xl:max-w-none xl:grid-cols-4">
-          <div v-for="tier in  tiers " :key="tier.id"
+          <div v-for="tier in tiers" :key="tier.id"
             :class="[tier.mostPopular ? 'ring-2 ring-ochre-600' : 'ring-1 ring-gray-200', 'rounded-3xl p-8']">
             <h3 :id="tier.id"
               :class="[tier.mostPopular ? 'text-ochre-600' : 'text-gray-900', 'text-lg font-semibold leading-8']">{{

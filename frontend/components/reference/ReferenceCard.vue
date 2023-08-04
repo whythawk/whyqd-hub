@@ -35,7 +35,8 @@
             </div>
           </div>
         </div>
-        <p v-if="props.reference.description" class="text-sm leading-6 text-gray-500">{{ props.reference.description }}
+        <p v-if="props.reference.description" class="text-sm leading-6 text-left text-gray-500">{{
+          props.reference.description }}
         </p>
         <div class="flex justify-between">
           <div class="flex items-center">
@@ -46,6 +47,20 @@
               </li>
             </ul>
           </div>
+          <div v-if="asSchemaSubject && !asSchemaObject" class="flex items-center justify-end">
+            <NuxtLink :to="`/references/schema/${props.reference.id}`"
+              class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 text-xs font-semibold">
+              <ArrowsRightLeftIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span class="hidden lg:block">Set as Subject</span>
+            </NuxtLink>
+          </div>
+          <div v-if="!asSchemaSubject && asSchemaObject" class="flex items-center justify-end">
+            <button type="button" @click.prevent="createSchemaCrosswalk"
+              class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 text-xs font-semibold">
+              <ArrowsRightLeftIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span class="hidden lg:block">Set as Object</span>
+            </button>
+          </div>
           <div v-if="addReference" class="flex items-center justify-end">
             <button type="button" @click.prevent="addToReference(addReference)"
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 text-xs font-semibold">
@@ -53,6 +68,11 @@
               <component :is="addIcons[addReference]" class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0"
                 aria-hidden="true" />
               <span class="hidden lg:block">Add to {{ addReference.toLowerCase() }}</span>
+            </button>
+            <button v-if="asSchemaSubject && asSchemaObject" type="button" @click.prevent="createSchemaCrosswalk"
+              class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 text-xs font-semibold">
+              <ArrowsRightLeftIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span class="hidden lg:block">Create crosswalk</span>
             </button>
           </div>
         </div>
@@ -94,6 +114,8 @@ const addIcons = {
   PROJECT: BeakerIcon
 }
 const addReference = ref("")
+const asSchemaSubject = ref(false)
+const asSchemaObject = ref(false)
 
 const props = defineProps<{
   reference: IReference,
@@ -118,6 +140,16 @@ async function addToReference(addTo: string) {
   await navigateTo(`/${addReference.value.toLowerCase()}s/${route.params.id}`)
 }
 
+async function createSchemaCrosswalk() {
+  const resourceStore = useResourceStore()
+  if (asSchemaSubject.value && asSchemaObject.value)
+    await resourceStore.createTaskSchemaCrosswalk(route.params.id as string, props.reference.id)
+  else await resourceStore.createSchemaCrosswalk(route.params.id as string, props.reference.id)
+  if (!resourceStore.term || !resourceStore.term.id)
+    throw createError({ statusCode: 404, statusMessage: "Page Not Found", fatal: true })
+  await navigateTo(`/resources/${resourceStore.term.id}`)
+}
+
 onMounted(async () => {
   if (route.path.includes("/project/") && addIncludes["PROJECT"].includes(props.reference.model_type))
     addReference.value = "PROJECT"
@@ -125,6 +157,14 @@ onMounted(async () => {
     addReference.value = "TASK"
   if (route.path.includes("/resource/") && addIncludes["RESOURCE"].includes(props.reference.model_type))
     addReference.value = "RESOURCE"
+  if (props.reference.model_type === 'SCHEMA') {
+    if (route.path.includes("/references/schema/") && route.params.id !== props.reference.id) asSchemaObject.value = true
+    else asSchemaSubject.value = true
+    if (addReference.value === "TASK") {
+      const taskStore = useTaskStore()
+      if (taskStore.term.schema && taskStore.term.schema.id) asSchemaObject.value = true
+    }
+  }
   avatar.value = await getAvatar(props.reference.model as string)
 })
 </script>
