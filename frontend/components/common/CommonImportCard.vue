@@ -1,5 +1,5 @@
 <template>
-  <div @click.prevent="fileClickHandler"
+  <div @click.prevent="fileClickHandler" @dragover="handleDragOver" @drop="handleDrop"
     class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
     <div class="text-center">
       <!-- @vue-ignore -->
@@ -85,6 +85,38 @@ async function fileClickHandler() {
       })
     }
   }
+}
+
+async function handleDrop(event: DragEvent) {
+  event.stopPropagation()
+  event.preventDefault()
+  try {
+    if (event.dataTransfer && event.dataTransfer.files.length) {
+      let response: any[] = []
+      for (const blob of Array.from(event.dataTransfer.files)) {
+        if (!importer[props.reference].mimeTypes.includes(blob.type))
+          throw new Error("Not an allowed mimetype.")
+        if (props.reference !== "DATA") {
+          const altblob = await getJSONfromBlob(blob)
+          response.push(altblob)
+        }
+      }
+      if (props.reference !== "DATA") emit("setImport", response)
+      else emit("setImport", event.dataTransfer.files)
+    }
+  } catch (error: any) {
+    if (error.name !== "AbortError") {
+      toast.addNotice({
+        title: "Import error",
+        content: `Error: ${error}`,
+        icon: "error"
+      })
+    }
+  }
+}
+
+function handleDragOver(event: DragEvent) {
+  event.preventDefault()
 }
 
 async function getJSONfromBlob(payload: any): Promise<any> {

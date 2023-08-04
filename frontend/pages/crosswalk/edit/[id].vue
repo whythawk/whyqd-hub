@@ -8,41 +8,35 @@
         <CommonHeadingEditView purpose="Crosswalk" :name="crosswalkStore.draft.name" :title="crosswalkStore.draft.title"
           :approach="saveApproach" @set-edit-request="watchEditHeadingRequest" />
         <!-- Main three-panel grid -->
-        <div class="grid grid-cols-1 items-start gap-2 2xl:grid-cols-10">
+        <div class="isolate grid grid-cols-1 items-start gap-2 2xl:grid-cols-10">
           <!-- Action column -->
-          <div class="grid grid-cols-1 gap-1 2xl:col-span-5">
+          <div class="isolate grid grid-cols-1 gap-1 2xl:col-span-5">
             <section aria-labelledby="section-1-title">
-              <h2 class="sr-only" id="section-1-title">Section title</h2>
-              <div>
-                <div class="pt-2">
-                  <!-- Action panel grid -->
-                  <div class="grid grid-cols-1 items-start gap-2 md:grid-cols-4">
-                    <!-- Action list column -->
-                    <div class="grid grid-cols-1 gap-1">
-                      <ActionTemplateCard @set-request="watchRequestSocket" />
-                    </div>
-                    <!-- Action workspace column -->
-                    <div class="grid grid-cols-1 gap-1 md:col-span-3">
-                      <div class="w-full flex-auto rounded-lg  py-2 px-3 ring-1 ring-inset ring-gray-200">
-                        <h2 class="flex border-b border-gray-200 text-xs items-center py-2 px-1 font-medium">
-                          <BoltIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                          <span class="mx-1 text-gray-500">Workspace</span>
-                        </h2>
-                        <div v-if="draftActions" class="space-y-4 max-h-[650px] 2xl:max-h-[1100px] overflow-y-auto mt-2">
-                          <div class="mx-2">
-                            <ul v-if="draftActions && draftActions.length" role="list">
-                              <li v-for="(action, aIdx) in draftActions"
-                                :key="`action-${action.uuid ? action.uuid : 'add-' + aIdx}`"
-                                :id="`action-${action.uuid ? action.uuid : 'add-' + aIdx}`" draggable="true"
-                                class="bg-white rounded-lg" @dragstart="handleDragStart" @dragenter="handleDragEnter"
-                                @dragover="handleDragOver" @dragleave="handleDragLeave" @drop="handleDrop"
-                                @dragend="handleDragEnd">
-                                <ActionEditCard :edit="action" :schema-subject="crosswalkStore.draft.schema_subject"
-                                  :schema-object="crosswalkStore.draft.schema_object" @set-request="watchRequestSocket" />
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
+              <h2 class="sr-only" id="section-1-title">Action area</h2>
+              <div class="pt-2">
+                <!-- Action panel grid -->
+                <div class="grid grid-cols-1 gap-2 md:grid-cols-4">
+                  <!-- Action list column -->
+                  <ActionTemplateCard @set-request="watchRequestSocket" />
+                  <!-- Action workspace column -->
+                  <div class="md:col-span-3 rounded-lg py-2 px-3 ring-1 ring-inset ring-gray-200">
+                    <h2 class="flex border-b border-gray-200 text-xs items-center py-2 px-1 font-medium">
+                      <BoltIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                      <span class="mx-1 text-gray-500">Workspace</span>
+                    </h2>
+                    <div v-if="draftActions" class="space-y-4 max-h-[650px] 2xl:max-h-[1100px] overflow-y-auto mt-2">
+                      <div class="mx-2">
+                        <ul v-if="draftActions && draftActions.length" role="list">
+                          <li v-for="(action, aIdx) in draftActions"
+                            :key="`action-${action.uuid ? action.uuid : 'add-' + aIdx}`"
+                            :id="`action-${action.uuid ? action.uuid : 'add-' + aIdx}`" draggable="true"
+                            class="bg-white rounded-lg" @dragstart="handleDragStart" @dragenter="handleDragEnter"
+                            @dragover="handleDragOver" @dragleave="handleDragLeave" @drop="handleDrop"
+                            @dragend="handleDragEnd">
+                            <ActionEditCard :edit="action" :schema-subject="crosswalkStore.draft.schema_subject"
+                              :schema-object="crosswalkStore.draft.schema_object" @set-request="watchRequestSocket" />
+                          </li>
+                        </ul>
                       </div>
                     </div>
                   </div>
@@ -53,7 +47,7 @@
           <!-- Information column -->
           <div class="grid grid-cols-1 gap-1 2xl:col-span-5">
             <section aria-labelledby="section-2-title">
-              <h2 class="sr-only" id="section-2-title">Section title</h2>
+              <h2 class="sr-only" id="section-2-title">Information and schemas</h2>
               <div class="w-full flex-auto rounded-lg  py-2 px-3 ring-1 ring-inset ring-gray-200 mt-2">
                 <TabGroup>
                   <TabList class="flex space-x-8 border-b border-gray-200 text-xs focus:ring-0 focus:ring-offset-0">
@@ -78,6 +72,7 @@
                             v-if="crosswalkStore.draft.data && crosswalkStore.draft.data.summary && crosswalkStore.draft.data.summarykeys"
                             :table-headers="crosswalkStore.draft.data.summarykeys"
                             :table-rows="crosswalkStore.draft.data.summary" />
+                          <CommonEmptyCard v-else term="This crosswalk has no source data." />
                         </div>
                       </div>
                     </TabPanel>
@@ -111,12 +106,13 @@
                       <div class="overflow-y-auto">
                         <div
                           class="flex flex-col p-2 text-left transition-all max-w-[100%] max-h-[800px] 2xl:max-h-[1100px]">
-                          <p class="text-sm leading-6 text-gray-600">Whyqd (/wɪkɪd/) crosswalks are mappings of the
+                          <p class="text-sm mb-2 leading-6 text-gray-600">Whyqd (/wɪkɪd/) crosswalks are mappings of the
                             relationships between
                             fields defined between a schema subject and a schema object. Ideally, these are one-to-one,
                             where a field in
                             the subject has an exact match in the object. In practice, it's more complicated than that.
                           </p>
+                          <CommonEmptyCard term="Contextual helps is still being written. Sorry." />
                         </div>
                       </div>
                     </TabPanel>

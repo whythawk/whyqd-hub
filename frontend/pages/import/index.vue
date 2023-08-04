@@ -41,6 +41,9 @@ async function watchSetUpload(data: FileWithHandle[]) {
     if (f.handle) {
       const fData = await f.handle.getFile()
       dataSources.value.push(fData)
+    } else {
+      // Drop event, already a blob
+      dataSources.value.push(f)
     }
   }
   if (dataSources.value.length) showImportTemplate.value = true
