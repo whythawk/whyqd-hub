@@ -6,6 +6,10 @@
     </div>
     <div v-if="appSettings.current.pageState === 'done'">
       <ResourceFilterPanel />
+      <div v-if="resourceStore.multi.length === 0" class="space-y-2">
+        <CommonEmptyCard
+          term="Nothing right now. Create schemas, import data or start tasks to see those resources here." />
+      </div>
       <ul role="list" class="space-y-6">
         <li v-for="(resource, i) in resourceStore.multi" :key="`resource-${i}`">
           <ResourceCard :resource="resource" :last-card="i === resourceStore.multi.length - 1" />

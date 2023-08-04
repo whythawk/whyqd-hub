@@ -1,11 +1,14 @@
 <template>
   <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-3xl mx-auto">
-    <CommonLaunchCard />
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
     <div v-if="appSettings.current.pageState === 'done'">
       <TaskFilterPanel />
+      <div v-if="taskStore.scheduled.length === 0" class="space-y-2">
+        <CommonEmptyCard
+          term="Nothing right now. Create tasks & assign update frequencies & priorities to see them here." />
+      </div>
       <ul role="list" class="space-y-2">
         <li v-for="(task, i) in taskStore.scheduled" :key="`task-${i}`">
           <TaskScheduleCard :task="task" :last-card="i === taskStore.scheduled.length - 1" />

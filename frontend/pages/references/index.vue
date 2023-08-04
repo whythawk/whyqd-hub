@@ -6,6 +6,10 @@
     </div>
     <div v-if="appSettings.current.pageState === 'done'">
       <ReferenceFilterPanel />
+      <div v-if="referenceStore.multi.length === 0" class="space-y-2">
+        <CommonEmptyCard
+          term="Nothing right now. Create schemas, import data or start tasks to see those references here." />
+      </div>
       <ul role="list" class="space-y-2">
         <li v-for="(reference, i) in referenceStore.multi" :key="`reference-${i}`">
           <ReferenceCard :reference="reference" :last-card="i === referenceStore.multi.length - 1" />

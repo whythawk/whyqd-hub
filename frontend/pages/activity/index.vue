@@ -6,6 +6,10 @@
     </div>
     <div v-if="appSettings.current.pageState === 'done'">
       <ActivityFilterPanel />
+      <div v-if="activityStore.multi.length === 0" class="space-y-2">
+        <CommonEmptyCard
+          term="Nothing right now, but when you start working, or join a team, you'll see your activities here." />
+      </div>
       <ul role="list" class="space-y-2">
         <li v-for="(activity, i) in activityStore.multi" :key="`activity-${i}`">
           <ActivityCard :activity="activity" :last-card="i === activityStore.multi.length - 1" />

@@ -8,6 +8,10 @@
         <TaskCard :task="taskStore.term" :last-card="true" />
       </div>
       <ResourceFilterPanel />
+      <div v-if="resourceStore.multi.length === 0" class="space-y-2">
+        <CommonEmptyCard
+          term="Nothing right now. Create schemas, import data or start tasks to see those resources here." />
+      </div>
       <ul role="list" class="space-y-6">
         <li v-for="(resource, i) in resourceStore.multi" :key="`resource-${i}`">
           <ResourceCard :resource="resource" :last-card="i === resourceStore.multi.length - 1" />
@@ -36,7 +40,7 @@ watch(() => [route.query], async () => {
 
 async function updateMulti() {
   if (route.query && route.query.page) resourceStore.setPage(route.query.page as string)
-  await resourceStore.getMultiByTask(taskStore.term.id)
+  await resourceStore.getMultiByTask(taskStore.term.id as string)
 }
 
 onMounted(async () => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-full">
+  <div class="min-h-full">
     <slot name="header">
       <!-- Responsive menus -->
       <NavigationDefaultSidebarMenu />

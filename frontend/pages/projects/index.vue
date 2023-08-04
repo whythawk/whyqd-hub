@@ -15,6 +15,9 @@
     </div>
     <div v-if="appSettings.current.pageState === 'done'">
       <ProjectFilterPanel />
+      <div v-if="projectStore.multi.length === 0" class="space-y-2">
+        <CommonEmptyCard term="Nothing right now. Create some projects to see them here." />
+      </div>
       <ul role="list" class="space-y-2">
         <li v-for="(project, i) in projectStore.multi" :key="`project-${i}`">
           <ProjectCard :project="project" :last-card="i === projectStore.multi.length - 1" />

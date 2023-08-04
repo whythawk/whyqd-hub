@@ -8,6 +8,9 @@
         <ProjectCard :project="projectStore.term" :last-card="true" />
       </div>
       <TaskFilterPanel />
+      <div v-if="taskStore.multi.length === 0" class="space-y-2">
+        <CommonEmptyCard term="Nothing right now. Create some tasks to see them here." />
+      </div>
       <ul role="list" class="space-y-2">
         <li v-for="(task, i) in taskStore.multi" :key="`task-${i}`">
           <TaskCard :task="task" :last-card="i === taskStore.multi.length - 1" />
