@@ -87,7 +87,7 @@ export default defineNuxtConfig({
       theme_color: "#c0651f",
       ogHost: "https://whyqd.com/",
       ogImage: {
-        path: "https://whyqd.com/img/ugly-data.png",
+        path: "https://whyqd.com/img/crosswalk.jpg",
         width: 1753,
         height: 806,
         type: "image/x-png"

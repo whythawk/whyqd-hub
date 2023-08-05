@@ -45,7 +45,7 @@ useServerSeoMeta({
   ogTitle: title,
   description: description,
   ogDescription: description,
-  ogImage: "https://whyqd.com/img/ugly-data.png"
+  ogImage: "https://whyqd.com/img/crosswalk.jpg"
 })
 // METADATA - END
 </script>

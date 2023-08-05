@@ -91,6 +91,8 @@ const redirectAfterLogin = "/"
 
 onMounted(async () => {
   appSettings.setPageName("Home")
+  if (auth.loggedIn) console.log("Welcome back :)")
+  else console.log("A Whyqd welcome :)")
   // Check if email is being validated
   if (route.query && route.query.magic) {
     // No idea: https://stackoverflow.com/q/74759799/295606
@@ -168,7 +170,7 @@ useServerSeoMeta({
   ogTitle: title,
   description: description,
   ogDescription: description,
-  ogImage: "https://whyqd.com/img/ugly-data.png"
+  ogImage: "https://whyqd.com/img/crosswalk.jpg"
 })
 // METADATA - END
 </script>
