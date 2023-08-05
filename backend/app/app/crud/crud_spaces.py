@@ -67,9 +67,10 @@ class CRUDSpaces:
         source = obj.get()["Body"].read().decode("utf-8")
         # Convert base64 to binary
         # return base64.b64decode(source)
-        source = base64.b64decode(source)
+        # source = base64.b64decode(source)
         # Try this:
-        return json.loads(source.decode("utf8"))
+        # return json.loads(source.decode("utf8"))
+        return json.loads(source)
 
     def fix_source(self, *, folder_id: UUID | str | None = None, filename: str) -> BinaryIO:
         # https://stackoverflow.com/a/35376156/295606
