@@ -1,5 +1,7 @@
 /* eslint-disable camelcase */
 
+export type IPageStatusType = "idle" | "loading" | "done" | "error"
+
 export interface ITokenResponse {
   access_token: string
   refresh_token: string
@@ -15,7 +17,6 @@ export interface INewTOTP {
   key: string
   uri: string
 }
-
 
 export interface IEnableTOTP {
   claim: string
@@ -39,4 +40,20 @@ export interface INotification {
   content: string
   icon?: "success" | "error" | "information"
   showProgress?: boolean
+}
+
+// https://stackoverflow.com/a/64782482/295606
+export interface IKeyable {
+  [key: string]: any | any[]
+}
+
+export interface ISocketRequest {
+  state: string
+  data: IKeyable
+}
+
+export interface ISocketResponse {
+  state: string
+  data?: IKeyable
+  error?: string | null
 }

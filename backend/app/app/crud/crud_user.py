@@ -1,8 +1,9 @@
-from typing import Any, Dict, Optional, Union
+from __future__ import annotations
+from typing import Optional, Union
 
 from sqlalchemy.orm import Session
 
-from app.core.security import get_password_hash, verify_password, create_new_totp
+from app.core.security import get_password_hash, verify_password  # , create_new_totp
 from app.crud.base import CRUDBase
 from app.models.user import User
 from app.schemas.user import UserCreate, UserInDB, UserUpdate
@@ -12,6 +13,9 @@ from app.schemas.totp import NewTOTP
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
         return db.query(User).filter(User.email == email).first()
+
+    def get_by_customer_id(self, db: Session, *, customer_id: str) -> Optional[User]:
+        return db.query(User).filter(User.customer_id == customer_id).first()
 
     def create(self, db: Session, *, obj_in: UserCreate) -> User:
         db_obj = User(
@@ -26,7 +30,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         db.refresh(db_obj)
         return db_obj
 
-    def update(self, db: Session, *, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]) -> User:
+    def update(self, db: Session, *, db_obj: User, obj_in: Union[UserUpdate, dict[str, any]]) -> User:
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
@@ -71,11 +75,16 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         obj_in["totp_counter"] = new_counter
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)
 
-    def toggle_user_state(self, db: Session, *, obj_in: Union[UserUpdate, Dict[str, Any]]) -> User:
+    def toggle_user_state(self, db: Session, *, obj_in: Union[UserUpdate, dict[str, any]]) -> User:
         db_obj = self.get_by_email(db, email=obj_in.email)
         if not db_obj:
             return None
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)
+
+    def has_password(self, user: User) -> bool:
+        if user.hashed_password:
+            return True
+        return False
 
     def is_active(self, user: User) -> bool:
         return user.is_active

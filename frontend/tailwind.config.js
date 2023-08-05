@@ -1,6 +1,7 @@
 /** @type {import("tailwindcss").Config} */
 // https://uicolors.app/create
 // https://www.canva.com/colors/
+const colors = require("tailwindcss/colors")
 
 module.exports = {
   content: [
@@ -9,6 +10,7 @@ module.exports = {
     "./pages/**/*.vue",
     "./plugins/**/*.{js,ts}",
     "./nuxt.config.{js,ts}",
+    "./node_modules/vue-tailwind-datepicker/**/*.js",
   ],
   theme: {
     extend: {
@@ -64,6 +66,19 @@ module.exports = {
             800: "#066486",
             900: "#0b526f",
         },
+        "vtd-primary": {
+            50: "#fdf8ed",
+            100: "#f7ebce",
+            200: "#efd598",
+            300: "#e7bb62",
+            400: "#e1a43e",
+            500: "#cc7d24",
+            600: "#c0651f",
+            700: "#9f491e",
+            800: "#823a1e",
+            900: "#6b301c",
+        }, // Light mode Datepicker color
+        "vtd-secondary": colors.gray, // Dark mode Datepicker color
       },
     },
   },
@@ -74,6 +89,5 @@ module.exports = {
     require("@tailwindcss/typography"),
     require("@tailwindcss/forms"),
     require("@tailwindcss/aspect-ratio"),
-    require("@tailwindcss/line-clamp"),
   ],
 }

@@ -41,6 +41,8 @@ You also declare that any and all data uploaded to this site are:
 
 This site should not be treated as an online storage service or repository for long-term custody of your research data. You are responsible for the secure storage and distribution of your data.
 
+You are in control of what is stored on Whyqd.com. No dialogs or popups will ask to confirm your actions. There is no `undo` button. All deletions - whether of data, schemas, crosswalks or anything else - are instant, and permanent.
+
 ## Your email address
 
 As with any other email, any and all email addresses sent to us as a result of correspondence, or saved as a consequence of you creating anaccount, results in us holding your email address and, if provided, your name, along with the content of your message.

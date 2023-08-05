@@ -23,47 +23,63 @@
 
 ---
 
+## What is it?
+
+> More research, less wrangling
+
+[**whyqd**](https://whyqd.com) (/wɪkɪd/) is a curatorial toolkit intended to produce well-structured and predictable 
+data for research analysis.
+
+It provides an intuitive method for creating schema-to-schema crosswalks for restructuring messy data to conform to a 
+standardised metadata schema. It supports rapid and continuous transformation of messy data using a simple series of 
+steps. Once complete, you can import wrangled data into more complex analytical or database systems.
+
+**whyqd** plays well with your existing Python-based data-analytical tools. It uses [Ray](https://www.ray.io/) and 
+[Modin](https://modin.readthedocs.io/) as a drop-in replacement for [Pandas](https://pandas.pydata.org/) to support 
+processing of large datasets, and [Pydantic](https://pydantic-docs.helpmanual.io/) for data models. 
+
+Each definition is saved as [JSON Schema-compliant](https://json-schema.org/) file. This permits others to read and 
+scrutinise your approach, validate your methodology, or even use your crosswalks to import and transform data in 
+production.
+
+Once complete, a transform file can be shared, along with your input data, and anyone can import and validate your 
+crosswalk to verify that your output data is the product of these inputs.
+
 ## Why use it?
 
-If all you want to do is test whether your source data are even useful, spending days or weeks slogging through data restructuring could kill a project. If you already have a workflow and established software, having to change your code every time your source data changes is really, really frustrating.
+If all you want to do is test whether your source data are even useful, spending days or weeks slogging through data 
+restructuring could kill a project. If you already have a workflow and established software which includes Python and 
+pandas, having to change your code every time your source data changes is really, really frustrating.
 
-If you want to go from a Cthulhu dataset like this:
+If you want to go from a [Cthulhu dataset](https://whyqd.readthedocs.io/tutorials/tutorial3) like this:
 
 ![UNDP Human Development Index 2007-2008: a beautiful example of messy data.](https://raw.githubusercontent.com/whythawk/whyqd/master/docs/images/undp-hdi-2007-8.jpg)
 
+*UNDP Human Development Index 2007-2008: a beautiful example of messy data.*
+
 To this:
 
-|     | country_name           | indicator_name | reference | year | values |
-| --: | :--------------------- | :------------- | :-------- | ---: | -----: |
-|   0 | Hong Kong, China (SAR) | HDI rank       | e         | 2008 |     21 |
-|   1 | Singapore              | HDI rank       | nan       | 2008 |     25 |
-|   2 | Korea (Republic of)    | HDI rank       | nan       | 2008 |     26 |
-|   3 | Cyprus                 | HDI rank       | nan       | 2008 |     28 |
-|   4 | Brunei Darussalam      | HDI rank       | nan       | 2008 |     30 |
-|   5 | Barbados               | HDI rank       | e,g, f    | 2008 |     31 |
+|    | country_name           | indicator_name   | reference   |   year |   values |
+|:---|:-----------------------|:-----------------|:------------|:-------|:---------|
+|  0 | Hong Kong, China (SAR) | HDI rank         | e           |   2008 |       21 |
+|  1 | Singapore              | HDI rank         | nan         |   2008 |       25 |
+|  2 | Korea (Republic of)    | HDI rank         | nan         |   2008 |       26 |
+|  3 | Cyprus                 | HDI rank         | nan         |   2008 |       28 |
+|  4 | Brunei Darussalam      | HDI rank         | nan         |   2008 |       30 |
+|  5 | Barbados               | HDI rank         | e,g,f       |   2008 |       31 |
 
 With a readable set of scripts to ensure that your process can be audited and repeated:
 
+```python
+schema_scripts = [
+    f"UNITE > 'reference' < {REFERENCE_COLUMNS}",
+    "RENAME > 'country_name' < ['Country']",
+    "PIVOT_LONGER > ['indicator_name', 'values'] < ['HDI rank', 'HDI Category', 'Human poverty index (HPI-1) - Rank;;2008', 'Human poverty index (HPI-1) - Value (%);;2008', 'Probability at birth of not surviving to age 40 (% of cohort);;2000-05', 'Adult illiteracy rate (% aged 15 and older);;1995-2005', 'Population not using an improved water source (%);;2004', 'Children under weight for age (% under age 5);;1996-2005', 'Population below income poverty line (%) - $1 a day;;1990-2005', 'Population below income poverty line (%) - $2 a day;;1990-2005', 'Population below income poverty line (%) - National poverty line;;1990-2004', 'HPI-1 rank minus income poverty rank;;2008']",
+    "SEPARATE > ['indicator_name', 'year'] < ';;'::['indicator_name']",
+    "DEBLANK",
+    "DEDUPE",
+]
 ```
-scripts = [
-     "DEBLANK",
-     "DEDUPE",
-     "REBASE < [11]",
-     f"DELETE_ROWS < {[int(i) for i in np.arange(144, df.index[-1]+1)]}",
-     "RENAME_ALL > ['HDI rank', 'Country', 'Human poverty index (HPI-1) - Rank;;2008', 'Reference 1', 'Human poverty index (HPI-1) - Value (%);;2008', 'Probability at birth of not surviving to age 40 (% of cohort);;2000-05', 'Reference 2', 'Adult illiteracy rate (% aged 15 and older);;1995-2005', 'Reference 3', 'Population not using an improved water source (%);;2004', 'Reference 4', 'Children under weight for age (% under age 5);;1996-2005', 'Reference 5', 'Population below income poverty line (%) - $1 a day;;1990-2005', 'Reference 6', 'Population below income poverty line (%) - $2 a day;;1990-2005', 'Reference 7', 'Population below income poverty line (%) - National poverty line;;1990-2004', 'Reference 8', 'HPI-1 rank minus income poverty rank;;2008']",
-     "PIVOT_CATEGORIES > ['HDI rank'] < [14,44,120]",
-     "RENAME_NEW > 'HDI Category'::['PIVOT_CATEGORIES_idx_20_0']",
-     "PIVOT_LONGER > = ['HDI rank', 'HDI Category', 'Human poverty index (HPI-1) - Rank;;2008', 'Human poverty index (HPI-1) - Value (%);;2008', 'Probability at birth of not surviving to age 40 (% of cohort);;2000-05', 'Adult illiteracy rate (% aged 15 and older);;1995-2005', 'Population not using an improved water source (%);;2004', 'Children under weight for age (% under age 5);;1996-2005', 'Population below income poverty line (%) - $1 a day;;1990-2005', 'Population below income poverty line (%) - $2 a day;;1990-2005', 'Population below income poverty line (%) - National poverty line;;1990-2004', 'HPI-1 rank minus income poverty rank;;2008']",
-     "SPLIT > ';;'::['PIVOT_LONGER_names_idx_9']",
-     f"JOIN > 'reference' < {reference_columns}",
-     "RENAME > 'indicator_name' < ['SPLIT_idx_11_0']",
-     "RENAME > 'country_name' < ['Country']",
-     "RENAME > 'year' < ['SPLIT_idx_12_1']",
-     "RENAME > 'values' < ['PIVOT_LONGER_values_idx_10']",
-  ]
-```
-
-If you want to treat schema-to-schema data transformation as a straightforward technical, and not complex social, task.
 
 ## Development roadmap
 

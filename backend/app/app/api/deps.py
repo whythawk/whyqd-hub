@@ -6,11 +6,12 @@ from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from app import crud, models, schemas
+from app import crud, models, schemas, schema_types
 from app.core.config import settings
 from app.db.session import SessionLocal
 
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/login/access-token")
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/login/oauth")
+reusable_ogun_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/ogun/oauth")
 
 
 def get_db() -> Generator:
@@ -88,12 +89,12 @@ def get_refresh_user(db: Session = Depends(get_db), token: str = Depends(reusabl
         raise HTTPException(status_code=400, detail="Inactive user")
     # Check and revoke this refresh token
     token_obj = crud.token.get(token=token, user=user)
-    if not token_obj or not token_obj.is_valid:
+    if not token_obj:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    crud.token.cancel_refresh_token(db, db_obj=token_obj)
+    crud.token.remove(db, db_obj=token_obj)
     return user
 
 
@@ -113,6 +114,63 @@ def get_current_active_superuser(
     return current_user
 
 
+###################################################################################################
+# SUBSCRIBERS
+###################################################################################################
+def get_subscribed_user(
+    current_user: models.User = Depends(get_current_active_user),
+) -> models.User:
+    if current_user.is_superuser:
+        return current_user
+    if not crud.subscription.current(user=current_user):
+        raise HTTPException(status_code=400, detail="Unsubscribed user.")
+    return current_user
+
+
+def get_elevated_subscribed_user(
+    current_user: models.User = Depends(get_current_active_user),
+) -> models.User:
+    if current_user.is_superuser:
+        return current_user
+    subscription = crud.subscription.current(user=current_user)
+    if not subscription or subscription.subscription_type not in [
+        schema_types.SubscriptionType.RESEARCHER,
+        schema_types.SubscriptionType.INVESTIGATOR,
+    ]:
+        raise HTTPException(status_code=400, detail="Need a higher subscription tier.")
+    return current_user
+
+
+###################################################################################################
+# OGUN TOKEN
+###################################################################################################
+def get_ogun_token(db: Session = Depends(get_db), token: str = Depends(reusable_ogun_oauth2)) -> models.OgunToken:
+    token_data = get_token_payload(token)
+    if not token_data.ogun:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Could not validate credentials",
+        )
+    user = crud.user.get(db, id=token_data.sub)
+    if user and not user.is_superuser and crud.user.is_active(user):
+        subscription = crud.subscription.current(user=user)
+        if not subscription or subscription.subscription_type not in [
+            schema_types.SubscriptionType.RESEARCHER,
+            schema_types.SubscriptionType.INVESTIGATOR,
+        ]:
+            raise HTTPException(status_code=400, detail="Need a higher subscription tier.")
+    token_obj = crud.oguntoken.get(token=token, user=user)
+    if not token_obj:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Could not validate credentials",
+        )
+    return token_obj
+
+
+###################################################################################################
+# WEBSOCKETS
+###################################################################################################
 def get_active_websocket_user(*, db: Session, token: str) -> models.User:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGO])

@@ -1,4 +1,10 @@
 {
+  "name": "whyqd",
+  "type": "module",
+  "version": "0.1.0",
+  "license": "MIT",
+  "homepage": "https://whyqd.com/",
+  "main": "./nuxt.config.ts",
   "private": true,
   "scripts": {
     "build": "nuxt build",
@@ -8,27 +14,31 @@
     "preview": "nuxt preview"
   },
   "devDependencies": {
-    "@kevinmarrec/nuxt-pwa": "^0.16.2",
-    "@nuxt/content": "^2.4.3",
-    "@pinia-plugin-persistedstate/nuxt": "^1.0.0",
+    "@kevinmarrec/nuxt-pwa": "^0.17.0",
+    "@nuxt/content": "^2.6.0",
+    "@pinia-plugin-persistedstate/nuxt": "^1.1.1",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.3",
-    "@tailwindcss/line-clamp": "^0.4.2",
-    "@tailwindcss/typography": "^0.5.7",
-    "autoprefixer": "^10.4.13",
-    "nuxt": "^3.0.0",
-    "postcss": "^8.4.18",
-    "tailwindcss": "^3.2.1"
+    "@tailwindcss/typography": "^0.5.9",
+    "autoprefixer": "^10.4.14",
+    "nuxt": "^3.4.3",
+    "postcss": "^8.4.23",
+    "tailwindcss": "^3.3.2"
   },
   "dependencies": {
-    "@dicebear/bottts": "^5.3.4",
-    "@dicebear/core": "^5.3.4",
-    "@headlessui/vue": "^1.7.3",
-    "@heroicons/vue": "2.0.12",
-    "@pinia/nuxt": "^0.4.3",
-    "@vee-validate/i18n": "^4.7.3",
-    "@vee-validate/rules": "^4.7.3",
-    "qrcode.vue": "^3.3.3",
-    "vee-validate": "^4.7.3"
+    "@dicebear/bottts": "^6.0.3",
+    "@dicebear/core": "^6.0.3",
+    "@headlessui/vue": "^1.7.13",
+    "@heroicons/vue": "2.0.18",
+    "@pinia/nuxt": "^0.4.10",
+    "@vee-validate/i18n": "^4.9.3",
+    "@vee-validate/rules": "^4.9.3",
+    "browser-fs-access": "^0.34.1",
+    "dayjs": "^1.11.8",
+    "qrcode.vue": "^3.4.0",
+    "vee-validate": "^4.9.3",
+    "vue-tailwind-datepicker": "^1.4.5",
+    "websocket": "^1.0.34",
+    "websocket-as-promised": "^2.0.1"
   }
 }

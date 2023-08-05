@@ -1,4 +1,5 @@
 import { Buffer } from "buffer"
+import {  IKeyable } from "@/interfaces"
 
 function generateUUID(): string {
   // Reference: https://stackoverflow.com/a/2117523/709884
@@ -47,13 +48,27 @@ function tokenParser(token: string) {
     Buffer.from(token.split(".")[1], "base64").toString()
   )
 }
+
+function removeEmpty(object: IKeyable): IKeyable {
+  // https://stackoverflow.com/a/38340730/295606
+  return Object.fromEntries(
+    Object.entries(object)
+      .filter(([_, v]) => (
+        v != null 
+        && Object.keys(v).length !== 0
+        && v.length !== 0
+      ))
+      .map(([k, v]) => [k, v === Object(v) ? removeEmpty(v) : v])
+  );
+}
   
-  export {
-    generateUUID,
-    getTimeInSeconds,
-    tokenExpired,
-    getKeyByValue,
-    isValidHttpUrl,
-    tokenParser,
-  }
+export {
+  generateUUID,
+  getTimeInSeconds,
+  tokenExpired,
+  getKeyByValue,
+  isValidHttpUrl,
+  tokenParser,
+  removeEmpty,
+}
   

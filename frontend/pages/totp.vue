@@ -57,8 +57,11 @@ definePageMeta({
   middleware: ["anonymous"],
 });
 
+const route = useRoute()
 const auth = useAuthStore()
-const redirectRoute = "/"
+const redirectRoute = "/settings"
+const subscriptionRoute = "/pricing"
+let query = ""
 const schema = {
   claim: { required: true, min: 6, max: 7 }
 }
@@ -66,13 +69,21 @@ const schema = {
 async function submit(values: any) {
   await auth.totpLogin(values.claim)
   if (auth.loggedIn) {
-    return await navigateTo(redirectRoute)
+    if (query && route.query.subscription) return await navigateTo(subscriptionRoute + query)
+    else return await navigateTo(redirectRoute + query)
   }
 }
 
 onMounted(async () => {
+  if (
+    route.query &&
+    Object.keys(route.query).length !== 0 &&
+    route.query.constructor === Object
+  ) {
+    query = "?" + Object.keys(route.query).map((key) => key + "=" + route.query[key]).join("&")
+  }
   // Check if token exists
   if (!auth.authTokens.token || !tokenIsTOTP(auth.authTokens.token))
-    return await navigateTo("/")
+    return await navigateTo("/login" + query)
 })
 </script>

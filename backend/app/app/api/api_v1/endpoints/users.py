@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 
-from app import crud, models, schemas
+from app import crud, models, schemas, schema_types
 from app.api import deps
 from app.core.config import settings
 from app.core import security
@@ -86,14 +86,13 @@ def read_user(
 def read_all_users(
     *,
     db: Session = Depends(deps.get_db),
-    skip: int = 0,
-    limit: int = 100,
+    page: int = 0,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Retrieve all current users.
     """
-    return crud.user.get_multi(db=db, skip=skip, limit=limit)
+    return crud.user.get_multi(db=db, page=page)
 
 
 @router.post("/new-totp", response_model=schemas.NewTOTP)
@@ -151,9 +150,74 @@ def create_user(
     return user
 
 
-@router.get("/tester", response_model=schemas.Msg)
-def test_endpoint() -> Any:
+@router.get("/memberships", response_model=List[schemas.Role])
+def read_project_memberships(
+    *,
+    db: Session = Depends(deps.get_db),
+    page: int = 0,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
     """
-    Test current endpoint.
+    Get a list of current project memberships.
     """
-    return {"msg": "Message returned ok."}
+    return crud.role.get_multi_by_member(db=db, researcher_id=current_user.id, page=page)
+
+
+@router.get("/invitations", response_model=List[schemas.Invitation])
+def read_project_invitations(
+    *,
+    db: Session = Depends(deps.get_db),
+    page: int = 0,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get a list of current project invitations.
+    """
+    return crud.invitation.get_multi_by_email(db=db, email=current_user.email, page=page)
+
+
+@router.post("/invitations/{invitation_id}", response_model=List[schemas.Invitation])
+def accept_project_invitation(
+    *,
+    db: Session = Depends(deps.get_db),
+    invitation_id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get a list of current project invitations.
+    """
+    invitation_obj = crud.invitation.get(db=db, id=invitation_id)
+    if not invitation_obj or not invitation_obj.email == current_user.email:
+        raise HTTPException(
+            status_code=400,
+            detail="Either invitation does not exist, or user does not have the rights for this request.",
+        )
+    crud.role.create(
+        db=db,
+        user=current_user,
+        responsibility=schema_types.RoleType.SEEKER,
+        db_obj=invitation_obj.project,
+        is_validated=True,
+    )
+    crud.invitation.remove(db=db, id=invitation_id)
+    return crud.invitation.get_multi_by_email(db=db, email=current_user.email)
+
+
+@router.delete("/invitations/{invitation_id}", response_model=List[schemas.Invitation])
+def reject_project_invitation(
+    *,
+    db: Session = Depends(deps.get_db),
+    invitation_id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get a list of current project invitations.
+    """
+    invitation_obj = crud.invitation.get(db=db, id=invitation_id)
+    if not invitation_obj or not invitation_obj.email == current_user.email:
+        raise HTTPException(
+            status_code=400,
+            detail="Either invitation does not exist, or user does not have the rights for this request.",
+        )
+    crud.invitation.remove(db=db, id=invitation_id)
+    return crud.invitation.get_multi_by_email(db=db, email=current_user.email)

@@ -1,0 +1,18 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image width="60px" src="https://whyqd.com/img/mark.svg" href="{{ server_host }}"></mj-image>
+        <mj-divider border-color="#c0651f"></mj-divider>
+        <mj-text font-size="16px" font-weight="bold" color="#635246">{{ project_name }} - Subscription error</mj-text>
+        <mj-text font-size="16px" color="#635246">Hi</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">A customer placed an order which could not be reconciled.</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">Customer email: {{ customer_email }}.</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">Event ID: {{ event_id }}</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">This is, obviously, urgent.</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">Kind regards</mj-text>
+        <mj-text font-size="16px" color="#635246" font-family="helvetica">{{ server_bot }} @ {{ server_name }}</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

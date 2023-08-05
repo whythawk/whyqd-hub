@@ -33,8 +33,6 @@ These files will also need to be customised for production deployment. Make alte
 
 This guide uses [DigitalOcean Droplets](https://www.digitalocean.com/pricing/droplets), so customise as required. Deploy to the smallest (currently 500MiB memory, 1 vCPU and 10GiB SSD for $4/month). You can upgrade later when you know your resource requirements.
 
-> **WARNING**: if you're using `neo4j` then the `java` server alone will need 1Gb of memory, and you may need a 2Gb to 4Gb base droplet. Plan accordingly. If you decide not to use it, you will need to carefully remove it. That will require editing `docker-compose.yml` and the start-up sequence in the backend. Shouldn't be too challenging.
-
 Ensure you add your SSH encryption keys on launch so that your server can be secure from the beginning.
 
 Deploy on whatever server image your prefer, although the default would be Ubuntu 20.04 (22.04 is the latest). End-of-life for 20.04 is April 2030, and for 22.04 is April 2032. You have time. The underlying image isn't that critical, as you'll be using the Docker images at their current versions.
@@ -47,7 +45,7 @@ For reference:
 - [Link Namecheap domain to DigitalOcean](https://www.namecheap.com/support/knowledgebase/article.aspx/10375/2208/how-do-i-link-a-domain-to-my-digitalocean-account/)
 - [Manage DNS records at DigitalOcean](https://docs.digitalocean.com/products/networking/dns/how-to/manage-records/)
 
-Don't forget to create DNS A records for `flower`, `neo4j`, `traefik`, and `pgadmin`.
+Don't forget to create DNS A records for `flower`, `traefik`, and `pgadmin`.
 
 Now you should be able to login to your server and begin deployment.
 

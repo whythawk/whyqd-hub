@@ -3,10 +3,7 @@ import { apiAuth } from "@/api"
 import { tokenExpired, tokenParser } from "@/utilities"
 import { useToastStore } from "./toasts"
 
-const toasts = useToastStore()
-const config = useRuntimeConfig()
-
-export const useTokenStore = defineStore("tokens", {
+export const useTokenStore = defineStore("tokenStore", {
   state: (): ITokenResponse => ({
     access_token: "",
     refresh_token: "",
@@ -14,13 +11,14 @@ export const useTokenStore = defineStore("tokens", {
   }),
   persist: {
     storage: persistedState.cookiesWithOptions({
-        // https://prazdevs.github.io/pinia-plugin-persistedstate/frameworks/nuxt-3.html
-        // https://nuxt.com/docs/api/composables/use-cookie#options
-        // in seconds
-        path: "/",
-        secure: true,
-        maxAge: config.public.appCookieExpire,
-        expires: new Date(new Date().getTime() + config.public.appCookieExpire),
+      // https://prazdevs.github.io/pinia-plugin-persistedstate/frameworks/nuxt-3.html
+      // https://nuxt.com/docs/api/composables/use-cookie#options
+      // in seconds
+      // useRuntimeConfig().public.appCookieExpire,
+      path: "/",
+      secure: true,
+      maxAge: 60 * 60 * 24 * 90,
+      expires: new Date(new Date().getTime() + 60 * 60 * 24 * 90),
     }),
   },
   getters: {
@@ -28,7 +26,7 @@ export const useTokenStore = defineStore("tokens", {
     refresh: (state) => state.refresh_token
   },
   actions: {
-    async getTokens(payload: { username: string; password?: string }) {
+    async getTokens(payload: { username: string; password?: string; query?: string }) {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
       let response
       try {
@@ -39,19 +37,21 @@ export const useTokenStore = defineStore("tokens", {
           ))
         else (
           { data: response } = await apiAuth.loginWithMagicLink(
-            payload.username
+            payload.username,
+            payload.query
           ))
         if (response.value) {
           if (response.value.hasOwnProperty("claim")) this.setMagicToken(response.value as unknown as IWebToken)
           else this.setTokens(response.value as unknown as ITokenResponse)          
         } else throw "Error"
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Login error",
           content: "Please check your details, or internet connection, and try again.",
           icon: "error"
         })
-        this.deleteTokens()
+        this.resetState()
       }
     },
     async validateMagicTokens(token: string) {
@@ -71,12 +71,13 @@ export const useTokenStore = defineStore("tokens", {
           } else throw "Error"
         }
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Login error",
           content: "Ensure you're using the same browser and that the token hasn't expired.",
           icon: "error"
         })
-        this.deleteTokens()
+        this.resetState()
       }
     },
     async validateTOTPClaim(data: string) {
@@ -88,12 +89,13 @@ export const useTokenStore = defineStore("tokens", {
           this.setTokens(response.value as unknown as ITokenResponse)          
         } else throw "Error"
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Two-factor error",
           content: "Unable to validate your verification code. Make sure it is the latest.",
           icon: "error"
         })
-        this.deleteTokens()
+        this.resetState()
       }
     },
     setMagicToken(payload: IWebToken) {
@@ -113,15 +115,15 @@ export const useTokenStore = defineStore("tokens", {
             const { data: response } = await apiAuth.getRefreshedToken(this.refresh)
             if (response.value) this.setTokens(response.value)
           } catch (error) {
-            this.deleteTokens()
+            this.resetState()
           } 
         } else {
-          this.deleteTokens()
+          this.resetState()
         }    
       }
     },
     // reset state using `$reset`
-    deleteTokens () {
+    resetState () {
       this.$reset()
     }
   }

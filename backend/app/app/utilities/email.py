@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 from pathlib import Path
 from typing import Any, Dict
@@ -63,26 +64,15 @@ def send_web_contact_email(data: EmailContent) -> None:
     )
 
 
-def send_test_email(email_to: str) -> None:
-    project_name = settings.PROJECT_NAME
-    subject = f"{project_name} - Test email"
-    with open(Path(settings.EMAIL_TEMPLATES_DIR) / "test_email.html") as f:
-        template_str = f.read()
-    send_email(
-        email_to=email_to,
-        subject_template=subject,
-        html_template=template_str,
-        environment={"project_name": settings.PROJECT_NAME, "email": email_to},
-    )
-
-
-def send_magic_login_email(email_to: str, token: str) -> None:
+def send_magic_login_email(email_to: str, token: str, subscription: str | None = None) -> None:
     project_name = settings.PROJECT_NAME
     subject = f"Your {project_name} magic login"
     with open(Path(settings.EMAIL_TEMPLATES_DIR) / "magic_login.html") as f:
         template_str = f.read()
     server_host = settings.SERVER_HOST
     link = f"{server_host}?magic={token}"
+    if subscription:
+        link = f"{server_host}/pricing?magic={token}&subscription={subscription}"
     send_email(
         email_to=email_to,
         subject_template=subject,
@@ -133,4 +123,40 @@ def send_new_account_email(email_to: str, username: str, password: str) -> None:
             "email": email_to,
             "link": link,
         },
+    )
+
+
+def send_failed_order_email(email_to: str, link_url: str) -> None:
+    subject = f"{settings.PROJECT_NAME} - order processing failed"
+    with open(Path(settings.EMAIL_TEMPLATES_DIR) / "failed_order.html") as f:
+        template_str = f.read()
+    send_email(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={"link_url": link_url},
+    )
+
+
+def send_successful_order_processing_error_email(email_to: str, link_url: str) -> None:
+    subject = f"{settings.PROJECT_NAME} - order processing failed"
+    with open(Path(settings.EMAIL_TEMPLATES_DIR) / "successful_order_processing_error.html") as f:
+        template_str = f.read()
+    send_email(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={"link_url": link_url},
+    )
+
+
+def send_admin_successful_order_processing_error_email(customer_email: str, event_id: str) -> None:
+    subject = f"{settings.PROJECT_NAME} - order processing failed"
+    with open(Path(settings.EMAIL_TEMPLATES_DIR) / "admin_successful_order_processing_error.html") as f:
+        template_str = f.read()
+    send_email(
+        email_to=settings.EMAILS_TO_EMAIL,
+        subject_template=subject,
+        html_template=template_str,
+        environment={"customer_email": customer_email, "event_id": event_id},
     )

@@ -6,7 +6,7 @@ COPY ./app/pyproject.toml ./app/poetry.lock* /app/
 WORKDIR /app/
 
 # Neomodel has shapely and libgeos as dependencies
-RUN apt-get update && apt-get install -y libgeos-dev
+# RUN apt-get update && apt-get install -y libgeos-dev
 
 # Allow installing dev dependencies to run tests
 ARG INSTALL_DEV=false

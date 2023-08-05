@@ -1,4 +1,4 @@
-from typing import Any, Union, Dict
+from typing import Any, Union, Optional
 from pydantic import EmailStr
 
 from fastapi import APIRouter, Body, Depends, HTTPException
@@ -25,7 +25,7 @@ Specifies minimum criteria:
         - The user ID or password was incorrect.
         - The account does not exist.
         - The account is locked or disabled.
-    - Code should go through the same process, no matter what, allowing the application to return in approximately 
+    - Code should go through the same process, no matter what, allowing the application to return in approximately
       the same response time.
     - In the words of George Orwell, break these rules sooner than do something truly barbaric.
 
@@ -34,7 +34,9 @@ See `security.py` for other requirements.
 
 
 @router.post("/magic/{email}", response_model=schemas.WebToken)
-def login_with_magic_link(*, db: Session = Depends(deps.get_db), email: EmailStr) -> Any:
+def login_with_magic_link(
+    *, db: Session = Depends(deps.get_db), email: EmailStr, subscription: Optional[str] = None
+) -> Any:
     """
     First step of a 'magic link' login. Check if the user exists and generate a magic link. Generates two short-duration
     jwt tokens, one for validation, one for email. Creates user if not exist.
@@ -49,7 +51,7 @@ def login_with_magic_link(*, db: Session = Depends(deps.get_db), email: EmailStr
     tokens = security.create_magic_tokens(subject=user.id)
     if settings.EMAILS_ENABLED and user.email:
         # Send email with user.email as subject
-        send_magic_login_email(email_to=user.email, token=tokens[0])
+        send_magic_login_email(email_to=user.email, token=tokens[0], subscription=subscription)
     return {"claim": tokens[1]}
 
 
@@ -193,11 +195,11 @@ def refresh_token(
     """
     Refresh tokens for future requests
     """
-    refresh_token = security.create_refresh_token(subject=current_user.id)
-    crud.token.create(db=db, obj_in=refresh_token, user_obj=current_user)
+    new_token = security.create_refresh_token(subject=current_user.id)
+    crud.token.create(db=db, obj_in=new_token, user_obj=current_user)
     return {
         "access_token": security.create_access_token(subject=current_user.id),
-        "refresh_token": refresh_token,
+        "refresh_token": new_token,
         "token_type": "bearer",
     }
 

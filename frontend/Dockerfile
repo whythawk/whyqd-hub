@@ -24,7 +24,6 @@ ARG POSTCSS_VERSION=^8.4.18
 ARG ASPECT_RATIO_VERSION=^0.4.2
 ARG FORMS_VERSION=^0.5.3
 ARG TYPOGRAPHY_VERSION=^0.5.7
-ARG LINE_CLAMP_VERSION=^0.4.2
 ARG HEADLESSUI_VERSION=^1.7.3
 ARG HEROICONS_VERSION=^2.0.12
 ARG PINIA_VERSION=^0.4.3
@@ -34,17 +33,27 @@ ARG VEE_INT_VERSION=^4.7.3
 ARG VEE_RULES_VERSION=^4.7.3
 ARG QR_CODE_VERSION=^3.3.3
 ARG DICEBEAR_BOTTTS_VERSION=^5.3.4
+ARG DICEBEAR_CORE_VERSION=^6.0.3
+ARG BROWSER_FS_ACCESS_VERSION=^0.34.1
+ARG DAYJS_VERSION=^1.11.8
+ARG VUE_TAILWIND_PICKER_VERSION=^1.4.5
+ARG WEBSOCKET_VERSION=^1.0.34
+ARG WEBSOCKET_AS_PROMISED_VERSION=^2.0.1
+ARG NUXT_PWA_VERSION=^0.17.0
 ENV NODE_ENV=production NITRO_HOST=${NITRO_HOST:-0.0.0.0} NITRO_PORT=${NITRO_PORT:-80} NUXT_TELEMETRY_DISABLED=1
 WORKDIR /app
-RUN yarn add nuxt@${NUXT_VERSION} @nuxt/content@${NUXT_CONTENT_VERSION} tailwindcss@${TAILWINDCSS_VERSION} autoprefixer@${AUTOPREFIXER_VERSION} postcss@${POSTCSS_VERSION} @tailwindcss/aspect-ratio@${ASPECT_RATIO_VERSION} @tailwindcss/forms@${FORMS_VERSION} @tailwindcss/line-clamp@${LINE_CLAMP_VERSION} @tailwindcss/typography@${TYPOGRAPHY_VERSION} @headlessui/vue@${HEADLESSUI_VERSION} @heroicons/vue@${HEROICONS_VERSION} @pinia/nuxt@${PINIA_VERSION} @pinia-plugin-persistedstate/nuxt@${PINIA_PERSISTED_VERSION} vee-validate@${VEE_VERSION} @vee-validate/i18n@${VEE_INT_VERSION} @vee-validate/rules@${VEE_RULES_VERSION} qrcode.vue@${QR_CODE_VERSION} @dicebear/core@${DICEBEAR_BOTTTS_VERSION} @dicebear/bottts@${DICEBEAR_BOTTTS_VERSION}
+RUN yarn add nuxt@${NUXT_VERSION} @nuxt/content@${NUXT_CONTENT_VERSION} tailwindcss@${TAILWINDCSS_VERSION} autoprefixer@${AUTOPREFIXER_VERSION} postcss@${POSTCSS_VERSION} @tailwindcss/aspect-ratio@${ASPECT_RATIO_VERSION} @tailwindcss/forms@${FORMS_VERSION} @tailwindcss/typography@${TYPOGRAPHY_VERSION} @headlessui/vue@${HEADLESSUI_VERSION} @heroicons/vue@${HEROICONS_VERSION} @pinia/nuxt@${PINIA_VERSION} @pinia-plugin-persistedstate/nuxt@${PINIA_PERSISTED_VERSION} vee-validate@${VEE_VERSION} @vee-validate/i18n@${VEE_INT_VERSION} @vee-validate/rules@${VEE_RULES_VERSION} qrcode.vue@${QR_CODE_VERSION} @dicebear/core@${DICEBEAR_BOTTTS_VERSION} @dicebear/bottts@${DICEBEAR_BOTTTS_VERSION} @dicebear/core@${DICEBEAR_CORE_VERSION} browser-fs-access@${BROWSER_FS_ACCESS_VERSION} dayjs@${DAYJS_VERSION} vue-tailwind-datepicker@${VUE_TAILWIND_PICKER_VERSION} websocket@${WEBSOCKET_VERSION} websocket-as-promised@${WEBSOCKET_AS_PROMISED_VERSION} @kevinmarrec/nuxt-pwa@${NUXT_PWA_VERSION}
 COPY --from=build /app/.nuxt ./.nuxt
 COPY --from=build /app/.output/ ./.output
 COPY --from=build /app/api ./api
 COPY --from=build /app/assets ./assets
 COPY --from=build /app/components ./components
+COPY --from=build /app/composables ./composables
+COPY --from=build /app/config ./config
 COPY --from=build /app/content ./content
 COPY --from=build /app/interfaces ./interfaces
 COPY --from=build /app/layouts ./layouts
+COPY --from=build /app/locales ./locales
 COPY --from=build /app/middleware ./middleware
 COPY --from=build /app/pages ./pages
 COPY --from=build /app/plugins ./plugins
@@ -54,6 +63,7 @@ COPY --from=build /app/stores ./stores
 COPY --from=build /app/utilities ./utilities
 COPY --from=build /app/.env ./
 COPY --from=build /app/app.vue ./
+COPY --from=build /app/error.vue ./
 COPY --from=build /app/nuxt.config* ./
 COPY --from=build /app/tailwind.config* ./
 COPY --from=build /app/tsconfig.json ./

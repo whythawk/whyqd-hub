@@ -98,3 +98,18 @@ def verify_password(*, plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
+
+###################################################################################################
+# OGUN TOKEN
+###################################################################################################
+
+
+def create_ogun_token(*, subject: Union[str, Any], expires_delta: timedelta = None) -> str:
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRE_SECONDS)
+    to_encode = {"exp": expire, "sub": str(subject), "ogun": True}
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.JWT_ALGO)
+    return encoded_jwt

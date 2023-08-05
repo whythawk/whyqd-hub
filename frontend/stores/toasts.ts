@@ -1,22 +1,22 @@
 import { INotification } from "@/interfaces"
 import { generateUUID } from "@/utilities"
 
-export const useToastStore = defineStore("toasts", {
+export const useToastStore = defineStore("toastStore", {
   state: () => ({
-    notifications: [] as INotification[]
+    board: [] as INotification[]
   }),
   getters: {
-    first: (state) => state.notifications.length > 0 && state.notifications[0],
-    notices: (state) => state.notifications
+    first: (state) => state.board.length > 0 && state.board[0],
+    multi: (state) => state.board
   },
   actions: {
     addNotice (payload: INotification) {
       payload.uid = generateUUID()
       if (!payload.icon) payload.icon = "success"
-      this.notices.push(payload)
+      this.multi.push(payload)
     },
     removeNotice (payload: INotification) {
-      this.notifications = this.notices.filter(
+      this.board = this.multi.filter(
         (note) => note !== payload
       )
     },
@@ -29,7 +29,7 @@ export const useToastStore = defineStore("toasts", {
       })
     },
     // reset state using `$reset`
-    deleteNotices() {
+    resetState() {
       this.$reset()
     }
   }

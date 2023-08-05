@@ -1,26 +1,28 @@
 import {
-    IUserProfile,
-    IUserProfileUpdate,
-    IUserProfileCreate,
-    IUserOpenProfileCreate,
-    ITokenResponse,
-    IWebToken,
-    INewTOTP,
-    IEnableTOTP,
-    IMsg
-  } from "@/interfaces"
+  IUserProfile,
+  IUserProfileUpdate,
+  IUserProfileCreate,
+  IUserOpenProfileCreate,
+  IProjectRole,
+  IProjectInvitation,
+  ITokenResponse,
+  IWebToken,
+  INewTOTP,
+  IEnableTOTP,
+  IMsg,
+  IOgunFilters
+} from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiAuth = {
-  // TEST
-  async getTestText() {
-    return await useFetch<IMsg>(`${apiCore.url()}/users/tester`)
-  },
   // LOGIN WITH MAGIC LINK OR OAUTH2 (USERNAME/PASSWORD)
-  async loginWithMagicLink(email: string) {
+  async loginWithMagicLink(email: string, subscription?: string) {
+    let payload = {}
+    if (subscription) payload = { subscription }
     return await useFetch<IWebToken>(`${apiCore.url()}/login/magic/${email}`,
       {
         method: "POST",
+        query: payload,
       }
     )
   },
@@ -147,10 +149,11 @@ export const apiAuth = {
     )
   },
   // ADMIN USER MANAGEMENT
-  async getAllUsers(token: string) {
+  async getAllUsers(token: string, payload: IOgunFilters = {}) {
     return await useFetch<IUserProfile[]>(`${apiCore.url()}/users/all`,
       {
-        headers: apiCore.headers(token)
+        headers: apiCore.headers(token),
+        query: payload,
       }
     )
   },
@@ -169,6 +172,41 @@ export const apiAuth = {
         method: "POST",
         body: data,
         headers: apiCore.headers(token)
+      }
+    )
+  },
+  // INVITATIONS AND PROJECT MEMBERSHIP
+  async getAllMemberships(token: string, payload: IOgunFilters = {}) {
+    return await useFetch<IProjectRole[]>(`${apiCore.url()}/users/memberships`, 
+      {
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async getAllInvitations(token: string, payload: IOgunFilters = {}) {
+    return await useFetch<IProjectInvitation[]>(`${apiCore.url()}/users/invitations`, 
+      {
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async acceptInvitation(token: string, invitation_key: string, payload: IOgunFilters = {}) {
+    return await useFetch<IProjectInvitation[]>(`${apiCore.url()}/users/invitations/${invitation_key}`, 
+      {
+        method: "POST",
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async rejectInvitation(token: string, invitation_key: string, payload: IOgunFilters = {}) {
+    return await useFetch<IProjectInvitation[]>(`${apiCore.url()}/users/invitations/${invitation_key}`, 
+      {
+        method: "DELETE",
+        headers: apiCore.headers(token),
+        query: payload,
       }
     )
   },

@@ -48,13 +48,22 @@ definePageMeta({
   middleware: ["anonymous"],
 });
 
+const route = useRoute()
 const auth = useAuthStore()
 const redirectRoute = "/login"
+let query = ""
 
 
 onMounted(async () => {
+  if (
+    route.query &&
+    Object.keys(route.query).length !== 0 &&
+    route.query.constructor === Object
+  ) {
+    query = "?" + Object.keys(route.query).map((key) => key + "=" + route.query[key]).join("&")
+  }
   if (!tokenParser(auth.authTokens.token).hasOwnProperty("fingerprint")) {
-    return await navigateTo(redirectRoute)
+    return await navigateTo(redirectRoute + query)
   }
 })
 </script>

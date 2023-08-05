@@ -2,6 +2,7 @@ import {
   IUserProfile,
   IUserProfileUpdate,
   IUserOpenProfileCreate,
+  ISubscriptionProfile,
   IEnableTOTP,
   IWebToken,
 } from "@/interfaces"
@@ -10,9 +11,7 @@ import { useTokenStore } from "./tokens"
 import { useToastStore } from "./toasts"
 import { tokenIsTOTP, tokenParser } from "@/utilities"
 
-const toasts = useToastStore()
-
-export const useAuthStore = defineStore("authUser", {
+export const useAuthStore = defineStore("authStore", {
   state: (): IUserProfile => ({
     id: "",
     email: "",
@@ -21,9 +20,21 @@ export const useAuthStore = defineStore("authUser", {
     is_superuser: false,
     full_name: "",
     password: false,
-    totp: false
+    totp: false,
+    subscriptions: {} as ISubscriptionProfile
   }),
-  persist: true,
+  persist: {
+    storage: persistedState.cookiesWithOptions({
+      // https://prazdevs.github.io/pinia-plugin-persistedstate/frameworks/nuxt-3.html
+      // https://nuxt.com/docs/api/composables/use-cookie#options
+      // in seconds
+      // useRuntimeConfig().public.appCookieExpire,
+      path: "/",
+      secure: true,
+      maxAge: 60 * 60 * 24 * 90,
+      expires: new Date(new Date().getTime() + 60 * 60 * 24 * 90),
+    }),
+  },
   getters: {
     isAdmin: (state) => {
         return (
@@ -34,19 +45,37 @@ export const useAuthStore = defineStore("authUser", {
     },
     profile: (state) => state,
     loggedIn: (state) => state.id !== "",
+    hasExplorerSubscription: (state) => {
+      return (
+        state.id &&
+        state.is_active &&
+        (["EXPLORER", "RESEARCHER", "INVESTIGATOR"].includes(state.subscriptions.membership)
+          || state.is_superuser)
+      )
+    },
+    hasResearcherSubscription: (state) => {
+      return (
+        state.id &&
+        state.is_active &&
+        (["RESEARCHER", "INVESTIGATOR"].includes(state.subscriptions.membership)
+          || state.is_superuser)
+      )
+    },
+    subscriptionState: (state) => state.subscriptions,
     authTokens: () => {
       return ( useTokenStore() )
     }
   },
   actions: {
     // AUTHENTICATION
-    async logIn(payload: { username: string; password?: string }) {
+    async logIn(payload: { username: string; password?: string; query?: string }) {
       try {
         await this.authTokens.getTokens(payload)
         if (this.authTokens.token && 
             !tokenIsTOTP(this.authTokens.token)
             ) await this.getUserProfile()
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Login error",
           content: "Please check your details, or internet connection, and try again.",
@@ -62,6 +91,7 @@ export const useAuthStore = defineStore("authUser", {
           !tokenIsTOTP(this.authTokens.token)
           ) await this.getUserProfile()
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Login error",
           content: "Please check your details, or internet connection, and try again.",
@@ -77,6 +107,7 @@ export const useAuthStore = defineStore("authUser", {
           !tokenIsTOTP(this.authTokens.token)
           ) await this.getUserProfile()
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Login error",
           content: "Please check your details, or internet connection, and try again.",
@@ -95,6 +126,7 @@ export const useAuthStore = defineStore("authUser", {
           password: payload.password 
         })
       } catch (error) {
+        const toasts = useToastStore()
         toasts.addNotice({
           title: "Login creation error",
           content: "Please check your details, or internet connection, and try again.",
@@ -102,8 +134,8 @@ export const useAuthStore = defineStore("authUser", {
         })
       }
     },
-    async getUserProfile() {
-      if (!this.loggedIn) {
+    async getUserProfile(force: boolean = false) {
+      if (!this.loggedIn || force) {
         await this.authTokens.refreshTokens()
         if (this.authTokens.token) {
           try {
@@ -118,9 +150,9 @@ export const useAuthStore = defineStore("authUser", {
     async updateUserProfile(payload: IUserProfileUpdate) {
       await this.authTokens.refreshTokens()
       if (this.loggedIn && this.authTokens.token) {
+        const toasts = useToastStore()
         try {
           const { data: response } = await apiAuth.updateProfile(this.authTokens.token, payload)
-          if (response.value) 
           if (response.value) {
             this.setUserProfile(response.value)
             toasts.addNotice({
@@ -139,6 +171,7 @@ export const useAuthStore = defineStore("authUser", {
     },
     // MANAGING TOTP
     async enableTOTPAuthentication(payload: IEnableTOTP) {
+      const toasts = useToastStore()
       await this.authTokens.refreshTokens()
       if (this.loggedIn && this.authTokens.token) {
         try {
@@ -160,6 +193,7 @@ export const useAuthStore = defineStore("authUser", {
       }
     },
     async disableTOTPAuthentication(payload: IUserProfileUpdate) {
+      const toasts = useToastStore()
       await this.authTokens.refreshTokens()
       if (this.loggedIn && this.authTokens.token) {
         try {
@@ -190,8 +224,10 @@ export const useAuthStore = defineStore("authUser", {
       this.full_name = payload.full_name
       this.password = payload.password
       this.totp = payload.totp
+      this.subscriptions = payload.subscriptions
     },
     async recoverPassword(email: string) {
+      const toasts = useToastStore()
       if (!this.loggedIn) {
         try {
           const { data: response } = await apiAuth.recoverPassword(email)
@@ -209,11 +245,12 @@ export const useAuthStore = defineStore("authUser", {
             content: "Please check your details, or internet connection, and try again.",
             icon: "error"
           })
-          this.authTokens.deleteTokens()
+          this.authTokens.resetState()
         }
       }
     },
     async resetPassword(password: string, token: string) {
+      const toasts = useToastStore()
       if (!this.loggedIn) {
         try {
           const claim: string = this.authTokens.token
@@ -236,13 +273,13 @@ export const useAuthStore = defineStore("authUser", {
             content: "Ensure you're using the same browser and that the token hasn't expired.",
             icon: "error"
           })
-          this.authTokens.deleteTokens()
+          this.authTokens.resetState()
         }
       }
     },
     // reset state using `$reset`
     logOut () {
-      this.authTokens.deleteTokens()
+      this.authTokens.resetState()
       this.$reset()
     }
   }
