@@ -48,7 +48,6 @@ COPY --from=build /app/.output/ ./.output
 COPY --from=build /app/api ./api
 COPY --from=build /app/assets ./assets
 COPY --from=build /app/components ./components
-COPY --from=build /app/composables ./composables
 COPY --from=build /app/config ./config
 COPY --from=build /app/content ./content
 COPY --from=build /app/interfaces ./interfaces
