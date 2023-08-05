@@ -126,15 +126,15 @@ class Settings(BaseSettings):
     SPACES_BUCKET: Optional[str] = None
     USE_SPACES: bool = False
 
-    # @validator("USE_SPACES", pre=True)
-    # def get_use_spaces(cls, v: bool, values: Dict[str, Any]) -> bool:
-    #     return bool(
-    #         values.get("SPACES_ACCESS_KEY")
-    #         and values.get("SPACES_SECRET_KEY")
-    #         and values.get("SPACES_REGION_NAME")
-    #         and values.get("SPACES_ENDPOINT_URL")
-    #         and values.get("SPACES_BUCKET")
-    #     )
+    @validator("USE_SPACES", pre=True)
+    def get_use_spaces(cls, v: bool, values: Dict[str, Any]) -> bool:
+        return bool(
+            values.get("SPACES_ACCESS_KEY")
+            and values.get("SPACES_SECRET_KEY")
+            and values.get("SPACES_REGION_NAME")
+            and values.get("SPACES_ENDPOINT_URL")
+            and values.get("SPACES_BUCKET")
+        )
 
     # IP2LOCATION IP COUNTRY LOCATION
     IP2_LINK: HttpUrl = "https://www.ip2location.com/download/"

@@ -69,6 +69,12 @@ async def create_and_edit_schema(*, db: Session = Depends(deps.get_db), websocke
                                 )
                                 if schema_obj and schema_obj.model_type != schema_types.ReferenceType.SCHEMA:
                                     schema_obj = None
+                            # Do a quick validation check on the fields
+                            if data.get("fields") and isinstance(data["fields"], list):
+                                for field in data["fields"]:
+                                    if field.get("constraints") and isinstance(field["constraints"], dict):
+                                        if not isinstance(field["constraints"].get("enum"), list):
+                                            field["constraints"]["enum"] = []
                             try:
                                 schema_definition.set(schema=data)
                             except ValidationError:
@@ -103,9 +109,15 @@ async def create_and_edit_schema(*, db: Session = Depends(deps.get_db), websocke
                         schema_definition.set(schema=data)
                     # ADD FIELD ########################################################
                     if state == "addField" and initialised:
+                        if data.get("constraints") and isinstance(data["constraints"], dict):
+                            if not isinstance(data["constraints"].get("enum"), list):
+                                data["constraints"]["enum"] = []
                         schema_definition.fields.add(term=data)
                     # UPDATE FIELD #####################################################
                     if state == "updateField" and initialised:
+                        if data.get("constraints") and isinstance(data["constraints"], dict):
+                            if not isinstance(data["constraints"].get("enum"), list):
+                                data["constraints"]["enum"] = []
                         schema_definition.fields.update(term=data)
                     # REMOVE FIELD #####################################################
                     if state == "removeField" and initialised:
