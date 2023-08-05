@@ -327,7 +327,8 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid"
 import { nameSpace, capitalizeFirst } from "@/utilities"
 import { ITask } from "@/interfaces"
 import { useTaskStore } from "@/stores"
-import * as dayjs from "dayjs"
+// import * as dayjs from "dayjs"
+import dayjs from "dayjs"
 
 const route = useRoute()
 const taskStore = useTaskStore()
