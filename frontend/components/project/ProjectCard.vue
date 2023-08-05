@@ -53,6 +53,13 @@
               <span class="hidden lg:block">Schedule</span>
             </NuxtLink>
           </li>
+          <div v-if="addTask" class="flex items-center justify-end">
+            <button type="button" @click.prevent="addProjectToTask"
+              class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 text-xs font-semibold">
+              <FolderPlusIcon class="text-sienna-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span class="hidden lg:block">Add task</span>
+            </button>
+          </div>
           <li class="relative">
             <NuxtLink :to="`/tasks/project/${props.project.id}`"
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
@@ -81,18 +88,26 @@
 </template>
 
 <script setup lang="ts">
-import { CalendarIcon, Square3Stack3DIcon, Squares2X2Icon, SquaresPlusIcon, TagIcon, UserGroupIcon } from "@heroicons/vue/24/outline"
+import { CalendarIcon, FolderPlusIcon, Square3Stack3DIcon, Squares2X2Icon, SquaresPlusIcon, TagIcon, UserGroupIcon } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar } from "@/utilities"
 import { IProject, IReferenceFilters } from "@/interfaces"
-import { useReferenceStore } from "@/stores"
+import { useReferenceStore, useTaskStore } from "@/stores"
 
+const route = useRoute()
 const referenceStore = useReferenceStore()
 const avatar = shallowRef("")
+const addTask = ref(false)
 
 const props = defineProps<{
   project: IProject,
   lastCard: Boolean
 }>()
+
+async function addProjectToTask() {
+  const taskStore = useTaskStore()
+  await taskStore.addToProject(route.params.id as string, props.project.id as string)
+  await navigateTo(`/tasks/${route.params.id as string}`)
+}
 
 async function schemaRedirect() {
   let filters: IReferenceFilters = { ...referenceStore.filters }
@@ -103,6 +118,7 @@ async function schemaRedirect() {
 }
 
 onMounted(async () => {
+  if (route.path.includes("/projects/task/")) addTask.value = true
   avatar.value = await getAvatar(props.project.id as string)
 })
 </script>

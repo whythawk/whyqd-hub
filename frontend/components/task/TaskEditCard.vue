@@ -385,7 +385,9 @@ async function watchEditHeadingRequest(request: string) {
       submitRequest()
       break
     case "cancel":
-      return await navigateTo(`/tasks/${route.params.id}`)
+      resetForm()
+      if (route.params.id === "create") return await navigateTo("/tasks")
+      else return await navigateTo(`/tasks/${route.params.id}`)
   }
 }
 
@@ -399,6 +401,7 @@ function resetDraft() {
 }
 
 function resetForm() {
+  if (route.params.id === "create") taskStore.resetDraft()
   if (saveApproach.value === "Update") taskStore.setDraft({ ...taskStore.term })
   resetDraft()
 }
@@ -418,6 +421,8 @@ async function submitRequest() {
 
 onMounted(async () => {
   if (route.params.id !== "create") saveApproach.value = "Update"
+  console.log(saveApproach.value)
+  console.log(taskStore.draft)
   if (taskStore.draft && Object.keys(taskStore.draft).length !== 0) resetDraft()
   else resetForm()
 })

@@ -223,6 +223,28 @@ export const useTaskStore = defineStore("taskStore", {
         }
       }
     },
+    async addToProject(key: string, project_key: string) {
+      await this.authTokens.refreshTokens()
+      if (this.authTokens.token) {
+        try {
+          const { data: response } = await apiTask.addToProject(this.authTokens.token, key, project_key)
+          if (response.value) this.setTerm(response.value)
+        } catch (error) {
+          this.one = {} as ITask
+        }
+      }
+    },
+    async removeFromProject(key: string, project_key: string) {
+      await this.authTokens.refreshTokens()
+      if (this.authTokens.token) {
+        try {
+          const { data: response } = await apiTask.removeFromProject(this.authTokens.token, key, project_key)
+          if (response.value) this.setTerm(response.value)
+        } catch (error) {
+          this.one = {} as ITask
+        }
+      }
+    },
     setFilters(payload: ITaskFilters) {
       this.facets = payload
     },

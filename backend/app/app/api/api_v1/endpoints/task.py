@@ -239,3 +239,53 @@ def remove_template(
             detail="Reference template does not exist, or user does not have the rights for this request.",
         )
     return crud.task.remove_template(db=db, id=task_id, template_type=template_obj.model_type, user=current_user)
+
+
+@router.post("/{task_id}/project/{project_id}", response_model=schemas.Task)
+def add_project(
+    *,
+    db: Session = Depends(deps.get_db),
+    task_id: str,
+    project_id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Add a project to a task.
+    """
+    task_obj = crud.task.get(db=db, id=task_id, user=current_user, responsibility=schema_types.RoleType.CURATOR)
+    project_obj = crud.project.get(
+        db=db, id=project_id, user=current_user, responsibility=schema_types.RoleType.CURATOR
+    )
+    if not task_obj or not project_obj:
+        raise HTTPException(
+            status_code=400,
+            detail="Either of task or project do not exist, or user does not have the rights for this request.",
+        )
+    return crud.task.add_project(
+        db=db, db_obj=task_obj, project_obj=project_obj, user=current_user, responsibility=schema_types.RoleType.CURATOR
+    )
+
+
+@router.delete("/{task_id}/project/{project_id}", response_model=schemas.Task)
+def remove_project(
+    *,
+    db: Session = Depends(deps.get_db),
+    task_id: str,
+    project_id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Remove a project from a task.
+    """
+    task_obj = crud.task.get(db=db, id=task_id, user=current_user, responsibility=schema_types.RoleType.CURATOR)
+    project_obj = crud.project.get(
+        db=db, id=project_id, user=current_user, responsibility=schema_types.RoleType.CURATOR
+    )
+    if not task_obj or not project_obj:
+        raise HTTPException(
+            status_code=400,
+            detail="Either of task or project do not exist, or user does not have the rights for this request.",
+        )
+    return crud.task.remove_project(
+        db=db, db_obj=task_obj, user=current_user, responsibility=schema_types.RoleType.CURATOR
+    )

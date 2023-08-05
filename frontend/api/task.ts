@@ -84,4 +84,20 @@ export const apiTask = {
       }
     )
   },
+  async addToProject(token: string, key: string, project_key: string) {
+    return await useFetch<ITask>(`${apiCore.url()}/task/${key}/project/${project_key}`, 
+      {
+        method: "POST",
+        headers: apiCore.headers(token),
+      }
+    )
+  },
+  async removeFromProject(token: string, key: string, project_key: string) {
+    return await useFetch<ITask>(`${apiCore.url()}/task/${key}/project/${project_key}`, 
+      {
+        method: "DELETE",
+        headers: apiCore.headers(token),
+      }
+    )
+  },
 }

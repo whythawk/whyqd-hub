@@ -24,6 +24,31 @@ if TYPE_CHECKING:
 
 
 class CRUDTask(CRUDWhyqdBase[Task, TaskCreate, TaskUpdate]):
+    def add_project(
+        self,
+        db: Session,
+        *,
+        db_obj: Task,
+        project_obj: Project,
+        user: User,
+        responsibility: RoleType = RoleType.CURATOR,
+    ) -> Task | None:
+        task_in = TaskUpdate.from_orm(db_obj)
+        task_in.project_id = project_obj.id
+        return super().update(db=db, id=db_obj.id, obj_in=task_in, user=user, responsibility=responsibility)
+
+    def remove_project(
+        self,
+        db: Session,
+        *,
+        db_obj: Task,
+        user: User,
+        responsibility: RoleType = RoleType.CURATOR,
+    ) -> Task | None:
+        task_in = TaskUpdate.from_orm(db_obj)
+        task_in.project_id = None
+        return super().update(db=db, id=db_obj.id, obj_in=task_in, user=user, responsibility=responsibility)
+
     def add_resource(self, db: Session, *, db_obj: Task, resource_obj: Resource) -> Task | None:
         db_obj.resources.append(resource_obj)
         db.commit()

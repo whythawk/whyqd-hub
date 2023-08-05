@@ -118,7 +118,7 @@
         </NuxtLink>
       </div>
       <div v-else class="space-y-6">
-        <NuxtLink to="/projects"
+        <NuxtLink :to="`/projects/task/${taskStore.term.id}`"
           class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-sm">
           <BeakerIcon class="text-sienna-700 group-hover:text-ochre-600 h-5 w-5 shrink-0" aria-hidden="true" />
           <span class="hidden lg:block">Add to project</span>

@@ -389,7 +389,9 @@ async function watchEditHeadingRequest(request: string) {
       submitRequest()
       break
     case "cancel":
-      return await navigateTo(`/projects/${route.params.id}`)
+      resetForm()
+      if (route.params.id === "create") return await navigateTo("/projects")
+      else return await navigateTo(`/projects/${route.params.id}`)
   }
 }
 
@@ -404,6 +406,7 @@ function resetDraft() {
 }
 
 function resetForm() {
+  if (route.params.id === "create") projectStore.resetDraft()
   if (saveApproach.value === "Update") projectStore.setDraft({ ...projectStore.term })
   resetDraft()
 }
