@@ -4,7 +4,7 @@ import { apiCore } from "./core"
 export const apiTask = {
   // REFERENCES
   async getMulti(token: string, payload: ITaskFilters = {}) {
-    return await useFetch<ITask[]>(`${apiCore.url()}/task`, 
+    return await useFetch<ITask[]>(`${apiCore.url()}/task/`, 
       {
         headers: apiCore.headers(token),
         query: payload,

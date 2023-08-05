@@ -7,7 +7,7 @@ import { apiCore } from "./core"
 export const apiSubscriptions = {
   // SUBSCRIPTIONS & ORDERS
   async getOrders(token: string, payload: IOgunFilters = {}) {
-    return await useFetch<IOrder[]>(`${apiCore.url()}/subscriptions`, 
+    return await useFetch<IOrder[]>(`${apiCore.url()}/subscriptions/`, 
       {
         headers: apiCore.headers(token),
         query: payload,

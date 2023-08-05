@@ -4,7 +4,7 @@ import { apiCore } from "./core"
 export const apiProject = {
   // REFERENCES
   async getMulti(token: string, payload: IProjectFilters = {}) {
-    return await useFetch<IProject[]>(`${apiCore.url()}/project`, 
+    return await useFetch<IProject[]>(`${apiCore.url()}/project/`, 
       {
         headers: apiCore.headers(token),
         query: payload,

@@ -3,7 +3,7 @@ import { apiCore } from "./core"
 
 export const apiResource = {
   async getMulti(token: string, payload: IResourceFilters = {}) {
-    return await useFetch<IResource[]>(`${apiCore.url()}/resource`, 
+    return await useFetch<IResource[]>(`${apiCore.url()}/resource/`, 
       {
         headers: apiCore.headers(token),
         query: payload,
