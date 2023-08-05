@@ -106,6 +106,12 @@ async def create_and_edit_schema(*, db: Session = Depends(deps.get_db), websocke
                         initialised = True
                     # SET METADATA #####################################################
                     if state == "setMetadata" and initialised:
+                        # Do a quick validation check on the fields
+                        if data.get("fields") and isinstance(data["fields"], list):
+                            for field in data["fields"]:
+                                if field.get("constraints") and isinstance(field["constraints"], dict):
+                                    if not isinstance(field["constraints"].get("enum"), list):
+                                        field["constraints"]["enum"] = []
                         schema_definition.set(schema=data)
                     # ADD FIELD ########################################################
                     if state == "addField" and initialised:
