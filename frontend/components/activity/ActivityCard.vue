@@ -22,8 +22,8 @@
               <div class="truncate py-0.5">
                 <time :datetime="props.activity.created" class="flex-none py-0.5 text-xs text-gray-500">{{
                   readableDate(props.activity.created) }}</time>
-                <BellIcon v-if="!props.activity.alert" class="inline-flex h-5 w-5 text-sienna-500 pl-1" />
-                <BoltIcon v-if="!props.activity.custodiansOnly" class="inline-flex h-5 w-5 text-cerulean-500 pl-1" />
+                <BellIcon v-if="props.activity.alert" class="inline-flex h-5 w-5 text-sienna-500 pl-1" />
+                <BoltIcon v-if="props.activity.custodiansOnly" class="inline-flex h-5 w-5 text-cerulean-500 pl-1" />
               </div>
               <div class="truncate py-0.5 text-xs text-gray-500">
                 <span v-if="props.activity.researcher.full_name" class="truncate font-medium text-gray-900">{{
