@@ -75,8 +75,10 @@ import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/2
 import { useResourceStore } from "@/stores"
 import { IResourceFilters } from "@/interfaces"
 
+const route = useRoute()
 const resourceStore = useResourceStore()
 const filters = ref({} as IResourceFilters)
+const appropriateMulti = ref("RESOURCE")
 const searchTerm = ref("")
 const dateFrom = ref("")
 const dateTo = ref("")
@@ -106,6 +108,17 @@ function watchSearchTerm(event: any) {
   if (event.key === "Enter") refreshResources()
 }
 
+async function getAppropriateMulti() {
+  switch (appropriateMulti.value) {
+    case "RESOURCE":
+      await resourceStore.getMulti()
+      break
+    case "TASK":
+      await resourceStore.getMultiByTask(route.params.id as string)
+      break
+  }
+}
+
 async function refreshResources() {
   filters.value.match = searchTerm.value
   if (dateFrom.value && dateTo.value && dateFrom.value >= dateTo.value) dateTo.value = ""
@@ -113,7 +126,7 @@ async function refreshResources() {
   if (dateTo.value) filters.value.date_to = dateTo.value
   resourceStore.setFilters(filters.value)
   getFilters()
-  await resourceStore.getMulti()
+  await getAppropriateMulti()
 }
 
 function getFilters() {
@@ -132,6 +145,7 @@ async function resetFilters() {
 }
 
 onMounted(async () => {
+  if (route.path.includes("/resources/task/")) appropriateMulti.value = "TASK"
   getFilters()
 })
 

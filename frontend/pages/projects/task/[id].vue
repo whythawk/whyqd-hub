@@ -8,7 +8,7 @@
         <TaskCard :task="taskStore.term" :last-card="true" />
       </div>
       <TaskFilterPanel />
-      <div v-if="taskStore.multi.length === 0" class="space-y-2">
+      <div v-if="projectStore.multi.length === 0" class="space-y-2">
         <CommonEmptyCard term="Nothing right now. Create some projects to see them here." />
       </div>
       <ul role="list" class="space-y-2">

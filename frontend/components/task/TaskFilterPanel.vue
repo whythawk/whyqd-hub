@@ -61,8 +61,10 @@ import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/2
 import { useTaskStore } from "@/stores"
 import { ITaskFilters } from "@/interfaces"
 
+const route = useRoute()
 const taskStore = useTaskStore()
 const filters = ref({} as ITaskFilters)
+const appropriateMulti = ref("TASK")
 const searchTerm = ref("")
 const dateFrom = ref("")
 const dateTo = ref("")
@@ -75,6 +77,23 @@ function watchSearchTerm(event: any) {
   if (event.key === "Enter") refreshActivities()
 }
 
+async function getAppropriateMulti() {
+  switch (appropriateMulti.value) {
+    case "TASK":
+      await taskStore.getMulti()
+      break
+    case "TASKPROJECT":
+      await taskStore.getMultiByProject(route.params.id as string)
+      break
+    case "SCHEDULE":
+      await taskStore.getScheduledMulti()
+      break
+    case "SCHEDULEPROJECT":
+      await taskStore.getScheduledMultiByProject(route.params.id as string)
+      break
+  }
+}
+
 async function refreshActivities() {
   filters.value.match = searchTerm.value
   if (dateFrom.value && dateTo.value && dateFrom.value >= dateTo.value) dateTo.value = ""
@@ -82,7 +101,7 @@ async function refreshActivities() {
   if (dateTo.value) filters.value.date_to = dateTo.value
   taskStore.setFilters(filters.value)
   getFilters()
-  await taskStore.getMulti()
+  await getAppropriateMulti()
 }
 
 function getFilters() {
@@ -101,6 +120,9 @@ async function resetFilters() {
 }
 
 onMounted(async () => {
+  if (route.path.includes("/tasks/project/")) appropriateMulti.value = "TASKPROJECT"
+  if (route.path.includes("/schedule")) appropriateMulti.value = "SCHEDULE"
+  if (route.path.includes("/schedule/project/")) appropriateMulti.value = "SCHEDULEPROJECT"
   getFilters()
 })
 
