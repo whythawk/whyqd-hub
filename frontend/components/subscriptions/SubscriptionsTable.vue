@@ -2,11 +2,11 @@
   <div v-if="appSettings.current.pageState === 'loading'">
     <LoadingCardSkeleton />
   </div>
-  <div v-if="appSettings.current.pageState === 'done' && subscriptionStore.multi.length">
+  <div v-if="appSettings.current.pageState === 'done'">
     <div class="flex-auto p-3">
       <div class="shadow sm:overflow-hidden sm:rounded-md min-w-max">
         <SubscriptionsUserSearch @set-request="watchSubscriberRequest" />
-        <table class="min-w-full divide-y divide-gray-300">
+        <table v-if="subscriptionStore.multi.length" class="min-w-full divide-y divide-gray-300">
           <thead class="bg-gray-50">
             <tr>
               <th v-for="(th, i) in defaultHeaders" :key="`header-${i}`"

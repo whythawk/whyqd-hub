@@ -94,7 +94,7 @@ onMounted(async () => {
 async function watchEditHeadingRequest(request: string) {
   switch (request) {
     case "reset":
-      resetSchema()
+      await resetSchema()
       break
     case "save":
       saveSchema()
@@ -128,7 +128,7 @@ async function newSchema() {
 }
 
 async function resetSchema() {
-  if (route.params.id === "create" && referenceID.value) return await navigateTo(`/schema/edit/${referenceID.value}`)
+  if (route.params.id !== 'create' && referenceID.value) resetFields() // return await navigateTo(`/schema/edit/${referenceID.value}`)
   else {
     await newSchema()
   }

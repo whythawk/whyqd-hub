@@ -143,6 +143,7 @@ async def create_or_edit_crosswalk(*, db: Session = Depends(deps.get_db), id: st
                                 db=db,
                                 id=resource_obj.id,
                                 obj_in=resource_in,
+                                user=current_user,
                                 responsibility=schema_types.RoleType.WRANGLER,
                             )
                         response["data"] = {"id": str(crosswalk_obj.id)}
