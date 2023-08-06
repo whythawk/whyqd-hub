@@ -104,7 +104,7 @@ definePageMeta({
 
 const route = useRoute()
 const auth = useAuthStore()
-const redirectAfterLogin = "/settings"
+const redirectAfterLogin = "/"
 const redirectAfterMagic = "/magic"
 const redirectTOTP = "/totp"
 const subscriptionRoute = "/pricing"

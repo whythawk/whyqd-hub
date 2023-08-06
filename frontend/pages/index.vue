@@ -28,7 +28,7 @@
               <div class="mt-6 flex items-center justify-center gap-x-6">
                 <NuxtLink v-if="!auth.loggedIn" to="/login"
                   class="rounded-md bg-ochre-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ochre-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ochre-600">
-                  Get notified</NuxtLink>
+                  Get started</NuxtLink>
                 <NuxtLink to="/about" class="text-sm font-semibold leading-6 text-gray-900">Learn more <span
                     aria-hidden="true">→</span></NuxtLink>
               </div>

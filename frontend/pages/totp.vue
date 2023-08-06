@@ -59,7 +59,7 @@ definePageMeta({
 
 const route = useRoute()
 const auth = useAuthStore()
-const redirectRoute = "/settings"
+const redirectRoute = "/"
 const subscriptionRoute = "/pricing"
 let query = ""
 const schema = {
