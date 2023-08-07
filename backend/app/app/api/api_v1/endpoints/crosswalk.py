@@ -140,11 +140,19 @@ async def create_or_edit_crosswalk(*, db: Session = Depends(deps.get_db), id: st
                         if not resource_obj.crosswalk_id or resource_obj.crosswalk_id != crosswalk_obj.id:
                             resource_in = schemas.ResourceUpdate.from_orm(resource_obj)
                             resource_in.crosswalk_id = crosswalk_obj.id
-                            crud.resource.update(
+                            resource_obj = crud.resource.update(
                                 db=db,
                                 id=resource_obj.id,
                                 obj_in=resource_in,
                                 user=current_user,
+                                responsibility=schema_types.RoleType.WRANGLER,
+                            )
+                        if resource_obj.data_id:
+                            crud.resource.update_state(
+                                db=db,
+                                db_obj=resource_obj,
+                                user=current_user,
+                                state=schema_types.StateType.TRANSFORM_READY,
                                 responsibility=schema_types.RoleType.WRANGLER,
                             )
                         response["data"] = {"id": str(crosswalk_obj.id)}
