@@ -386,9 +386,11 @@ function handleDragStart(e: any) {
     "bg-white",
     "bg-cerulean-100"
   )
-  dragID.value = getActionID(e.currentTarget.id)
-  e.dataTransfer.effectAllowed = "move"
-  e.dataTransfer.setData("id", dragID.value)
+  if (getActionID(e.currentTarget.id)) {
+    dragID.value = getActionID(e.currentTarget.id)
+    e.dataTransfer.effectAllowed = "move"
+    e.dataTransfer.setData("id", dragID.value)
+  }
 }
 
 function handleDragEnter(e: any) {
@@ -421,6 +423,7 @@ function handleDrop(e: any) {
   e.stopPropagation()
   e.preventDefault()
   const hasData = e.dataTransfer.getData("id")
+  console.log("dropped", getActionID(e.currentTarget.id))
   if (hasData === "ADD_ACTION") {
     // Initialise a new ACTION
     const addAction: IActionModel = {
