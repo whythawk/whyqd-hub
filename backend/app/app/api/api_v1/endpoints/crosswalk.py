@@ -85,7 +85,8 @@ async def create_or_edit_crosswalk(*, db: Session = Depends(deps.get_db), id: st
                         # For local versions that have yet to be saved
                         crosswalk_dfn = crud.reference.get_crosswalk_definition(db_obj=resource_obj)
                         crosswalk_dfn.actions.reset()
-                        crosswalk_dfn.actions.add_multi(terms=data["actions"])
+                        if data.get("actions"):
+                            crosswalk_dfn.actions.add_multi(terms=data["actions"])
                         crosswalk_dfn.model.name = data["metadata"]["name"]
                         crosswalk_dfn.model.title = data["metadata"].get("title")
                         crosswalk_dfn.model.description = data["metadata"].get("description")

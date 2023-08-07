@@ -80,7 +80,7 @@ function submitRequest() {
     let data = { ...props.action }
     data.destinationField = selectedDestinationField.value
     data.sourceField = [selectedSourceField.value]
-    data.destinationTerm = selectedDestinationField.value
+    data.destinationTerm = selectedDestinationTerm.value
     data.sourceTerm = selectedSourceTerms.value
     const request: ISocketRequest = {
       state: state,
@@ -94,7 +94,9 @@ function submitRequest() {
 onMounted(async () => {
   if (props.action.uuid !== "") {
     selectedDestinationField.value = props.action.destinationField as string
-    if (props.action.sourceField) selectedSourceField.value = props.action.sourceField[0] as string
+    selectedDestinationTerm.value = props.action.destinationTerm as string
+    selectedSourceField.value = props.action.sourceField as string
+    selectedSourceTerms.value = props.action.sourceTerm as string[]
   }
 })
 </script>

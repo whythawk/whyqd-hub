@@ -24,8 +24,21 @@
                       <BoltIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                       <span class="mx-1 text-gray-500">Workspace</span>
                     </h2>
-                    <div v-if="draftActions" class="space-y-4 max-h-[650px] 2xl:max-h-[1100px] overflow-y-auto mt-2">
-                      <div class="mx-2">
+                    <div class="space-y-4 max-h-[650px] 2xl:max-h-[1100px] min-h-full overflow-y-auto mt-2">
+                      <div class="mx-2 min-h-full" @dragstart="handleDragStart" @dragenter="handleDragEnter"
+                        @dragover="handleDragOver" @dragleave="handleDragLeave" @drop="handleDrop"
+                        @dragend="handleDragEnd">
+                        <div
+                          class="my-1 flex justify-center rounded-lg border border-dashed border-gray-900/25 bg-gray-100 p-2">
+                          <div class="text-center">
+                            <div class="mt-2 flex text-sm leading-6 text-gray-600">
+                              <BoltIcon class="mx-auto h-6 w-6 text-ochre-300" aria-hidden="true" />
+                              <div class="relative rounded-md font-semibold text-ochre-600 ml-1">
+                                Drop zone
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                         <ul v-if="draftActions && draftActions.length" role="list">
                           <li v-for="(action, aIdx) in draftActions"
                             :key="`action-${action.uuid ? action.uuid : 'add-' + aIdx}`"
