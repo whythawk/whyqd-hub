@@ -50,6 +50,8 @@ async def create_or_edit_crosswalk(*, db: Session = Depends(deps.get_db), id: st
                     db=db, id=id, user=current_user, responsibility=schema_types.RoleType.WRANGLER
                 )
             if resource_obj:
+                if not crosswalk_obj and resource_obj.crosswalk_id:
+                    crosswalk_obj = resource_obj.crosswalk
                 data = crud.reference.get_resource_crosswalk_manager(
                     db=db, db_obj=resource_obj, user=current_user, responsibility=schema_types.RoleType.WRANGLER
                 )
