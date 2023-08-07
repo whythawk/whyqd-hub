@@ -30,7 +30,7 @@ function convertActionModelToScript(m: IActionModel): string | null {
       // @ts-ignore
       const dTerm = m.sourceTerm.map( x => `'${x}'`)
       // @ts-ignore
-      return `${m.action} > '${m.destinationField}' < '${m.sourceField}'::[${dTerm}]`
+      return `${m.action} > '${m.destinationField}'::'${m.destinationTerm}' < '${m.sourceField}'::[${dTerm}]`
     case "DEBLANK":
       // "DEBLANK"
       return `${m.action}`
