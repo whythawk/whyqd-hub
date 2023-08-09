@@ -143,7 +143,12 @@ async def download_reference_data(
         model_obj = crud.reference.get_model(db_obj=reference_obj)
         if model_obj:
             mime = crud.files.reader.get_mimetype(mimetype=model_obj.mime)
-            stream = crud.files.get_data_stream(obj_id=model_obj.uuid, mimetype=mime)
+            if crud.files.use_spaces:
+                obj_name = f"{model_obj.uuid}.{mime.name}"
+                if crud.spaces.exists(filename=obj_name):
+                    stream = crud.spaces.get_stream(filename=obj_name, folder_id=None)
+            if not stream:
+                stream = crud.files.get_data_stream(obj_id=model_obj.uuid, mimetype=mime)
     if not stream:
         raise HTTPException(
             status_code=400,

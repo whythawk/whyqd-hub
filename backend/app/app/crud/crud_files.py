@@ -201,7 +201,7 @@ class CRUDFiles:
 
     def get_data_stream(
         self, *, obj_id: str, mimetype: MimeType | str, folder_id: UUID | str | None = None
-    ) -> Iterator[BufferedReader] | StreamingBody:
+    ) -> StreamingBody | Iterator[BufferedReader]:
         mimetype = self.reader.get_mimetype(mimetype=mimetype)
         obj_name = f"{obj_id}.{mimetype.name}"
         if self.use_spaces:
