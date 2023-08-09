@@ -1115,6 +1115,8 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             crosswalk = qd.CrosswalkDefinition(schema_source=schema_subject, schema_destination=schema_object)
             if refresh_schema and db_obj.crosswalk:
                 crosswalk_model = self.get_model(db_obj=db_obj.crosswalk)
+                # Ensure remains the same reference
+                crosswalk.get.uuid = crosswalk_model.uuid
                 if crosswalk_model.actions:
                     # Changes to subject / object may cause issues if this is a refresh_schema
                     for action in crosswalk_model.actions:
