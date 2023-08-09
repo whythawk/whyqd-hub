@@ -1113,18 +1113,19 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             schema_subject = self.get_model(db_obj=db_obj.schema_subject)
             schema_object = self.get_model(db_obj=db_obj.schema_object)
             crosswalk = qd.CrosswalkDefinition(schema_source=schema_subject, schema_destination=schema_object)
-            if db_obj.task and db_obj.task.crosswalk:
+            if refresh_schema and db_obj.crosswalk:
+                crosswalk_model = self.get_model(db_obj=db_obj.crosswalk)
+                if crosswalk_model.actions:
+                    # Changes to subject / object may cause issues if this is a refresh_schema
+                    for action in crosswalk_model.actions:
+                        try:
+                            crosswalk.actions.add(term=action)
+                        except ValueError:
+                            pass
+            elif db_obj.task and db_obj.task.crosswalk:
                 crosswalk_model = self.get_model(db_obj=db_obj.task.crosswalk)
                 if crosswalk_model.actions:
-                    if refresh_schema:
-                        # Changes to subject / object may cause issues if this is a refresh_schema
-                        for action in crosswalk_model.actions:
-                            try:
-                                crosswalk.actions.add(term=action)
-                            except ValueError:
-                                pass
-                    else:
-                        crosswalk.actions.add_multi(terms=crosswalk_model.actions)
+                    crosswalk.actions.add_multi(terms=crosswalk_model.actions)
             crosswalk.model.name = db_obj.name
             if db_obj.title:
                 crosswalk.model.title = db_obj.title
