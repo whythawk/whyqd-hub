@@ -80,12 +80,16 @@ async def create_or_edit_crosswalk(*, db: Session = Depends(deps.get_db), id: st
                     # INITIALISE CROSSWALK ####################################################
                     if state == "initialiseCrosswalk":
                         # Used to reinitialise
-                        crosswalk_dfn = crud.reference.get_crosswalk_definition(db_obj=resource_obj)
+                        crosswalk_dfn = crud.reference.get_crosswalk_definition(
+                            db_obj=resource_obj, refresh_schema=True
+                        )
                         initialised = True
                     # LOAD CROSSWALK ##########################################################
                     if state == "loadCrosswalk":
                         # For local versions that have yet to be saved
-                        crosswalk_dfn = crud.reference.get_crosswalk_definition(db_obj=resource_obj)
+                        crosswalk_dfn = crud.reference.get_crosswalk_definition(
+                            db_obj=resource_obj, refresh_schema=True
+                        )
                         crosswalk_dfn.actions.reset()
                         if data.get("actions"):
                             crosswalk_dfn.actions.add_multi(terms=data["actions"])

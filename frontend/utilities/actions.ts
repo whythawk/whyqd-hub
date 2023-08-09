@@ -28,7 +28,7 @@ function convertActionModelToScript(m: IActionModel): string | null {
     case "CATEGORISE":
       // "CATEGORISE > 'destination_field'::'destination_term' < 'source_field'::['source_term']"
       // @ts-ignore
-      const dTerm = m.sourceTerm.map( x => `'${x}'`)
+      const dTerm = m.sourceTerm.map( x => typeof x === "boolean" ? x ? 'True' : 'False' : `'${x}'`)
       // @ts-ignore
       return `${m.action} > '${m.destinationField}'::'${m.destinationTerm}' < '${m.sourceField}'::[${dTerm}]`
     case "DEBLANK":

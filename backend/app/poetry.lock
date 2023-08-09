@@ -1635,7 +1635,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "whyqd"
-version = "1.0.4"
+version = "1.0.5"
 description = "data wrangling simplicity, complete audit transparency, and at speed"
 category = "main"
 optional = false
@@ -3289,8 +3289,8 @@ websockets = [
     {file = "websockets-11.0.3.tar.gz", hash = "sha256:88fc51d9a26b10fc331be344f1781224a375b78488fc343620184e95a4b27016"},
 ]
 whyqd = [
-    {file = "whyqd-1.0.4-py3-none-any.whl", hash = "sha256:18a92ffe9cee8dac45eec5a07970aba0fa08b6280783e2d6f8ca5a7689acab40"},
-    {file = "whyqd-1.0.4.tar.gz", hash = "sha256:c908e9927fcfa414d030f1f9e18098a3e05dce4a04bc23fd16d9fb26e9b12f57"},
+    {file = "whyqd-1.0.5-py3-none-any.whl", hash = "sha256:ed9f932597ba6e5a62852333c834ad2a5cd6f6bd1805c91fe004877ddf4dc03d"},
+    {file = "whyqd-1.0.5.tar.gz", hash = "sha256:82fe1c96e535408cca64933a76aa6ec4ec09eccce9f0cb2f16f29ad6bce272d8"},
 ]
 xlrd = [
     {file = "xlrd-2.0.1-py2.py3-none-any.whl", hash = "sha256:6a33ee89877bd9abc1158129f6e94be74e2679636b8a205b43b85206c3f0bbdd"},

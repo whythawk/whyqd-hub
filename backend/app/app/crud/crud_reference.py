@@ -1091,9 +1091,11 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             am.sourceTerm = term["source_param"]
         return am
 
-    def get_crosswalk_definition(self, *, db_obj: Resource | Task) -> qd.CrosswalkDefinition | None:
+    def get_crosswalk_definition(
+        self, *, db_obj: Resource | Task, refresh_schema: bool = False
+    ) -> qd.CrosswalkDefinition | None:
         # For websocket use, for interactive crosswalk development
-        if db_obj.crosswalk:
+        if db_obj.crosswalk and not refresh_schema:
             crosswalk = self.get_model(db_obj=db_obj.crosswalk)
             return qd.CrosswalkDefinition(crosswalk=crosswalk)
         if isinstance(db_obj, Task) and db_obj.schema_object:
@@ -1114,7 +1116,15 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             if db_obj.task and db_obj.task.crosswalk:
                 crosswalk_model = self.get_model(db_obj=db_obj.task.crosswalk)
                 if crosswalk_model.actions:
-                    crosswalk.actions.add_multi(terms=crosswalk_model.actions)
+                    if refresh_schema:
+                        # Changes to subject / object may cause issues if this is a refresh_schema
+                        for action in crosswalk_model.actions:
+                            try:
+                                crosswalk.actions.add(term=action)
+                            except ValueError:
+                                pass
+                    else:
+                        crosswalk.actions.add_multi(terms=crosswalk_model.actions)
             crosswalk.model.name = db_obj.name
             if db_obj.title:
                 crosswalk.model.title = db_obj.title

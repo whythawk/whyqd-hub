@@ -77,11 +77,6 @@ const strategies = [
   { value: "boolean", label: "Values to boolean TRUE" },
 ]
 
-function requestTest(test: string) {
-  console.log("requested ", test, props.field.name)
-  isDisabled.value = true
-}
-
 async function requestCategorisation(term_type: string) {
   await tokenStore.refreshTokens()
   if (tokenStore.token) {
@@ -110,9 +105,9 @@ const props = defineProps<{
   lastCard: Boolean
 }>()
 
-onMounted(async () => {
-  if (props.field.constraints && props.field.constraints.enum && props.field.constraints.enum.length)
-    isDisabled.value = true
-})
+// onMounted(async () => {
+//   if (props.field.constraints && props.field.constraints.enum && props.field.constraints.enum.length)
+//     isDisabled.value = true
+// })
 
 </script>
