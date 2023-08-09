@@ -949,8 +949,9 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
                 if crosswalk_prospects:
                     # Just pick the first for now
                     crosswalk_obj = next(iter(crosswalk_prospects))
-                    resource_in.crosswalk_id = crosswalk_obj.id
-                    resource_in.state = StateType.TRANSFORM_READY
+                    if crosswalk_obj:
+                        resource_in.crosswalk_id = crosswalk_obj.id
+                        resource_in.state = StateType.TRANSFORM_READY
             # And create the resource ##################################################################################
             resource_obj = crud_resource.create(db=db, obj_in=resource_in, user=user)
             if not resource_obj.crosswalk_id:

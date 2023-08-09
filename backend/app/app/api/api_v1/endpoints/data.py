@@ -153,7 +153,7 @@ async def download_reference_data(
     if mime in [schema_types.MimeType.CSV, schema_types.MimeType.XLS, schema_types.MimeType.XLSX]:
         media_type = mime.value
     return StreamingResponse(
-        stream,
+        content=stream,
         media_type=media_type,
         headers={
             "Content-Disposition": f"attachment; filename={model_obj.name}",
