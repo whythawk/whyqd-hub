@@ -140,7 +140,9 @@
           </li>
         </ul>
       </div>
-      <div v-if="props.reference && props.state === 'COMPLETE' && props.lastCard" class="flex items-center">
+      <div
+        v-if="props.reference && props.lastCard && (props.state === 'COMPLETE' || (props.reference.links && props.reference.links.length))"
+        class="flex items-center">
         <h4 id="process-heading" class="sr-only">Remove transform</h4>
         <ul role="list" class="flex flex-row text-xs">
           <li>
