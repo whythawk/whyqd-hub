@@ -1635,7 +1635,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "whyqd"
-version = "1.0.7"
+version = "1.0.8"
 description = "data wrangling simplicity, complete audit transparency, and at speed"
 category = "main"
 optional = false
@@ -1671,7 +1671,7 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9.4"
-content-hash = "acc4e2588255ca1e1ced2a6d67e1644dd0163b3abae90e356f0e3a6d4e3d98c0"
+content-hash = "a6251c5112ff76590c9e71b17cff8d81f0686afbd8a4e787a1920ed81936692e"
 
 [metadata.files]
 aiosignal = [
@@ -3305,8 +3305,8 @@ websockets = [
     {file = "websockets-11.0.3.tar.gz", hash = "sha256:88fc51d9a26b10fc331be344f1781224a375b78488fc343620184e95a4b27016"},
 ]
 whyqd = [
-    {file = "whyqd-1.0.7-py3-none-any.whl", hash = "sha256:43110ae3ccf3dcccaf04779358db16b7cb76bff5575ead2915bda303f69fd388"},
-    {file = "whyqd-1.0.7.tar.gz", hash = "sha256:d0901b7cdaa375c0ea96c8a4ebf41e9deaacacecabffce7425352d843b8d161d"},
+    {file = "whyqd-1.0.8-py3-none-any.whl", hash = "sha256:2af19ae9ef3f436ba1b8d6b165dff39597d4393ec40d10f60b4fd689541c9fed"},
+    {file = "whyqd-1.0.8.tar.gz", hash = "sha256:9d2f51166ac75b0aaa1caf3a438d91057c377c95e6336c9ed3306e487c72f653"},
 ]
 xlrd = [
     {file = "xlrd-2.0.1-py2.py3-none-any.whl", hash = "sha256:6a33ee89877bd9abc1158129f6e94be74e2679636b8a205b43b85206c3f0bbdd"},
