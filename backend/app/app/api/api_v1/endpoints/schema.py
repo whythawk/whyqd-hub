@@ -169,6 +169,13 @@ async def create_and_edit_schema(*, db: Session = Depends(deps.get_db), websocke
                         # https://stackoverflow.com/q/65622045/295606
                         # TODO: https://stackoverflow.com/a/69740271/295606 when you have the time
                         response["data"] = json.loads(schema_definition.get.json(by_alias=True))
+                        # Pydantic is sometimes wrecking the aliases for category ("category" instead of "enum")
+                        if response["data"].get("fields") and isinstance(response["data"]["fields"], list):
+                            for field in response["data"]["fields"]:
+                                if field.get("constraints") and isinstance(field["constraints"], dict):
+                                    if field["constraints"].get("category") and not field["constraints"].get("enum"):
+                                        field["constraints"]["enum"] = field["constraints"]["category"]
+                                        field["constraints"].pop("category", None)
                 except ValidationError as e:
                     response = {"state": "error", "error": e}
                 ########################################################################

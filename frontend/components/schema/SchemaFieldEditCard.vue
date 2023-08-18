@@ -247,7 +247,6 @@ const parameters = {
 }
 
 function checkUnique(objArray: ICategoryCreate[]): boolean {
-  console.log("testing length")
   if (!objArray || !objArray.length) return true
   let nameList = objArray.map(({ name }) => name)
   const listLength = nameList.length
@@ -278,8 +277,8 @@ function addCategory(): void {
   if (!draft.value.constraints!.enum) draft.value.constraints!.enum = [] as ICategoryCreate[]
   const newCat: ICategoryCreate = {
     uuid: generateUUID(),
-    name: "New category name",
-    description: "New category description",
+    name: "",
+    description: "",
   }
   draft.value.constraints!.enum.splice(draft.value.constraints!.enum.length, 1, newCat)
 }

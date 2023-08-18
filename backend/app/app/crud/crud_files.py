@@ -191,9 +191,13 @@ class CRUDFiles:
             source = self.directory
             obj_in = self.core.load_json(source=str(source / obj_name))
         if obj_in:
+            # Pydantic is sometimes wrecking the aliases for category ("category" instead of "enum")
             if obj_in.get("fields") and isinstance(obj_in["fields"], list):
                 for field in obj_in["fields"]:
                     if field.get("constraints") and isinstance(field["constraints"], dict):
+                        if field["constraints"].get("category") and not field["constraints"].get("enum"):
+                            field["constraints"]["enum"] = field["constraints"]["category"]
+                            field["constraints"].pop("category", None)
                         if not isinstance(field["constraints"].get("enum"), list):
                             field["constraints"]["enum"] = []
             obj_in = resource_model(**obj_in)
