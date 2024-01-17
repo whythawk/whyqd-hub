@@ -75,6 +75,20 @@ export interface ITaskFilters {
   date_from?: string
   date_to?: string
   descending?: boolean
+  scheduled?: boolean
+  prioritised?: boolean
+  accrualPolicy?: IAccrualPolicyType
+  accrualPeriodicity?: IFrequencyType
+  page?: number
+}
+
+export interface ITaskScheduleFilters {
+  match?: string
+  date_from?: string
+  date_to?: string
+  scheduled?: boolean
+  accrualPolicy?: IAccrualPolicyType
+  accrualPeriodicity?: IFrequencyType
   page?: number
 }
 

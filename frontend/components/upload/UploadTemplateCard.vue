@@ -6,7 +6,10 @@
     <TableCellsIcon
       class="relative mt-3 h-6 w-6 flex-none rounded-full bg-gray-50 ring-1 ring-offset-4 ring-ochre-200 text-gray-700"
       aria-hidden="true" />
-    <form class="flex-auto rounded-lg  py-2 px-3 ring-1 ring-inset ring-gray-200">
+    <Form
+      @submit="submitRequest"
+      :validation-schema="formSchema" :initial-values="formValues"
+      class="flex-auto rounded-lg  py-2 px-3 ring-1 ring-inset ring-gray-200">
       <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
         <div class="col-span-full">
           <label for="datasource-name" class="block text-sm font-semibold leading-6 text-gray-900">Name *</label>
@@ -56,6 +59,17 @@
             </Listbox>
           </div>
         </div>
+        <div class="col-span-full">
+          <label for="datasourcePath" class="block text-sm font-semibold leading-6 text-gray-900">
+            URL or web-based file path
+          </label>
+          <div class="mt-2 group relative inline-block w-full">
+            <Field type="text" name="datasourcePath" id="datasourcePath"
+              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-ochre-600 sm:text-sm sm:leading-6" />
+            <ErrorMessage name="datasourcePath"
+              class="absolute left-5 top-5 translate-y-full w-48 px-2 py-1 bg-gray-700 rounded-lg text-center text-white text-sm after:content-[''] after:absolute after:left-1/2 after:bottom-[100%] after:-translate-x-1/2 after:border-8 after:border-x-transparent after:border-t-transparent after:border-b-gray-700" />
+          </div>
+        </div>
         <Disclosure as="section" aria-labelledby="detail-heading" v-slot="{ open }" class="col-span-full">
           <DisclosureButton
             class="group flex flex-row items-center text-sm font-medium text-gray-500 hover:text-ochre-500">
@@ -75,15 +89,6 @@
               <label for="description" class="block text-sm font-semibold leading-6 text-gray-900">Description</label>
               <div class="mt-2">
                 <textarea id="description" name="description" rows="3" v-model="datasource.description"
-                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-ochre-600 sm:text-sm sm:leading-6" />
-              </div>
-            </div>
-            <div class="col-span-full">
-              <label for="datasource-path" class="block text-sm font-semibold leading-6 text-gray-900">
-                URL or web-based file path
-              </label>
-              <div class="mt-2">
-                <input type="text" name="datasource-path" id="datasource-path" v-model="datasource.path"
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-ochre-600 sm:text-sm sm:leading-6" />
               </div>
             </div>
@@ -118,12 +123,12 @@
         </Disclosure>
       </div>
       <div class="flex items-center justify-end">
-        <button type="submit" @click.prevent="submitRequest"
+        <button type="submit"
           class="rounded-md bg-ochre-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-ochre-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ochre-600">
           Upload
         </button>
       </div>
-    </form>
+    </Form>
   </div>
 </template>
 
@@ -131,9 +136,10 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Listbox, ListboxButton, ListboxOptions, ListboxOption, } from "@headlessui/vue"
 import { CheckIcon, ChevronUpDownIcon, ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { TableCellsIcon } from "@heroicons/vue/24/outline"
-import { IDataSourceTemplate } from "@/interfaces"
+import { IDataSourceTemplate, IKeyable } from "@/interfaces"
 import { useTokenStore, useToastStore } from "@/stores"
 import { apiData } from "@/api"
+import { isValidHttpUrl } from "@/utilities"
 
 const tokenStore = useTokenStore()
 const toasts = useToastStore()
@@ -148,6 +154,7 @@ let formData: FormData = new FormData()
 
 const props = defineProps<{
   source: File,
+  sourceUrl: string,
   idx: number,
   lastCard: Boolean
 }>()
@@ -162,6 +169,10 @@ const parameters = {
     { value: "FEATHER" },
   ],
 }
+const formSchema = {
+  datasourcePath: { url: true, required: false },
+}
+const formValues = ref<IKeyable>({ datasourcePath: '' })
 
 function onlyNumbers(payload: any[]): boolean {
   return payload.every(element => {
@@ -188,7 +199,10 @@ function validateTemplate(): boolean {
   return true
 }
 
-async function submitRequest() {
+async function submitRequest(values: any) {
+  if (values.datasourcePath && isValidHttpUrl(values.datasourcePath)) {
+    datasource.value.path = values.datasourcePath
+  } 
   delete datasource.value.header
   delete datasource.value.attributes
   attributesError.value = false
@@ -243,9 +257,14 @@ async function submitRequest() {
   }
 }
 
-
 function initialiseTemplate() {
   datasource.value.name = props.source.name
+  if (props.sourceUrl && isValidHttpUrl(props.sourceUrl)) {
+    datasource.value.path = props.sourceUrl
+    formValues.value = {
+      datasourcePath: props.sourceUrl
+    }
+  } 
   formData.append("files", props.source, props.source.name)
 }
 

@@ -41,6 +41,7 @@ class Reference(Base):
         Computed("to_tsvector('pg_catalog.simple', \"description\")", persisted=True),
         nullable=True,
     )
+    isFeatured: Mapped[bool] = mapped_column(default=False)
     # OF RESOURCE TYPE
     model: Mapped[UUID] = mapped_column(UUID(as_uuid=True), unique=False, nullable=False, index=True)
     model_type: Mapped[ENUM[ReferenceType]] = mapped_column(ENUM(ReferenceType), nullable=False, index=True)

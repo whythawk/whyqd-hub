@@ -34,14 +34,15 @@
               <p class="text-sm text-gray-500">Drag to reorder.</p>
             </div>
             <SchemaFieldEditCard v-if="showAddField" state="addField" :edit="{} as IFieldCreate" :last-card="false"
-              @set-request="watchRequestSocket" />
+              @set-request="watchRequestSocket" @set-draggable="watchDraggableState" />
             <div v-for="(field, fIdx) in schemaStore.draft.fields" :key="`field-${field.uuid}`"
-              :id="`field-${field.uuid}`" draggable="true" class="bg-white rounded-lg" @dragstart="handleDragStart"
+              :id="`field-${field.uuid}`" :draggable="isDraggable" class="bg-white rounded-lg" @dragstart="handleDragStart"
               @dragenter="handleDragEnter" @dragover="handleDragOver" @dragleave="handleDragLeave" @drop="handleDrop"
               @dragend="handleDragEnd">
               <!-- <SchemaFieldCard :edit="field" /> -->
               <SchemaFieldEditCard state="updateField" :edit="field"
-                :last-card="fIdx === schemaStore.draft.fields.length - 1" @set-request="watchRequestSocket" />
+                :last-card="fIdx === schemaStore.draft.fields.length - 1" 
+                @set-request="watchRequestSocket" @set-draggable="watchDraggableState" />
             </div>
           </div>
         </div>
@@ -79,6 +80,7 @@ const showAddField = ref(false)
 const showReset = ref(false)
 const referenceID = ref("" as string)
 const showImport = ref(false)
+const isDraggable = ref(false)
 
 onMounted(async () => {
   if (route.params.id !== "create" || schemaStore.term.uuid === schemaStore.draft.uuid) {
@@ -103,6 +105,10 @@ async function watchEditHeadingRequest(request: string) {
       const link = route.params.id !== 'create' ? `/schema/${route.params.id}` : '/'
       return await navigateTo(link)
   }
+}
+
+async function watchDraggableState(draggable: boolean) {
+  isDraggable.value = draggable
 }
 
 onBeforeRouteLeave((to, from, next) => {
@@ -156,7 +162,17 @@ async function watchResponseSocket(response: ISocketResponse) {
       })
       else {
         // if already have a saved draft, reload it
-        if (schemaStore.draft && Object.keys(schemaStore.draft).length !== 0) await watchRequestSocket({
+        if (
+          schemaStore.draft
+          && Object.keys(schemaStore.draft).length !== 0
+          && (
+            !schemaStore.term
+            || (
+              Object.keys(schemaStore.term).length !== 0
+              && schemaStore.term.uuid === schemaStore.draft.uuid
+            )
+          )
+        ) await watchRequestSocket({
           state: "initialiseSchema",
           data: schemaStore.draft
         })

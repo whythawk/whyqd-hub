@@ -10,6 +10,7 @@ export interface IResource {
   name: string
   title?: string
   description?: string
+  sourceURL?: string
   state: IStatusType
   data?: IModelSummary
   schema_subject?: IModelSummary

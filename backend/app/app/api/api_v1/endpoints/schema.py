@@ -124,6 +124,12 @@ async def create_and_edit_schema(*, db: Session = Depends(deps.get_db), websocke
                         if data.get("constraints") and isinstance(data["constraints"], dict):
                             if not isinstance(data["constraints"].get("enum"), list):
                                 data["constraints"]["enum"] = []
+                        # Need to pass this into whyqd as a fix
+                        if data.get("uuid"):
+                            # For the case where the field name is changed
+                            updateField = schema_definition.fields.get(name=UUID(data["uuid"]).hex)
+                            updateField.name = data["name"]
+                        # Resume
                         schema_definition.fields.update(term=data)
                     # REMOVE FIELD #####################################################
                     if state == "removeField" and initialised:

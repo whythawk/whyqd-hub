@@ -40,6 +40,8 @@ async def create_upload_files(
     current_user: models.User = Depends(deps.get_subscribed_user),
 ) -> Any:
     for source in files:
+        # Establish the source url because datasource's path will be repointed at the saved tabular file
+        sourceURL = data.path
         try:
             datasource_in = crud.files.import_source_from_upload(source=source, datasource_in=data)
         except ValueError as e:
@@ -48,7 +50,7 @@ async def create_upload_files(
                 detail=e,
             )
         datasource_in = json.loads(datasource_in.json(by_alias=True))
-        celery_app.send_task("app.worker.process_data_import", args=[current_user.id, datasource_in, None])
+        celery_app.send_task("app.worker.process_data_import", args=[current_user.id, datasource_in, sourceURL, None])
     return {
         "msg": "Source files successfully uploaded. Check your activity log to see when they're ready to process further."
     }
@@ -70,6 +72,17 @@ async def create_upload_files_for_task(
             detail="Either the task does not exist, or you do not have the rights for this request.",
         )
     for source in files:
+        # START: Update source url
+        # Establish the source url because datasource's path will be repointed at the saved tabular file
+        sourceURL = data.path
+        if task_obj.source and not sourceURL:
+            sourceURL = task_obj.source
+        if sourceURL and sourceURL.strip() != task_obj.source:
+            # Update the task source url
+            task_in = schemas.TaskUpdate.from_orm(task_obj)
+            task_in.source = sourceURL.strip()
+            task_obj = crud.task.update(db=db, id=id, obj_in=task_in, user=current_user, responsibility=schema_types.RoleType.WRANGLER)
+        # END: Update source url
         try:
             datasource_in = crud.files.import_source_from_upload(source=source, datasource_in=data)
         except ValueError as e:
@@ -78,7 +91,7 @@ async def create_upload_files_for_task(
                 detail=e,
             )
         datasource_in = json.loads(datasource_in.json(by_alias=True))
-        celery_app.send_task("app.worker.process_data_import", args=[current_user.id, datasource_in, task_obj.id])
+        celery_app.send_task("app.worker.process_data_import", args=[current_user.id, datasource_in, sourceURL, task_obj.id])
     return {
         "msg": "Source files successfully uploaded. Check your activity log to see when they're ready to process further."
     }

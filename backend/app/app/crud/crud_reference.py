@@ -789,6 +789,28 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
     #         )
     #     return False
 
+    def toggle_featured_schema(
+        self,
+        db: Session,
+        *,
+        db_obj: Reference,
+        user: User,
+        responsibility: RoleType = RoleType.CURATOR,
+    ) -> Reference:
+        # Featured schema, used for listing destination / object schemas
+        obj_in = ResourceSchemaReference.from_orm(db_obj)
+        obj_in.isFeatured = True
+        if db_obj.isFeatured:
+            obj_in.isFeatured = False
+        return self.update(
+            db=db,
+            id=db_obj.id,
+            user=user,
+            reference_in=obj_in,
+            reference_type=ReferenceType.SCHEMA,
+            responsibility=responsibility,
+        )
+
     ###################################################################################################
     # WHYQD WORKFLOW
     ###################################################################################################
@@ -798,6 +820,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         db: Session,
         user: User,
         datasource_in: DataSourceTemplateModel,
+        sourceURL: str | None = None,
         task: Task | None = None,
     ) -> None:
         # ASSUMES ALREADY RUN CRUD.FILES.IMPORT_SOURCE #################################################################
@@ -818,7 +841,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
                 "description": datasource_in.description,
             }
         resource_in = ResourceCreate(**resource_in)
-        # Check of a schema object is specified ########################################################################
+        # Check if a schema object is specified ########################################################################
         schema_object_in = None
         if task:
             resource_in.task_id = task.id
@@ -898,6 +921,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         )
         resource_in.state = StateType.DATA_READY
         resource_in.datasource_id = datasource_obj.id
+        resource_in.sourceURL = sourceURL
         for data_in in data_models:
             # Each data model requires its own resource, even if there is a single source file (multi-sheet excel)
             resource_in.id = uuid4()
@@ -911,7 +935,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             resource_in.data_id = data_obj.id
             # Check for a unique schema subject, or derive one #########################################################
             hash = self.get_term_hash(terms=data_in.columns)
-            schema_prospects = self.get_multi_by_hash(db=db, hash=hash, user=user)
+            schema_prospects = self.get_multi_by_hash(db=db, hash=hash, user=user, task=task)
             schema_subject_in = None
             if len(schema_prospects) == 1:
                 schema_subject_in = next(iter(schema_prospects))
@@ -1277,9 +1301,17 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         return hashlib.blake2b(terms).hexdigest()
 
     def get_multi_by_hash(
-        self, db: Session, *, hash: str, user: User, responsibility: RoleType = RoleType.SEEKER
+        self, 
+        db: Session, 
+        *, 
+        hash: str, 
+        user: User, 
+        responsibility: RoleType = RoleType.SEEKER,
+        task: Task | None = None,
     ) -> set[Reference]:
         db_objs = db.query(self.model).filter(self.model.hash == hash)
+        if task:
+            db_objs = db_objs.filter(self.model.schema_subjects.any(Resource.task_id == task.id))
         if not user.is_superuser:
             responsibilities = crud_role._get_responsibility(responsibility=responsibility)
             db_objs = self._get_query(db_query=db_objs, user=user, responsibilities=responsibilities)
@@ -1293,10 +1325,13 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         schema_object: Reference,
         user: User,
         responsibility: RoleType = RoleType.SEEKER,
+        task: Task | None = None,
     ) -> set[Reference]:
         db_objs = db.query(Resource).filter(
             (Resource.schema_subject_id == schema_subject.id) & (Resource.schema_object_id == schema_object.id)
         )
+        if task:
+            db_objs = db_objs.filter(self.model.schema_subjects.any(Resource.task_id == task.id))
         if not user.is_superuser:
             responsibilities = crud_role._get_responsibility(responsibility=responsibility)
             db_objs = self._get_query(db_query=db_objs, user=user, responsibilities=responsibilities)
@@ -1309,12 +1344,13 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         data_obj: Reference,
         user: User,
         responsibility: RoleType = RoleType.SEEKER,
+        task: Task | None = None,
     ) -> set[Reference]:
         schema_prospects = {}
         data_model = crud_files.get(obj_id=data_obj.model, obj_type=data_obj.model_type)
         if data_model:
             hash = self.get_term_hash(terms=data_model.columns)
-            schema_prospects = self.get_multi_by_hash(db=db, hash=hash, user=user, responsibility=responsibility)
+            schema_prospects = self.get_multi_by_hash(db=db, hash=hash, user=user, responsibility=responsibility, task=task)
         return schema_prospects
 
     ###################################################################################################

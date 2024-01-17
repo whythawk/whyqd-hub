@@ -149,7 +149,10 @@ class Task(Base):
 
     @hybrid_property
     def last_scheduled(self) -> Optional[Resource]:
-        return self.resources.filter(Resource.state == StateType.COMPLETE).order_by(Resource.created.desc()).first()
+        return self.resources.filter(
+            (Resource.state == StateType.COMPLETE)
+            & (self.id == Resource.task_id)
+            ).order_by(Resource.created.desc()).first()
 
     @last_scheduled.inplace.expression
     @classmethod
@@ -194,7 +197,7 @@ class Task(Base):
 
     @scheduled.inplace.expression
     @classmethod
-    def _scheduled(cls) -> ColumnElement[DateTime]:
+    def _scheduled(cls) -> ColumnElement[bool]:
         # Can't get this to work for now ...
         # https://stackoverflow.com/a/14341182/295606
         # cycle_date = func.concat(func.substring(self.update_cycle, 1, 4), "0401")

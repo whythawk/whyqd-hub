@@ -8,6 +8,7 @@ export interface IReference {
   name: string
   title?: string
   description?: string
+  isFeatured?: boolean
   model: string
   model_type: IReferenceType
   version?: string
@@ -35,16 +36,16 @@ interface IKeyable {
 }
 
 export interface IDataSourceTemplate {
-    uuid?: string
-    created?: string
-    name?: string
-    title?: string
-    description?: string
-    path?: string
-    mime?: IMimeType
-    header?: number | number[]
-    attributes?: IKeyable
-    citation?: ICitation
+  uuid?: string
+  created?: string
+  name?: string
+  title?: string
+  description?: string
+  path?: string
+  mime?: IMimeType
+  header?: number | number[]
+  attributes?: IKeyable
+  citation?: ICitation
 }
 
 export interface ICrosswalkTemplate {

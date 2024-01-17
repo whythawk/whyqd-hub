@@ -47,6 +47,7 @@ class Resource(Base):
         Computed("to_tsvector('pg_catalog.simple', \"description\")", persisted=True),
         nullable=True,
     )
+    sourceURL: Mapped[Optional[str]] = mapped_column(nullable=True)
     state: Mapped[ENUM[StateType]] = mapped_column(ENUM(StateType), nullable=False)
     # REFERENCE WORKFLOW
     # 1. source

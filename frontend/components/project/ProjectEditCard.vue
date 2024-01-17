@@ -428,7 +428,18 @@ async function submitRequest() {
 
 onMounted(async () => {
   if (route.params.id !== "create") saveApproach.value = "Update"
-  if (projectStore.draft && Object.keys(projectStore.draft).length !== 0) resetDraft()
+  if (
+    projectStore.draft
+    && Object.keys(projectStore.draft).length !== 0
+    && (
+      !projectStore.term
+      || (
+        Object.keys(projectStore.term).length !== 0
+        && projectStore.term.id === route.params.id
+        && projectStore.term.id === projectStore.draft.id
+      )
+    )
+  ) resetDraft()
   else resetForm()
 })
 

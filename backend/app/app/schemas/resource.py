@@ -23,6 +23,10 @@ class ResourceBase(BaseSchema):
         None,
         description="A short description of the resource.",
     )
+    sourceURL: Optional[str] = Field(
+        None,
+        description="A related URL from which the described source data is imported.",
+    )
     state: Optional[StateType] = Field(default=StateType.READY, description="Resource work state.")
 
 
@@ -100,6 +104,7 @@ class ResourceDataReference(ResourceReference):
 
 
 class ResourceSchemaReference(ResourceReference):
+    isFeatured: Optional[bool] = Field(False, description="Schema is a featured destination / object.")
     fields: List[FieldModel] = Field(
         default=[],
         description="A list of fields which define the schema. Fields, similarly, contain `name`, `title` and `description`, as well as `type` as compulsory.",
