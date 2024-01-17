@@ -42,7 +42,7 @@ import {
   IResourceCrosswalkManager,
   IResourceFilters
 } from "./resource"
-import { ITask, IScheduledTask, ITaskFilters } from "./task"
+import { ITask, IScheduledTask, ITaskFilters, ITaskScheduleFilters } from "./task"
 import { IProject, IProjectFilters, IProjectRole, IProjectInvitation } from "./project"
 
 export {
@@ -91,6 +91,7 @@ export {
   ITask,
   IScheduledTask,
   ITaskFilters,
+  ITaskScheduleFilters,
   IProject,
   IProjectFilters,
   IProjectRole,

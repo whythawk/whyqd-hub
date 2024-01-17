@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
+from sqlalchemy import nullslast
 from uuid import UUID
 from datetime import datetime
 
@@ -11,7 +12,7 @@ from app.models.task import Task
 from app.models.reference import Reference
 from app.models.reference_template import ReferenceTemplate
 from app.schemas.task import TaskCreate, TaskUpdate
-from app.schema_types import RoleType, ReferenceType
+from app.schema_types import RoleType, ReferenceType, DCAccrualPolicyType, DCFrequencyType
 
 # from app.crud.crud_project import project as crud_project
 from app.crud.crud_role import role as crud_role
@@ -166,33 +167,42 @@ class CRUDTask(CRUDWhyqdBase[Task, TaskCreate, TaskUpdate]):
         responsibility: RoleType = RoleType.SEEKER,
         project_obj: Project | None = None,
         match: str | None = None,
+        scheduled: bool = False,
+        accrualPolicy: DCAccrualPolicyType | None = None,
+        accrualPeriodicity: DCFrequencyType | None = None,
         date_from: datetime | str | None = None,
         date_to: datetime | str | None = None,
-        descending: bool = True,
+        prioritised: bool = True,
         page: int = 0,
         page_break: bool = False,
     ) -> list[Task]:
-        db_objs = db.query(self.model).filter(
-            (
-                (func.extract("EPOCH", func.now()) - func.extract("EPOCH", self.model.last_scheduled))
-                >= self.model.scheduled_period
-            )
-            | (
-                (self.model.last_scheduled == None)  # noqa: E711
-                & (
-                    (func.extract("EPOCH", func.now()) - func.extract("EPOCH", self.model.temporalStart))
+        db_objs = db.query(self.model)
+        if scheduled:
+            db_objs = db_objs.filter(
+                (
+                    (func.extract("EPOCH", func.now()) - func.extract("EPOCH", self.model.last_scheduled))
                     >= self.model.scheduled_period
                 )
-            )
-            | (
-                (self.model.last_scheduled == None)  # noqa: E711
-                & (self.model.temporalStart == None)  # noqa: E711
-                & (
-                    (func.extract("EPOCH", func.now()) - func.extract("EPOCH", self.model.created))
-                    >= self.model.scheduled_period
+                | (
+                    (self.model.last_scheduled == None)  # noqa: E711
+                    & (
+                        (func.extract("EPOCH", func.now()) - func.extract("EPOCH", self.model.temporalStart))
+                        >= self.model.scheduled_period
+                    )
+                )
+                | (
+                    (self.model.last_scheduled == None)  # noqa: E711
+                    & (self.model.temporalStart == None)  # noqa: E711
+                    & (
+                        (func.extract("EPOCH", func.now()) - func.extract("EPOCH", self.model.created))
+                        >= self.model.scheduled_period
+                    )
                 )
             )
-        )
+        if accrualPolicy:
+            db_objs = db_objs.filter(self.model.accrualPolicy == accrualPolicy)
+        if accrualPeriodicity:
+            db_objs = db_objs.filter(self.model.accrualPeriodicity == accrualPeriodicity)
         if not user.is_superuser:
             responsibilities = crud_role._get_responsibility(responsibility=responsibility)
             db_objs = self._get_query(db_query=db_objs, user=user, responsibilities=responsibilities)
@@ -216,10 +226,12 @@ class CRUDTask(CRUDWhyqdBase[Task, TaskCreate, TaskUpdate]):
                     | self.model.description_vector.match(str(match))
                 )
             )
-        order_by = self.model.created
-        if descending:
-            order_by = order_by.desc()
-        db_objs = db_objs.distinct().order_by(order_by)
+        if prioritised:
+            db_objs = db_objs.order_by(
+                self.model.scheduled.desc(), nullslast(self.model.accrualPriority.desc()), self.model.title
+            )
+        else:
+            db_objs = db_objs.order_by(self.model.title)
         if not page_break:
             if page > 0:
                 db_objs = db_objs.offset(page * settings.MULTI_MAX)

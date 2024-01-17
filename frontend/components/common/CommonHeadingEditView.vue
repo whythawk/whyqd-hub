@@ -84,14 +84,22 @@ const icons: IKeyable = {
 }
 const emit = defineEmits<{ setEditRequest: [request: string] }>()
 
+watch(() => [props.title, props.name], () => {
+  watchHeading()
+})
+
 async function watchEditRequest(request: string) {
   // One of 'reset, 'cancel', 'save'
   emit("setEditRequest", request)
 }
 
-onMounted(async () => {
+function watchHeading() {
   if (props.title) heading.value = props.title
   else heading.value = props.name
+}
+
+onMounted(async () => {
+  watchHeading()
   if (props.approach) saveApproach.value = props.approach
   avatar.value = await getAvatar(route.params.id as string)
 })

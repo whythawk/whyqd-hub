@@ -5,7 +5,7 @@
     </div>
     <div v-if="appSettings.current.pageState === 'done' && taskStore.term">
       <div class="mt-6 border-b border-t border-gray-200 py-3 md:px-8">
-        <TaskCard :task="taskStore.term" :last-card="true" />
+        <TaskScheduleCard :task="taskStore.term" :last-card="true" />
       </div>
       <div v-if="!authStore.hasExplorerSubscription" class="my-2">
         <SubscriptionsNeededCard needed="EXPLORER" />
@@ -16,6 +16,7 @@
           <ul role="list" class="pt-1 space-y-2">
             <li v-for="(source, sIdx) in dataSources" :key="`source-${sIdx}`" class="space-y-10">
               <UploadTemplateCard v-if="!uploaded.includes(sIdx)" :source="source" :idx="sIdx"
+                :source-url="taskStore.term.source ? taskStore.term.source : ''"
                 :last-card="sIdx === dataSources.length - 1" @pop-request="watchUploadRequests" />
             </li>
           </ul>

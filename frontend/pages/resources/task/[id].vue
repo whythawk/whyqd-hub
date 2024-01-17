@@ -5,7 +5,7 @@
     </div>
     <div v-if="appSettings.current.pageState === 'done' && taskStore.term">
       <div class="mt-6 border-b border-t border-gray-200 py-3 md:px-8">
-        <TaskCard :task="taskStore.term" :last-card="true" />
+        <TaskScheduleCard :task="taskStore.term" :last-card="true" />
       </div>
       <ResourceFilterPanel />
       <div v-if="resourceStore.multi.length === 0" class="space-y-2">

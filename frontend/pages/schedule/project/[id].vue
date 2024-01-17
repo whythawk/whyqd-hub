@@ -7,7 +7,7 @@
       <div class="mt-6 border-b border-t border-gray-200 py-3 md:px-8">
         <ProjectCard :project="projectStore.term" :last-card="true" />
       </div>
-      <TaskFilterPanel />
+      <TaskFilterSchedulePanel />
       <div v-if="taskStore.scheduled.length === 0" class="space-y-2">
         <CommonEmptyCard
           term="Nothing right now. Create tasks & assign update frequencies & priorities to see them here." />

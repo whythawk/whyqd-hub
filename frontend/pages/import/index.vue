@@ -9,7 +9,8 @@
         <ul role="list" class="space-y-2">
           <li v-for="(source, sIdx) in dataSources" :key="`source-${sIdx}`" class="space-y-10">
             <UploadTemplateCard v-if="!uploaded.includes(sIdx)" :source="source" :idx="sIdx"
-              :last-card="sIdx === dataSources.length - 1" @pop-request="watchUploadRequests" />
+              :source-url="''" :last-card="sIdx === dataSources.length - 1" 
+              @pop-request="watchUploadRequests" />
           </li>
         </ul>
       </div>

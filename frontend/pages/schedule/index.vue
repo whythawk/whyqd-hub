@@ -4,7 +4,7 @@
       <LoadingCardSkeleton />
     </div>
     <div v-if="appSettings.current.pageState === 'done'">
-      <TaskFilterPanel />
+      <TaskFilterSchedulePanel />
       <div v-if="taskStore.scheduled.length === 0" class="space-y-2">
         <CommonEmptyCard
           term="Nothing right now. Create tasks & assign update frequencies & priorities to see them here." />

@@ -6,14 +6,50 @@
     <div v-if="appSettings.current.pageState === 'done' && taskStore.term && taskStore.term.name">
       <CommonHeadingView purpose="Task" :name="taskStore.term.name" :title="taskStore.term.title"
         @set-edit-request="watchHeadingRequest" />
+      <ul role="list" class="flex flex-row justify-end text-xs">
+        <h3 id="action-heading" class="sr-only">Import, source link, and latest resource state</h3>
+        <li class="relative">
+          <NuxtLink :to="`/import/task/${taskStore.term.id}`"
+            class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 p-2 pl-0 font-semibold text-xs items-center">
+            <ArrowUpTrayIcon class="text-cerulean-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>Import data</span>
+          </NuxtLink>
+        </li>
+        <li v-if="taskStore.term.source && isValidHttpUrl(taskStore.term.source)" class="relative">
+          <a :href="taskStore.term.source" target="_blank"
+            class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-xs items-center">
+            <LinkIcon class="text-cerulean-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>Source</span>
+          </a>
+        </li>
+        <li class="flex flex-row items-center relative">
+          <NuxtLink :to="`/resources/task/${taskStore.term.id}`"
+            class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-xs items-center">
+            <RectangleGroupIcon class="text-cerulean-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span class="hidden lg:block">Resources</span>
+            <span v-if="taskStore.term.resources">({{ taskStore.term.resources }})</span>
+          </NuxtLink>
+        </li>
+      </ul>
       <dl class="divide-y divide-gray-100">
         <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Name</dt>
+          <dt class="text-sm font-medium text-gray-900">Task identifier</dt>
           <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ taskStore.term.name }}</dd>
         </div>
         <div v-if="taskStore.term.title" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Title</dt>
           <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ taskStore.term.title }}</dd>
+        </div>
+        <div v-if="taskStore.term.source" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-900">Source</dt>
+          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            <span v-if="taskStore.term.source && isValidHttpUrl(taskStore.term.source)">
+              <a :href="taskStore.term.source" class="hover:text-ochre-400 text-ochre-600" target="_blank">
+                {{ taskStore.term.source }}
+              </a>
+            </span>
+            <span v-else>{{ taskStore.term.source }}</span>
+          </dd>
         </div>
         <div v-if="taskStore.term.accrualPriority" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Accrual priority</dt>
@@ -74,11 +110,6 @@
         <div v-if="taskStore.term.rights" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Rights held</dt>
           <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ taskStore.term.rights }}
-          </dd>
-        </div>
-        <div v-if="taskStore.term.source" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Source</dt>
-          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ taskStore.term.source }}
           </dd>
         </div>
         <div v-if="taskStore.term.accessRights" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -176,13 +207,15 @@
 <script setup lang="ts">
 import {
   ArrowsRightLeftIcon,
+  ArrowUpTrayIcon,
   BeakerIcon,
   RectangleGroupIcon,
   SquaresPlusIcon,
   TableCellsIcon,
-  TrashIcon
+  TrashIcon,
+  LinkIcon,
 } from "@heroicons/vue/24/outline"
-import { readableDate } from "@/utilities"
+import { readableDate, isValidHttpUrl } from "@/utilities"
 import { ICitation, IReferenceFilters } from "@/interfaces"
 import { useSettingStore, useTaskStore, useReferenceStore } from "@/stores"
 

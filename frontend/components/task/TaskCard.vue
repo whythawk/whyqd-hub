@@ -52,21 +52,13 @@
               <span v-if="props.task.resources">({{ props.task.resources }})</span>
             </NuxtLink>
           </li>
-          <li v-if="props.task.schema" class="flex items-center relative">
-            <NuxtLink :to="`/schema/${props.task.schema.id}`"
+          <li class="relative">
+            <NuxtLink v-if="props.task.schema" :to="`/schema/${props.task.schema.id}`"
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
               <Squares2X2Icon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
               <span class="hidden lg:block">Schema</span>
             </NuxtLink>
-            <button type="button" @click.prevent="schemaRedirect"
-              class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
-              <ArrowsRightLeftIcon class="text-sienna-700 group-hover:text-ochre-600 h-4 w-4 shrink-0"
-                aria-hidden="true" />
-              <span class="hidden lg:block">Crosswalk</span>
-            </button>
-          </li>
-          <li v-else class="relative">
-            <button type="button" @click.prevent="schemaRedirect"
+            <button v-else type="button" @click.prevent="schemaRedirect"
               class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
               <SquaresPlusIcon class="text-sienna-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
               <span class="hidden lg:block">Schema</span>

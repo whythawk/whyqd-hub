@@ -11,7 +11,7 @@ client_sentry = Client(settings.SENTRY_DSN)
 
 
 @celery_app.task(name="app.worker.process_data_import")  # (acks_late=True)
-def process_data_import(user_id: str, datasource_in: dict, task_id: Union[str, None] = None) -> str:
+def process_data_import(user_id: str, datasource_in: dict, sourceURL: Union[str, None] = None, task_id: Union[str, None] = None) -> str:
     # call with celery_app.send_task("app.worker.process_data_import", args=[user_id, datasource_in, task_id])
     SessionScoped = get_scoped_session()
     db = SessionScoped()
@@ -22,7 +22,7 @@ def process_data_import(user_id: str, datasource_in: dict, task_id: Union[str, N
     if task_id:
         task_obj = crud.task.get(db=db, id=task_id, user=user_obj, responsibility=schema_types.RoleType.WRANGLER)
     # PROCESS
-    crud.reference.import_source(db=db, user=user_obj, datasource_in=datasource_in, task=task_obj)
+    crud.reference.import_source(db=db, user=user_obj, datasource_in=datasource_in, sourceURL=sourceURL, task=task_obj)
     response = f"Process data import complete: {datasource_in.name}, {user_obj.email}"
     if task_obj:
         response = f"Process data import complete: {datasource_in.name}, {user_obj.email} - {task_obj.name}"

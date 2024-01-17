@@ -1,5 +1,4 @@
 import logging
-
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 from sqlalchemy.sql import text
 

@@ -10,6 +10,7 @@
       :class="[props.state === 'addField' ? 'bg-cerulean-100' : '', 'flex-auto rounded-lg p-3 ring-1 ring-inset ring-gray-200']">
       <Disclosure v-slot="{ open, close }">
         <DisclosureButton
+          @click="disclosureWatcher(open)"
           class="flex w-full justify-between items-center rounded-lg text-base font-semibold text-gray-900">
           <h2 v-if="props.state === 'addField'" class="text-base font-semibold text-gray-900">Add field</h2>
           <h2 v-else class="text-base font-semibold text-gray-900">Field: {{ props.edit.name }}</h2>
@@ -223,7 +224,10 @@ import { capitalizeFirst, generateUUID } from "@/utilities"
 
 const toasts = useToastStore()
 const draft = ref({} as IFieldCreate)
-const emit = defineEmits<{ setRequest: [request: ISocketRequest] }>()
+const emit = defineEmits<{
+  setRequest: [request: ISocketRequest],
+  setDraggable: [isDraggable: boolean]
+}>()
 const props = defineProps<{
   state: string,
   edit: IFieldCreate,
@@ -246,6 +250,14 @@ const parameters = {
   ],
 }
 
+
+// WATCHERS
+function disclosureWatcher(open: boolean) {
+    // `open` seems to be false if open and true of closed ...
+  emit("setDraggable", open)
+}
+
+// SETTERS
 function checkUnique(objArray: ICategoryCreate[]): boolean {
   if (!objArray || !objArray.length) return true
   let nameList = objArray.map(({ name }) => name)
@@ -292,6 +304,7 @@ function removeField(uuid: string) {
     state: "removeField",
     data: { name: uuid }
   }
+  emit("setDraggable", true)
   emit("setRequest", request)
   resetForm()
 }
@@ -302,6 +315,7 @@ function submitRequest(close: any) {
       state: props.state,
       data: { ...draft.value }
     }
+    emit("setDraggable", true)
     emit("setRequest", request)
     resetForm()
     close()

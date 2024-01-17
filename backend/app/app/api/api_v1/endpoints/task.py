@@ -75,7 +75,10 @@ def read_all_scheduled_tasks(
     match: Optional[str] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
-    descending: bool = True,
+    scheduled: bool = False,
+    prioritised: bool = True,
+    accrualPolicy: Optional[schema_types.DCAccrualPolicyType] = None,
+    accrualPeriodicity: Optional[schema_types.DCFrequencyType] = None,
     page: int = 0,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
@@ -86,9 +89,12 @@ def read_all_scheduled_tasks(
         db=db,
         user=current_user,
         match=match,
+        scheduled=scheduled,
+        prioritised=prioritised,
+        accrualPolicy=accrualPolicy,
+        accrualPeriodicity=accrualPeriodicity,
         date_from=date_from,
         date_to=date_to,
-        descending=descending,
         page=page,
     )
 
@@ -99,9 +105,12 @@ def read_all_scheduled_project_tasks(
     db: Session = Depends(deps.get_db),
     project_id: str,
     match: Optional[str] = None,
+    scheduled: bool = False,
+    prioritised: bool = True,
+    accrualPolicy: Optional[schema_types.DCAccrualType] = None,
+    accrualPeriodicity: Optional[schema_types.DCFrequencyType] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
-    descending: bool = True,
     page: int = 0,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
@@ -119,9 +128,12 @@ def read_all_scheduled_project_tasks(
         user=current_user,
         project_obj=project_obj,
         match=match,
+        scheduled=scheduled,
+        prioritised=prioritised,
+        accrualPolicy=accrualPolicy,
+        accrualPeriodicity=accrualPeriodicity,
         date_from=date_from,
         date_to=date_to,
-        descending=descending,
         page=page,
     )
 

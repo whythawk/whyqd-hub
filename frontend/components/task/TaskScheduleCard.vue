@@ -7,19 +7,21 @@
     <img :src="avatar" :alt="heading"
       class="relative mt-3 h-6 w-6 flex-none rounded-full bg-gray-50 ring-1 ring-offset-4 ring-ochre-200 text-gray-700"
       aria-hidden="true" />
-    <NuxtLink :to="`/tasks/${props.task.id}`" class="flex-auto rounded-lg  py-2 px-3 ring-1 ring-inset ring-gray-200">
-      <div class="flex w-full items-center">
+    <div class="flex-auto rounded-lg  py-2 px-3 ring-1 ring-inset ring-gray-200">
+      <NuxtLink :to="`/tasks/${props.task.id}`"  class="flex w-full items-center">
         <div class="flex-1">
           <div class="flex justify-between gap-x-4 items-center">
             <div class="py-0.5 text-sm leading-5 text-gray-500">
-              <h2 class="font-bold text-gray-900">{{ heading }}</h2>
+              <h2 class="font-bold text-gray-900 hover:text-ochre-600 ">{{ heading }}</h2>
             </div>
             <div class="truncate py-0.5 text-xs text-gray-500 text-right">
               <span v-if="props.task.accrualPriority">Priority: {{ props.task.accrualPriority }}</span>
               <span v-else>Priority: none</span>
               <span class="text-sm text-gray-400 px-2">&middot;</span>
-              <span v-if="props.task.accrualPeriodicity">Updated: {{ props.task.accrualPeriodicity }}</span>
-              <span v-else>Updated: never</span>
+              <span>Update: </span>
+              <span v-if="props.task.accrualPolicy">{{ props.task.accrualPolicy.toLowerCase() }}, </span>
+              <span v-if="props.task.accrualPeriodicity">{{ props.task.accrualPeriodicity }}</span>
+              <span v-else>never</span>
               <time v-if="props.task.latestResource" :datetime="props.task.modified"
                 class="flex-none py-0.5 text-xs text-gray-500">
                 <span class="text-sm text-gray-400 px-2">&middot;</span>
@@ -28,29 +30,28 @@
             </div>
           </div>
         </div>
-      </div>
+      </NuxtLink>
       <p v-if="props.task.description" class="text-sm leading-6 text-gray-500">{{ props.task.description }}</p>
       <div class="flex items-center justify-between">
-        <NuxtLink v-if="!props.task.latestResource" :to="`/import/task/${props.task.id}`"
-          class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 font-semibold text-xs items-center">
-          <ArrowUpTrayIcon class="text-cerulean-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
-          <span>Import data</span>
-        </NuxtLink>
-        <NuxtLink v-else :to="`/resources/${props.task.latestResource.id}`"
-          class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 font-semibold text-xs items-center">
-          <RectangleGroupIcon class="text-cerulean-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
-          <span>Resource - {{ props.task.latestResource.state }}</span>
-        </NuxtLink>
-        <ul role="list" class="flex flex-row justify-end text-xs">
-          <h3 id="detail-heading" class="sr-only">Project, templates and schema object</h3>
+        <ul role="list" class="flex flex-row justify-start text-xs">
+          <h3 id="action-heading" class="sr-only">Import, source link, and latest resource state</h3>
           <li class="relative">
-            <NuxtLink :to="`/resources/task/${props.task.id}`"
-              class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
-              <RectangleGroupIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
-              <span class="hidden lg:block">Resources</span>
-              <span v-if="props.task.resources">({{ props.task.resources }})</span>
+            <NuxtLink :to="`/import/task/${props.task.id}`"
+              class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 p-2 pl-0 font-semibold text-xs items-center">
+              <ArrowUpTrayIcon class="text-cerulean-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span>Import data</span>
             </NuxtLink>
           </li>
+          <li v-if="props.task.source && isValidHttpUrl(props.task.source)" class="relative">
+            <a :href="props.task.source" target="_blank"
+              class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-xs items-center z-50">
+              <LinkIcon class="text-cerulean-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span>Source</span>
+            </a>
+          </li>
+        </ul>
+        <ul role="list" class="flex flex-row justify-end text-xs">
+          <h3 id="detail-heading" class="sr-only">Project, resources and latest resource state</h3>
           <li v-if="props.task.project && Object.keys(props.task.project).length !== 0" class="relative">
             <NuxtLink :to="`/projects/${props.task.project.id}`"
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
@@ -65,34 +66,32 @@
               <span class="hidden lg:block">Project</span>
             </button>
           </li>
-          <li v-if="props.task.schema" class="relative">
-            <NuxtLink :to="`/schema/${props.task.schema.id}`"
-              class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
-              <Squares2X2Icon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
-              <span class="hidden lg:block">Schema</span>
+          <li class="flex flex-row items-center relative">
+            <NuxtLink :to="`/resources/task/${props.task.id}`"
+              class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 pr-1 font-semibold">
+              <RectangleGroupIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span class="hidden lg:block">Resources</span>
+              <span v-if="props.task.resources">({{ props.task.resources }})</span>
             </NuxtLink>
-          </li>
-          <li v-else class="relative">
-            <button type="button" @click.prevent="schemaRedirect"
-              class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
-              <SquaresPlusIcon class="text-sienna-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
-              <span class="hidden lg:block">Schema</span>
-            </button>
+            <span v-if="props.task.latestResource" class="text-sm text-gray-400">&middot;</span>
+            <NuxtLink v-if="props.task.latestResource" :to="`/resources/${props.task.latestResource.id}`"
+              class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 pl-1 font-semibold">
+              <span>{{ props.task.latestResource.state }}</span>
+            </NuxtLink>
           </li>
         </ul>
       </div>
-    </NuxtLink>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { BeakerIcon, RectangleGroupIcon, Squares2X2Icon, SquaresPlusIcon, ArrowUpTrayIcon } from "@heroicons/vue/24/outline"
-import { readableDate, getAvatar } from "@/utilities"
-import { IScheduledTask, IReferenceFilters } from "@/interfaces"
-import { useReferenceStore, useTaskStore, useProjectStore } from "@/stores"
+import { BeakerIcon, RectangleGroupIcon, ArrowUpTrayIcon, LinkIcon } from "@heroicons/vue/24/outline"
+import { readableDate, getAvatar, isValidHttpUrl } from "@/utilities"
+import { IScheduledTask } from "@/interfaces"
+import { useTaskStore, useProjectStore } from "@/stores"
 
 const route = useRoute()
-const referenceStore = useReferenceStore()
 const avatar = shallowRef("")
 const heading = ref("")
 const addProject = ref(false)
@@ -109,14 +108,6 @@ async function addToProject() {
     const taskStore = useTaskStore()
     await taskStore.getMultiByProject(route.params.id as string)
   }
-}
-
-async function schemaRedirect() {
-  let filters: IReferenceFilters = { ...referenceStore.filters }
-  filters.reference_type = "SCHEMA"
-  referenceStore.resetFilters()
-  referenceStore.setFilters(filters)
-  await navigateTo(`/references/task/${props.task.id}`)
 }
 
 onMounted(async () => {
