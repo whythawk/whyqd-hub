@@ -149,19 +149,22 @@ class Task(Base):
 
     @hybrid_property
     def last_scheduled(self) -> Optional[Resource]:
-        return self.resources.filter(
-            (Resource.state == StateType.COMPLETE)
-            & (self.id == Resource.task_id)
-            ).order_by(Resource.created.desc()).first()
+        return (
+            self.resources.filter((Resource.state == StateType.COMPLETE) & (self.id == Resource.task_id))
+            .order_by(Resource.created.desc())
+            .first()
+        )
 
     @last_scheduled.inplace.expression
     @classmethod
     def _last_scheduled(cls) -> ColumnElement[Optional[Resource]]:
+        # https://stackoverflow.com/a/55629083
         return (
             select(Resource.created)
             .correlate(cls, Resource)
             .where((cls.id == Resource.task_id) & (Resource.state == StateType.COMPLETE.value))
             .order_by(Resource.created.desc())
+            .limit(1)
             .scalar_subquery()
         )
 
@@ -209,10 +212,7 @@ class Task(Base):
         return case(  # select(cls).where(
             (
                 cls.last_scheduled is not None,
-                (
-                    (func.extract("EPOCH", func.now()) - func.extract("EPOCH", cls.last_scheduled))
-                    >= cls.scheduled_period
-                ),
+                (func.extract("EPOCH", func.now()) - func.extract("EPOCH", cls.last_scheduled)) >= cls.scheduled_period,
             ),
             (
                 cls.temporalStart is not None,
