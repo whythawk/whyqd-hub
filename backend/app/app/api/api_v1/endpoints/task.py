@@ -107,7 +107,7 @@ def read_all_scheduled_project_tasks(
     match: Optional[str] = None,
     scheduled: bool = False,
     prioritised: bool = True,
-    accrualPolicy: Optional[schema_types.DCAccrualType] = None,
+    accrualPolicy: Optional[schema_types.DCAccrualPolicyType] = None,
     accrualPeriodicity: Optional[schema_types.DCFrequencyType] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,

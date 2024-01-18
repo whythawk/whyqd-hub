@@ -132,9 +132,7 @@ export const useTemplateStore = defineStore("templateStore", {
       }
     },
     resetFilters() {
-      const page = this.facets.page
       this.facets = {}
-      this.setPage("" + page)
     },
     // reset state using `$reset`
     resetState () {

@@ -244,6 +244,7 @@ const options: IKeyable = {
   
   async function resetFilters() {
     taskStore.resetFilters()
+    console.log(taskStore.filters)
     getFilters()
     await refreshActivities()
   }

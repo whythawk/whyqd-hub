@@ -184,9 +184,7 @@ export const useSubscriptionsStore = defineStore("subscriptionsStore", {
       }
     },
     resetFilters() {
-      const page = this.facets.page
       this.facets = {}
-      this.setPage("" + page)
     },
     // reset state using `$reset`
     resetState () {

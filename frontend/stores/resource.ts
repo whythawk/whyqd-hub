@@ -188,9 +188,7 @@ export const useResourceStore = defineStore("resourceStore", {
       }
     },
     resetFilters() {
-      const page = this.facets.page
       this.facets = {}
-      this.setPage("" + page)
     },
     // reset state using `$reset`
     resetState () {
