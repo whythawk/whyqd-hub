@@ -14,13 +14,23 @@ export interface IActivity {
   project: IModelSummary
 }
 
+export interface IResourceActivity {
+  id: string
+  created: string
+  custodiansOnly: boolean
+  alert: boolean
+  message: string
+}
+
 export interface IActivityFilters {
+  match?: string
   state?: IStatusType
   date_from?: string
   date_to?: string
   alert?: boolean
   custodian?: boolean
-  descending?: boolean
+  excludeComplete?: boolean
+  prioritised?: boolean
   page?: number
 }
 

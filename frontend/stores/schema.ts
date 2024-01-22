@@ -1,14 +1,15 @@
-import { IReference, ISchema, ISchemaCreate, IField, IFieldCreate, ICitation,  } from "@/interfaces"
+import { IReference, ISchema, ISchemaCreate, IField, IFieldCreate, ICitation, IReferenceFilters } from "@/interfaces"
 import { useTokenStore } from "./tokens"
 import { useSettingStore } from "./settings"
 import { useReferenceStore } from "./reference"
-import { apiSchema } from "@/api"
+import { apiSchema, apiReference } from "@/api"
 
 export const useSchemaStore = defineStore("schemaStore", {
   state: () => ({
     board: [] as IReference[],
     one: {} as ISchema,
     edit: {} as ISchemaCreate,
+    facets: {} as IReferenceFilters,
   }),
   persist: {
     storage: persistedState.localStorage,
@@ -17,6 +18,7 @@ export const useSchemaStore = defineStore("schemaStore", {
     multi: (state) => state.board,
     term: (state) => state.one,
     draft: (state) => state.edit,
+    filters: (state) => state.facets,
     authTokens: () => {
       return ( useTokenStore() )
     },
@@ -28,11 +30,29 @@ export const useSchemaStore = defineStore("schemaStore", {
     },
   },
   actions: {
-    async getMulti() {
-      this.reference.facets.reference_type = "SCHEMA"
-      await this.reference.getMulti()
-      if (this.reference.multi && this.reference.multi.length) this.setMulti(this.reference.multi)
-      else this.setMulti([])
+    async getMulti(facets: IReferenceFilters = {}) {
+      await this.authTokens.refreshTokens()
+      if (this.authTokens.token) {
+        try {
+          this.settings.setPageState("loading")
+          this.facets.reference_type = "SCHEMA"
+          this.setMulti([])
+          if (!facets || Object.keys(facets).length === 0) facets = this.facets
+          const { data: response } = await apiReference.getMulti(this.authTokens.token, facets)
+          if (response.value) {
+            if (response.value.length) {
+              this.setMulti(response.value)
+              this.settings.setPageNext(true)
+            } else {
+              this.settings.setPageNext(false)
+            }
+          }
+          this.settings.setPageState("done")
+        } catch (error) {
+          this.settings.setPageState("error")
+          this.board = []
+        }
+      }
     },
     setMulti(payload: IReference[]) {
       this.board = payload
@@ -59,6 +79,17 @@ export const useSchemaStore = defineStore("schemaStore", {
     },
     resetDraft() {
       this.edit = {} as ISchemaCreate
+    },
+    setFilters(payload: IReferenceFilters) {
+      this.facets = payload
+    },
+    setPage(payload: string) {
+      if (!isNaN(+payload)) {
+        this.facets.page = +payload 
+      }
+    },
+    resetFilters() {
+      this.facets = {}
     },
     resetState() {
       this.$reset()

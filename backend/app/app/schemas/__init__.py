@@ -8,7 +8,7 @@ from .base_schema import (  # noqa: F401
 )
 
 # WHYQD
-from .activity import ActivityBase, ActivityCreate, ActivityUpdate, Activity  # noqa: F401
+from .activity import ActivityBase, ActivityCreate, ActivityUpdate, Activity, ResourceActivity  # noqa: F401
 from .reference import ReferenceBase, ReferenceCreate, ReferenceUpdate, Reference  # noqa: F401
 from .reference_template import (  # noqa: F401
     ReferenceTemplateBase,
@@ -22,6 +22,7 @@ from .resource import (  # noqa: F401
     ResourceCreate,
     ResourceUpdate,
     Resource,
+    ResourceActivitySummary,
     ResourceModelLinks,
     ResourceDataReference,
     ResourceSchemaReference,

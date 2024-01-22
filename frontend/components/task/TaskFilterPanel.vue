@@ -114,6 +114,7 @@ function getFilters() {
 }
 
 async function resetFilters() {
+  searchTerm.value = ""
   taskStore.resetFilters()
   getFilters()
   await refreshActivities()

@@ -139,6 +139,7 @@ function getFilters() {
 }
 
 async function resetFilters() {
+  searchTerm.value = ""
   resourceStore.resetFilters()
   getFilters()
   await refreshResources()

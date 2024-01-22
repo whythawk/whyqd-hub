@@ -7,6 +7,7 @@ from whyqd.models import FieldModel, DataSourceAttributeModel
 
 from app.schemas.base_schema import BaseSchema, BaseSummarySchema
 from app.schemas.crosswalk import ActionModel
+from app.schemas.activity import ResourceActivity
 from app.schema_types import StateType, ReferenceType, MimeType
 
 
@@ -62,6 +63,15 @@ class Resource(ResourceBase):
     transformdata: Optional[BaseSummarySchema] = Field(None, description="Transform data table reference.")
     # transformdatasource: Optional[Reference] = Field(None, description="Transform source data table reference.")
     task: Optional[BaseSummarySchema] = Field(None, description="Associated task table reference.")
+
+    class Config:
+        orm_mode = True
+
+
+class ResourceActivitySummary(ResourceBase):
+    task_id: Optional[UUID] = Field(None, description="Task model reference.")
+    project_id: Optional[UUID] = Field(None, description="Project model reference.")
+    latest_activity: ResourceActivity = Field(..., description="Summary of latest activity")
 
     class Config:
         orm_mode = True

@@ -62,6 +62,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         user: User,
         responsibility: RoleType = RoleType.SEEKER,
         reference_type: ReferenceType | None = None,
+        isFeatured: bool = False,
         mime_type: MimeType | None = None,
         match: str | None = None,
         date_from: datetime | str | None = None,
@@ -78,6 +79,8 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             db_objs = db_objs.filter(self.model.model_type == reference_type)
         else:
             db_objs = db_objs.filter(self.model.model_type != ReferenceType.DATASOURCE)
+        if isFeatured:
+            db_objs = db_objs.filter(self.model.isFeatured)
         if reference_type in [ReferenceType.DATA, ReferenceType.DATASOURCE] and mime_type:
             db_objs = db_objs.filter(self.model.mime_type == mime_type)
         if date_from and date_to and date_from > date_to:
@@ -101,6 +104,8 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         order_by = self.model.created
         if descending:
             order_by = order_by.desc()
+        if reference_type == ReferenceType.SCHEMA:
+            order_by = self.model.title
         db_objs = db_objs.distinct().order_by(order_by)
         if not page_break:
             if page > 0:
@@ -1301,11 +1306,11 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         return hashlib.blake2b(terms).hexdigest()
 
     def get_multi_by_hash(
-        self, 
-        db: Session, 
-        *, 
-        hash: str, 
-        user: User, 
+        self,
+        db: Session,
+        *,
+        hash: str,
+        user: User,
         responsibility: RoleType = RoleType.SEEKER,
         task: Task | None = None,
     ) -> set[Reference]:
@@ -1350,7 +1355,9 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         data_model = crud_files.get(obj_id=data_obj.model, obj_type=data_obj.model_type)
         if data_model:
             hash = self.get_term_hash(terms=data_model.columns)
-            schema_prospects = self.get_multi_by_hash(db=db, hash=hash, user=user, responsibility=responsibility, task=task)
+            schema_prospects = self.get_multi_by_hash(
+                db=db, hash=hash, user=user, responsibility=responsibility, task=task
+            )
         return schema_prospects
 
     ###################################################################################################

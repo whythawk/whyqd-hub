@@ -7,12 +7,12 @@
     <img :src="avatar" :alt="heading"
       class="relative mt-3 h-6 w-6 flex-none rounded-full bg-gray-50 ring-1 ring-offset-4 ring-ochre-200 text-gray-700"
       aria-hidden="true" />
-    <div class="flex-auto rounded-lg  py-2 px-3 ring-1 ring-inset ring-gray-200">
-      <NuxtLink :to="`/tasks/${props.task.id}`"  class="flex w-full items-center">
+    <div class="flex-auto rounded-lg py-2 px-3 ring-1 ring-inset ring-gray-200">
+      <NuxtLink :to="`/tasks/${props.task.id}`" class="flex w-full items-center">
         <div class="flex-1">
           <div class="flex justify-between gap-x-4 items-center">
             <div class="py-0.5 text-sm leading-5 text-gray-500">
-              <h2 class="font-bold text-gray-900 hover:text-ochre-600 ">{{ heading }}</h2>
+              <h2 class="font-bold text-gray-900 hover:text-ochre-600">{{ heading }}</h2>
             </div>
             <div class="truncate py-0.5 text-xs text-gray-500 text-right">
               <span v-if="props.task.accrualPriority">Priority: {{ props.task.accrualPriority }}</span>
@@ -44,7 +44,7 @@
           </li>
           <li v-if="props.task.source && isValidHttpUrl(props.task.source)" class="relative">
             <a :href="props.task.source" target="_blank"
-              class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-xs items-center z-50">
+              class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-xs items-center">
               <LinkIcon class="text-cerulean-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
               <span>Source</span>
             </a>
@@ -67,10 +67,10 @@
             </button>
           </li>
           <li class="flex flex-row items-center relative">
-            <NuxtLink :to="`/resources/task/${props.task.id}`"
+            <NuxtLink :to="`/activity/task/${props.task.id}`"
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 pr-1 font-semibold">
               <RectangleGroupIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
-              <span class="hidden lg:block">Resources</span>
+              <span class="hidden lg:block">Activities</span>
               <span v-if="props.task.resources">({{ props.task.resources }})</span>
             </NuxtLink>
             <span v-if="props.task.latestResource" class="text-sm text-gray-400">&middot;</span>

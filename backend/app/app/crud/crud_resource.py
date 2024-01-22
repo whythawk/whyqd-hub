@@ -27,11 +27,15 @@ class CRUDResource(CRUDWhyqdBase[Resource, ResourceCreate, ResourceUpdate]):
         user: User,
         responsibility: RoleType = RoleType.SEEKER,
         task_obj: Task | None = None,
+        project_obj: Project | None = None,
         state: StateType | None = None,
+        excludeComplete: bool = True,
         match: str | None = None,
         date_from: datetime | str | None = None,
         date_to: datetime | str | None = None,
-        descending: bool = True,
+        alert: bool = False,
+        custodian: bool = False,
+        prioritised: bool = True,
         page: int = 0,
         page_break: bool = False,
     ) -> list[Resource]:
@@ -41,18 +45,22 @@ class CRUDResource(CRUDWhyqdBase[Resource, ResourceCreate, ResourceUpdate]):
             db_objs = self._get_query(db_query=db_objs, user=user, responsibilities=responsibilities)
         if task_obj:
             db_objs = db_objs.filter(self.model.task_id == task_obj.id)
+        if project_obj:
+            db_objs = db_objs.filter((self.model.task_id == Task.id) & (Task.project_id == project_obj.id))
         if state:
             db_objs = db_objs.filter(self.model.state == state)
+        if excludeComplete and not state:
+            db_objs = db_objs.filter(self.model.state != StateType.COMPLETE)
         if date_from and date_to and date_from > date_to:
             date_to = None
         if date_to:
             if isinstance(date_to, str):
                 date_to = datetime.strptime(date_to, "%Y-%m-%d")
-            db_objs = db_objs.filter(self.model.created <= date_to)
+            db_objs = db_objs.filter(self.model.latest_activity.created <= date_to)
         if date_from:
             if isinstance(date_from, str):
                 date_from = datetime.strptime(date_from, "%Y-%m-%d")
-            db_objs = db_objs.filter(self.model.created >= date_from)
+            db_objs = db_objs.filter(self.model.latest_activity.created >= date_from)
         if match:
             db_objs = db_objs.filter(
                 (
@@ -61,10 +69,14 @@ class CRUDResource(CRUDWhyqdBase[Resource, ResourceCreate, ResourceUpdate]):
                     | self.model.description_vector.match(str(match))
                 )
             )
-        order_by = self.model.created
-        if descending:
-            order_by = order_by.desc()
-        db_objs = db_objs.distinct().order_by(order_by)
+        if alert:
+            db_objs = db_objs.filter(self.model.latest_activity.alert)
+        if custodian:
+            db_objs = db_objs.filter(self.model.latest_activity.custodians_only)
+        if prioritised:
+            db_objs = db_objs.order_by(self.model.latest_activity.desc(), self.model.title)
+        else:
+            db_objs = db_objs.order_by(self.model.title, self.model.latest_activity)
         if not page_break:
             if page > 0:
                 db_objs = db_objs.offset(page * settings.MULTI_MAX)

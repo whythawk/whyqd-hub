@@ -71,6 +71,7 @@ import {
   MagnifyingGlassIcon,
   RectangleGroupIcon,
   Square3Stack3DIcon,
+  Squares2X2Icon,
 } from "@heroicons/vue/24/outline"
 import { useSettingStore, useAuthStore } from "@/stores"
 
@@ -79,17 +80,14 @@ const auth = useAuthStore()
 
 const leadNavigation = [
   { name: "Home", to: "/", icon: HomeIcon, login: false },
-  { name: "Activity", to: "/activity", icon: BellIcon, login: true },
   { name: "Schedule", to: "/schedule", icon: CalendarIcon, login: true },
+  { name: "Activity", to: "/activity", icon: BellIcon, login: true },
   // { name: "Bookmarks", to: "/bookmarks", icon: BookmarkIcon },
+  { name: "Import", to: "/import", icon: ArrowUpTrayIcon, login: true },
 ]
 
 const secondaryNavigation = [
-  { name: "Import", to: "/import", icon: ArrowUpTrayIcon, login: true },
-  { name: "References", to: "/references", icon: DocumentTextIcon, login: true },
-  { name: "Resources", to: "/resources", icon: RectangleGroupIcon, login: true },
-  { name: "Tasks", to: "/tasks", icon: Square3Stack3DIcon, login: true },
-  { name: "Projects", to: "/projects", icon: BeakerIcon, login: true },
+  { name: "Schemas", to: "/schema", icon: Squares2X2Icon, login: true },
   { name: "Settings", to: "/settings", icon: Cog8ToothIcon, login: true },
 ]
 </script>

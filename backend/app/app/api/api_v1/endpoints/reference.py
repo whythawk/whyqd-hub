@@ -18,6 +18,7 @@ def read_all_references(
     match: Optional[str] = None,
     reference_type: Optional[schema_types.ReferenceType] = None,
     mime_type: Optional[str] = None,
+    isFeatured: Optional[bool] = False,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     descending: bool = True,

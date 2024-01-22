@@ -36,36 +36,6 @@
     <DisclosurePanel class="border-t border-gray-200 py-5">
       <div class="mx-auto text-xs sm:text-sm px-8 space-y-4">
         <fieldset>
-          <legend class="block font-bold">Reference type</legend>
-          <div class="space-y-4 pt-4">
-            <div class="grid auto-rows-min grid-cols-4 gap-y-2 md:gap-x-3">
-              <div v-for="(option, optionIdx) in options.reference" :key="option.value" class="flex items-center">
-                <input :id="`reference-${optionIdx}`" name="reference" :value="option.value" type="radio"
-                  v-model="filters.reference_type"
-                  class="h-4 w-4 flex-shrink-0 rounded-full border-gray-300 text-ochre-600 focus:ring-ochre-500"
-                  :checked="option.value === filters.reference_type" />
-                <label :for="`reference-${optionIdx}`" class="ml-3 min-w-0 flex-1 text-gray-600">{{
-                  capitalizeFirst(option.value) }}</label>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend class="block font-bold">Data file type</legend>
-          <div class="space-y-4 pt-4">
-            <div class="grid auto-rows-min grid-cols-3 gap-y-2 md:grid-cols-5 md:gap-x-3">
-              <div v-for="(option, optionIdx) in options.mime" :key="option.value" class="flex items-center">
-                <input :id="`mime-${optionIdx}`" name="mime" :value="option.value" type="radio"
-                  v-model="filters.mime_type"
-                  class="h-4 w-4 flex-shrink-0 rounded-full border-gray-300 text-ochre-600 focus:ring-ochre-500"
-                  :checked="option.value === filters.mime_type" />
-                <label :for="`mime-${optionIdx}`" class="ml-3 min-w-0 flex-1 text-gray-600">{{
-                  option.value }}</label>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-        <fieldset>
           <legend class="block font-bold pb-4">Date range</legend>
           <div class="flex space-x-4 items-center">
             <vue-tailwind-datepicker :formatter="formatter" as-single v-model="dateFrom" />
@@ -74,16 +44,15 @@
           </div>
         </fieldset>
         <fieldset>
-          <legend class="block font-bold">Research responsbility</legend>
-          <div class="space-y-4 pt-4">
-            <div class="grid auto-rows-min grid-cols-4 gap-y-2 md:gap-x-3">
-              <div v-for="(option, optionIdx) in options.responsibility" :key="option.value" class="flex items-center">
-                <input :id="`responsibility-${optionIdx}`" name="responsibility" :value="option.value" type="radio"
-                  v-model="filters.responsibility"
-                  class="h-4 w-4 flex-shrink-0 rounded-full border-gray-300 text-ochre-600 focus:ring-ochre-500"
-                  :checked="option.value === filters.responsibility" />
-                <label :for="`reference-${optionIdx}`" class="ml-3 min-w-0 flex-1 text-gray-600">{{
-                  capitalizeFirst(option.value) }}</label>
+          <legend class="block font-bold">Schema flags</legend>
+          <div class="flex space-x-16">
+            <div class="relative flex items-start pt-4">
+              <div class="flex h-6 items-center">
+                <input id="alerts" name="alerts" type="checkbox" v-model="filters.isFeatured"
+                  class="h-4 w-4 rounded border-gray-300 text-ochre-600 focus:ring-ochre-600" />
+              </div>
+              <div class="ml-3 leading-6">
+                <label for="alerts" class="font-medium text-gray-600">Featured</label>
               </div>
             </div>
           </div>
@@ -103,7 +72,6 @@
 import VueTailwindDatepicker from "vue-tailwind-datepicker"
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline"
-import { capitalizeFirst } from "@/utilities"
 import { useReferenceStore } from "@/stores"
 import { IReferenceFilters } from "@/interfaces"
 
@@ -116,27 +84,6 @@ const formatter = ref({
   date: "YYYY-MM-DD",
   month: "MMM"
 })
-const options = {
-  reference: [
-    { value: "DATA" },
-    { value: "SCHEMA" },
-    { value: "CROSSWALK" },
-    { value: "TRANSFORM" },
-  ],
-  responsibility: [
-    { value: "SEEKER" },
-    { value: "WRANGLER" },
-    { value: "CURATOR" },
-    { value: "CUSTODIAN" },
-  ],
-  mime: [
-    { value: "CSV" },
-    { value: "XLS" },
-    { value: "XLSX" },
-    { value: "PARQUET" },
-    { value: "FEATHER" },
-  ]
-}
 
 function watchSearchTerm(event: any) {
   if (event.key === "Enter") refreshReferences()

@@ -61,6 +61,7 @@ export interface ICrosswalkTemplate {
 export interface IReferenceFilters {
   match?: string
   reference_type?: IReferenceType
+  isFeatured?: boolean
   responsibility?: IResearcherRoleType
   mime_type?: IMimeType
   date_from?: string

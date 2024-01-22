@@ -2,7 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey, Computed, Index
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import ForeignKey, Computed, Index, ColumnElement, select
 from sqlalchemy_utils import TSVectorType
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
@@ -11,12 +12,13 @@ from uuid import uuid4
 
 from app.db.base_class import Base
 from app.schema_types import StateType
+from app.models.activity import Activity
+from app.models.project import Project
 
 if TYPE_CHECKING:
     from app.models.reference import Reference  # noqa: F401
     from app.models.task import Task  # noqa: F401
     from app.models.role import Role  # noqa: F401
-    from app.models.activity import Activity  # noqa: F401
 
 
 class Resource(Base):
@@ -101,3 +103,33 @@ class Resource(Base):
         Index("ix_resource_title_vector", title_vector, postgresql_using="gin"),
         Index("ix_resource_description_vector", description_vector, postgresql_using="gin"),
     )
+
+    @hybrid_property
+    def latest_activity(self) -> Optional[Activity]:
+        return self.activities.order_by(Activity.created.desc()).first()
+
+    @latest_activity.inplace.expression
+    @classmethod
+    def _latest_activity(cls) -> ColumnElement[Optional[Activity]]:
+        # https://stackoverflow.com/a/55629083
+        return (
+            select(Activity.created)
+            .correlate(cls, Resource)
+            .where(cls.id == Activity.resource_id)
+            .order_by(Activity.created.desc())
+            .limit(1)
+            .scalar_subquery()
+        )
+
+    @hybrid_property
+    def project_id(self) -> Optional[UUID]:
+        if self.task_id and self.task.project_id:
+            return self.task.project_id
+        return None
+
+    @project_id.inplace.expression
+    @classmethod
+    def _project_id(cls) -> ColumnElement[Optional[Project.id]]:
+        # I don't think this does anything
+        # https://stackoverflow.com/a/55629083
+        return select(Project.id).correlate(cls, Resource).where(cls.task_id.is_not(None)).limit(1).scalar_subquery()

@@ -61,10 +61,10 @@
             </button>
           </div>
           <li class="relative">
-            <NuxtLink :to="`/tasks/project/${props.project.id}`"
+            <NuxtLink :to="`/activity/project/${props.project.id}`"
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
-              <Square3Stack3DIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
-              <span class="hidden lg:block">Tasks</span>
+              <BellIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span class="hidden lg:block">Activities</span>
             </NuxtLink>
           </li>
           <li v-if="props.project.schema" class="relative">
@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { CalendarIcon, FolderPlusIcon, Square3Stack3DIcon, Squares2X2Icon, SquaresPlusIcon, TagIcon, UserGroupIcon } from "@heroicons/vue/24/outline"
+import { CalendarIcon, BellIcon, FolderPlusIcon, Square3Stack3DIcon, Squares2X2Icon, SquaresPlusIcon, TagIcon, UserGroupIcon } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar } from "@/utilities"
 import { IProject, IReferenceFilters } from "@/interfaces"
 import { useReferenceStore, useTaskStore } from "@/stores"

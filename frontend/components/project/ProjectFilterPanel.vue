@@ -95,6 +95,7 @@ function getFilters() {
 }
 
 async function resetFilters() {
+  searchTerm.value = ""
   projectStore.resetFilters()
   getFilters()
   await refreshProjects()

@@ -13,6 +13,19 @@
             <button type="button" @click="resetFilters" class="text-gray-500 hover:text-ochre-600">Clear</button>
           </div>
         </div>
+          <div class="flex items-center justify-center sm:mx-4 px-2 w-full">
+            <div class="w-full">
+              <label for="search" class="sr-only">Search</label>
+              <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </div>
+                <input id="search" name="search" v-model="searchTerm" @keydown="watchSearchTerm"
+                  class="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-ochre-600 sm:text-sm sm:leading-6"
+                  placeholder="Search" type="search" />
+              </div>
+            </div>
+          </div>
         <button type="button" @click="refreshActivities" class="group inline-flex justify-center">
           <ArrowPathIcon class="-mr-1 ml-1 mt-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-ochre-600"
             aria-hidden="true" />
@@ -47,6 +60,24 @@
         <fieldset>
           <legend class="block font-bold">Activity flags</legend>
           <div class="flex space-x-16">
+            <div class="relative flex items-start pt-4">
+              <div class="flex h-6 items-center">
+                <input id="alerts" name="alerts" type="checkbox" v-model="filters.prioritised"
+                  class="h-4 w-4 rounded border-gray-300 text-ochre-600 focus:ring-ochre-600" />
+              </div>
+              <div class="ml-3 leading-6">
+                <label for="alerts" class="font-medium text-gray-600">Prioritised</label>
+              </div>
+            </div>
+            <div class="relative flex items-start pt-4">
+              <div class="flex h-6 items-center">
+                <input id="alerts" name="alerts" type="checkbox" v-model="filters.excludeComplete"
+                  class="h-4 w-4 rounded border-gray-300 text-ochre-600 focus:ring-ochre-600" />
+              </div>
+              <div class="ml-3 leading-6">
+                <label for="alerts" class="font-medium text-gray-600">Exclude Completed</label>
+              </div>
+            </div>
             <div class="relative flex items-start pt-4">
               <div class="flex h-6 items-center">
                 <input id="alerts" name="alerts" type="checkbox" v-model="filters.alert"
@@ -87,6 +118,7 @@ import { IActivityFilters } from "@/interfaces"
 
 const activityStore = useActivityStore()
 const filters = ref({} as IActivityFilters)
+const searchTerm = ref("")
 const dateFrom = ref("")
 const dateTo = ref("")
 const formatter = ref({
@@ -111,7 +143,12 @@ const options = {
   ],
 }
 
+function watchSearchTerm(event: any) {
+  if (event.key === "Enter") refreshActivities()
+}
+
 async function refreshActivities() {
+  filters.value.match = searchTerm.value
   if (dateFrom.value && dateTo.value && dateFrom.value >= dateTo.value) dateTo.value = ""
   if (dateFrom.value) filters.value.date_from = dateFrom.value
   if (dateTo.value) filters.value.date_to = dateTo.value
@@ -122,13 +159,17 @@ async function refreshActivities() {
 
 function getFilters() {
   filters.value = { ...activityStore.filters }
+  if (typeof filters.value.prioritised === "undefined") filters.value.prioritised = true
+  if (typeof filters.value.excludeComplete === "undefined") filters.value.excludeComplete = true
   dateFrom.value = ""
   dateTo.value = ""
   if (filters.value.date_from) dateFrom.value = filters.value.date_from
   if (filters.value.date_to) dateTo.value = filters.value.date_to
+  if (filters.value.match) searchTerm.value = filters.value.match
 }
 
 async function resetFilters() {
+  searchTerm.value = ""
   activityStore.resetFilters()
   getFilters()
   await refreshActivities()

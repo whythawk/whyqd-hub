@@ -45,3 +45,12 @@ class Activity(ActivityBase):
 
     class Config:
         orm_mode = True
+
+
+class ResourceActivity(ActivityBase):
+    id: UUID = Field(..., description="Automatically generated unique identity.")
+    created: datetime = Field(..., description="Automatically generated date reference was created.")
+    message: str = Field(..., description="Brief phrase describing the activity.")
+
+    class Config:
+        orm_mode = True

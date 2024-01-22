@@ -11,7 +11,7 @@ import {
 } from "./schema_types"
 
 import { IUserSummary, IModelSummary, ICitation } from "./utilities"
-import { IActivity, IActivityFilters, IPinnedResource } from "./activities"
+import { IActivity, IResourceActivity, IActivityFilters, IPinnedResource } from "./activities"
 import { IVersion } from "./version"
 
 import {
@@ -36,6 +36,7 @@ import {
 import { IReference, IReferenceTemplate, IDataSourceTemplate, ICrosswalkTemplate, IReferenceFilters } from "./reference"
 import {
   IResource,
+  IResourceActivitySummary,
   IResourceDataReference,
   IResourceSchemaReference,
   IResourceManager,
@@ -59,6 +60,7 @@ export {
   IModelSummary,
   ICitation,
   IActivity,
+  IResourceActivity,
   IActivityFilters,
   IPinnedResource,
   IVersion,
@@ -83,6 +85,7 @@ export {
   ICrosswalkTemplate,
   IReferenceFilters,
   IResource,
+  IResourceActivitySummary,
   IResourceDataReference,
   IResourceSchemaReference,
   IResourceManager,

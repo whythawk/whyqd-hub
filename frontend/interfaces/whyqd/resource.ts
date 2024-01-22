@@ -1,5 +1,5 @@
 import { IKeyable } from "../utilities"
-import { IMimeType, IStatusType, IReferenceType, IModelSummary, IFieldCreate, IActionModel } from "./"
+import { IMimeType, IStatusType, IReferenceType, IModelSummary, IFieldCreate, IActionModel, IResourceActivity } from "./"
 
 export interface IResource {
   // https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3
@@ -19,6 +19,21 @@ export interface IResource {
   transform?: IModelSummary
   transformdata?: IModelSummary
   task?: IModelSummary
+}
+
+export interface IResourceActivitySummary {
+  id: string
+  created: string
+  modified: string
+  is_private: boolean
+  name: string
+  title?: string
+  description?: string
+  sourceURL?: string
+  state: IStatusType
+  task_id?: string
+  project_id?: string
+  latest_activity: IResourceActivity
 }
 
 interface IResourceModelLinks {

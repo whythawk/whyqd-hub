@@ -1,10 +1,12 @@
 <template>
-  <!-- Hero -->
   <div class="px-2 py-10 lg:px-4 lg:py-6 max-w-3xl mx-auto">
     <div v-if="appSettings.current.pageState === 'loading'">
       <LoadingCardSkeleton />
     </div>
-    <div v-if="appSettings.current.pageState === 'done'">
+    <div v-if="appSettings.current.pageState === 'done' && projectStore.term">
+      <div class="mt-6 border-b border-t border-gray-200 py-3 md:px-8">
+        <ProjectCard :project="projectStore.term" :last-card="true" />
+      </div>
       <ActivityFilterPanel />
       <div v-if="activityStore.multi.length === 0" class="space-y-2">
         <CommonEmptyCard
@@ -21,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSettingStore, useActivityStore } from "@/stores"
+import { useSettingStore, useActivityStore, useProjectStore } from "@/stores"
 
 definePageMeta({
   middleware: ["authenticated"],
@@ -30,6 +32,7 @@ definePageMeta({
 const route = useRoute()
 const appSettings = useSettingStore()
 const activityStore = useActivityStore()
+const projectStore = useProjectStore()
 
 watch(() => [route.query], async () => {
   await updateMulti()
@@ -37,10 +40,14 @@ watch(() => [route.query], async () => {
 
 async function updateMulti() {
   if (route.query && route.query.page) activityStore.setPage(route.query.page as string)
-  await activityStore.getMulti()
+  if (projectStore.term.id)
+    await activityStore.getMultiByProject(projectStore.term.id)
+  else
+    throw createError({ statusCode: 404, statusMessage: "Page Not Found", fatal: true })
 }
 
 onMounted(async () => {
+  await projectStore.getTerm(route.params.id as string)
   appSettings.setPageName("Activity")
   updateMulti()
 })
