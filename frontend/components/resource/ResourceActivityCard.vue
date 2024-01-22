@@ -27,7 +27,7 @@
           </div>
         </div>
       </NuxtLink>
-      <p v-if="props.resource.description" class="text-sm leading-6 text-gray-500">{{ props.resource.description }}</p>
+      <p v-if="props.resource.latest_activity.message" class="text-sm leading-6 text-gray-500">{{ props.resource.latest_activity.message }}</p>
       <div class="flex items-center justify-between pt-2">
         <div class="group flex flex-row text-xs font-medium text-gray-700">
           <MapPinIcon class="text-gray-700 h-4 w-4 shrink-0" aria-hidden="true" />
