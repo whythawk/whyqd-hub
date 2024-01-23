@@ -88,8 +88,10 @@ const resourceStore = useResourceStore()
 async function watchHeadingRequest(request: string) {
   switch (request) {
     case "remove":
+      let projectID = resourceStore.term.project_id
       await resourceStore.removeTerm(route.params.id as string)
-      return await navigateTo("/resources")
+      if (projectID !== null) return await navigateTo(`/activity/project/${projectID}`)
+      else return await navigateTo("/activity")
   }
 }
 

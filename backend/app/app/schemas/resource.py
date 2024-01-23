@@ -63,6 +63,7 @@ class Resource(ResourceBase):
     transformdata: Optional[BaseSummarySchema] = Field(None, description="Transform data table reference.")
     # transformdatasource: Optional[Reference] = Field(None, description="Transform source data table reference.")
     task: Optional[BaseSummarySchema] = Field(None, description="Associated task table reference.")
+    project_id: Optional[UUID] = Field(None, description="Project model reference.")
 
     class Config:
         orm_mode = True
@@ -139,6 +140,7 @@ class ResourceManager(ResourceBase):
     transform: Optional[BaseSummarySchema] = Field(None, description="Transform table reference.")
     transformdata: Optional[ResourceDataReference] = Field(None, description="Transform data table reference.")
     task: Optional[BaseSummarySchema] = Field(None, description="Associated task table reference.")
+    project_id: Optional[UUID] = Field(None, description="Project model reference.")
 
     class Config:
         orm_mode = True

@@ -19,6 +19,7 @@ export interface IResource {
   transform?: IModelSummary
   transformdata?: IModelSummary
   task?: IModelSummary
+  project_id?: string
 }
 
 export interface IResourceActivitySummary {
@@ -94,6 +95,7 @@ export interface IResourceManager {
   transform?: IModelSummary
   transformdata?: IResourceDataReference
   task?: IModelSummary
+  project_id?: string
 }
 
 export interface IResourceCrosswalkManager {
