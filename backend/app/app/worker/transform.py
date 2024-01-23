@@ -11,7 +11,9 @@ client_sentry = Client(settings.SENTRY_DSN)
 
 
 @celery_app.task(name="app.worker.process_data_import")  # (acks_late=True)
-def process_data_import(user_id: str, datasource_in: dict, sourceURL: Union[str, None] = None, task_id: Union[str, None] = None) -> str:
+def process_data_import(
+    user_id: str, datasource_in: dict, sourceURL: Union[str, None] = None, task_id: Union[str, None] = None
+) -> str:
     # call with celery_app.send_task("app.worker.process_data_import", args=[user_id, datasource_in, task_id])
     SessionScoped = get_scoped_session()
     db = SessionScoped()
@@ -33,7 +35,7 @@ def process_data_import(user_id: str, datasource_in: dict, sourceURL: Union[str,
 
 @celery_app.task(name="app.worker.process_schema_categorisation")  # (acks_late=True)
 def process_schema_categorisation(user_id: str, resource_id: str, field_name: str, term_type: str) -> str:
-    # call with celery_app.send_task("app.worker.process_schema_categorisation", args=[user_id, resource_id, field_name])
+    # call with celery_app.send_task("app.worker.process_schema_categorisation", args=[user_id, resource_id, field_name, term_type])
     SessionScoped = get_scoped_session()
     db = SessionScoped()
     # GET DEPENDENCIES
@@ -47,6 +49,26 @@ def process_schema_categorisation(user_id: str, resource_id: str, field_name: st
         db=db, resource_obj=resource_obj, user=user_obj, field_name=field_name, as_bool=as_bool
     )
     response = f"Process schema categorisation complete: {resource_obj.name}, {field_name} - {user_obj.email}"
+    db.close()
+    SessionScoped.remove()
+    return response
+
+
+@celery_app.task(name="app.worker.process_schema_type_update")  # (acks_late=True)
+def process_schema_type_update(user_id: str, resource_id: str, field_name: str, dtype: str) -> str:
+    # call with celery_app.send_task("app.worker.process_schema_type_update", args=[user_id, resource_id, field_name, dtype])
+    SessionScoped = get_scoped_session()
+    db = SessionScoped()
+    # GET DEPENDENCIES
+    user_obj = crud.user.get(db=db, id=user_id)
+    resource_obj = crud.resource.get(
+        db=db, id=resource_id, user=user_obj, responsibility=schema_types.RoleType.WRANGLER
+    )
+    # PROCESS
+    crud.reference.modify_schema_field_dtype(
+        db=db, resource_obj=resource_obj, user=user_obj, field_name=field_name, dtype=dtype
+    )
+    response = f"Process schema data type update complete: {resource_obj.name}, {field_name} - {user_obj.email}"
     db.close()
     SessionScoped.remove()
     return response

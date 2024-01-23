@@ -48,6 +48,8 @@ export type IFieldType =
   | "integer"
   | "boolean"
   | "array"
+  | "time"
+  | "usdate"
   | "date"
   | "datetime"
   | "month"

@@ -601,6 +601,16 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         db_model.crosswalk = reference_in
         return db_model
 
+    def toggle_featured(self, db: Session, *, db_obj: Reference) -> Reference:
+        isFeatured = False
+        if db_obj.isFeatured:
+            isFeatured = db_obj.isFeatured
+        db_obj.isFeatured = not isFeatured
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
     ###################################################################################################
     # ROLES AND RIGHTS
     ###################################################################################################
@@ -1040,7 +1050,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
     ) -> None:
         data_in = self.get_data_model(resource_obj=resource_obj)
         if not data_in or not resource_obj.schema_subject:
-            message = f"Schema subject for field ({field_name}) categorisation is not found."
+            message = f"Schema subject for resource ({resource_obj.name}) categorisation is not found."
             self._record_activity(db=db, user=user, db_obj=resource_obj, message=message, alert=True)
             return None
         datasource = qd.DataSourceDefinition(source=data_in)
@@ -1050,7 +1060,10 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         )
         schema_subject = qd.SchemaDefinition(source=schema_in)
         try:
-            schema_subject.fields.set_categories(name=field_name, terms=datasource.get_data(), as_bool=as_bool)
+            field = schema_subject.fields.get(name=field_name)
+            if not field:
+                raise ValueError(f"Field ({field_name}) for schema subject not found.")
+            schema_subject.fields.set_categories(name=field.name, terms=datasource.get_data(), as_bool=as_bool)
         except ValueError as e:
             message = e
             self._record_activity(db=db, user=user, db_obj=resource_obj, message=message, alert=True)
@@ -1063,7 +1076,38 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             reference_type=ReferenceType.SCHEMA,
             responsibility=RoleType.WRANGLER,
         )
-        message = f"Schema subject field ({field_name}) successfully categorised."
+        message = f"Schema subject field ({field.name}) successfully categorised."
+        self._record_activity(db=db, user=user, db_obj=resource_obj, message=message)
+
+    def modify_schema_field_dtype(
+        self, *, db: Session, resource_obj: Resource, user: User, field_name: str, dtype: str
+    ) -> None:
+        if not resource_obj.schema_subject:
+            message = f"Schema subject for resource ({resource_obj.name}) is not found."
+            self._record_activity(db=db, user=user, db_obj=resource_obj, message=message, alert=True)
+            return None
+        schema_in = crud_files.get(
+            obj_id=resource_obj.schema_subject.model,
+            obj_type=resource_obj.schema_subject.model_type,
+        )
+        schema_subject = qd.SchemaDefinition(source=schema_in)
+        try:
+            dtype = qd.dtypes.FieldType(dtype).value
+            field = schema_subject.fields.get(name=field_name)
+            field.dtype = dtype
+        except ValueError as e:
+            message = e
+            self._record_activity(db=db, user=user, db_obj=resource_obj, message=message, alert=True)
+            return None
+        self.update(
+            db=db,
+            id=resource_obj.schema_subject.id,
+            user=user,
+            reference_in=schema_subject.get,
+            reference_type=ReferenceType.SCHEMA,
+            responsibility=RoleType.WRANGLER,
+        )
+        message = f"Schema subject field ({field.name}) data type successfully updated."
         self._record_activity(db=db, user=user, db_obj=resource_obj, message=message)
 
     def get_schema_definition(

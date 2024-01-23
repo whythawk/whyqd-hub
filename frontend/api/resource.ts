@@ -80,6 +80,14 @@ export const apiResource = {
       }
     )
   },
+  async postSchemaFieldTypeUpdate(token: string, key: string, field_name: string, data_type: string) {
+    return await useFetch<IMsg>(`${apiCore.url()}/resource/${key}/dtype/${field_name}/${data_type}`, 
+      {
+        method: "POST",
+        headers: apiCore.headers(token),
+      }
+    )
+  },
   async postProcessTransform(token: string, key: string, mimetype: string) {
     return await useFetch<IMsg>(`${apiCore.url()}/resource/${key}/transform/${mimetype}`, 
       {

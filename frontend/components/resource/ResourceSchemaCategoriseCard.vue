@@ -39,7 +39,7 @@
         <Disclosure as="div" v-slot="{ open }">
           <DisclosureButton class="flex w-full items-center justify-between text-left">
             <h4 class="text-sm font-semibold leading-7 text-gray-500 pt-2">
-              Fields <span class="text-sienna-700 font-normal">[perform categorisations]</span>
+              Fields <span class="text-sienna-700 font-normal">[perform categorisations & data typing]</span>
             </h4>
             <ChevronDownIcon :class="[open ? 'rotate-180 transform' : '', 'h-5 w-5']" aria-hidden="true" />
           </DisclosureButton>

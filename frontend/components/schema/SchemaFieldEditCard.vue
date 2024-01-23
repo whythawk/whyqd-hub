@@ -71,7 +71,7 @@
                             <span :class="[
                               selected ? 'font-medium' : 'font-normal',
                               'block truncate',
-                            ]">{{ capitalizeFirst(dtype.value) }}</span>
+                            ]">{{ dtype.label }}</span>
                             <span v-if="selected" class="absolute inset-y-0 left-0 flex items-center pl-3 text-ochre-600">
                               <CheckIcon class="h-5 w-5" aria-hidden="true" />
                             </span>
@@ -236,17 +236,19 @@ const props = defineProps<{
 
 const parameters = {
   dtypes: [
-    { value: "string" },
-    { value: "number" },
-    { value: "integer" },
-    { value: "boolean" },
-    { value: "array" },
-    { value: "date" },
-    { value: "datetime" },
-    { value: "month" },
-    { value: "quarter" },
-    { value: "year" },
-    { value: "any" },
+    { value: "string", label: "String" },
+    { value: "number", label: "Number" },
+    { value: "integer", label: "Integer" },
+    { value: "boolean", label: "Boolean" },
+    { value: "array", label: "Array" },
+    { value: "time", label: "Time" },
+    { value: "date", label: "Date" },
+    { value: "usdate", label: "US Date" },
+    { value: "datetime", label: "DateTime" },
+    { value: "month", label: "Month" },
+    { value: "quarter", label: "Quarter" },
+    { value: "year", label: "Year" },
+    { value: "any", label: "Any" },
   ],
 }
 

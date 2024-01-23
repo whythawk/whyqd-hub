@@ -3,6 +3,7 @@ from typing import Any, Optional, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+import whyqd as qd
 
 from app import crud, models, schemas, schema_types
 from app.api import deps
@@ -160,6 +161,35 @@ def create_resource_schema_categorisation_as_terms(
         "app.worker.process_schema_categorisation", args=[current_user.id, resource_obj.id, field_id, term_type]
     )
     return {"msg": "Field categorisation processing. Check your activity log to see when complete."}
+
+
+@router.post("/{id}/dtype/{field_id}/{data_type}", response_model=schemas.Msg)
+def process_resource_schema_field_data_type(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: str,
+    field_id: str,
+    data_type: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Extract categories from source data as unique terms or as boolean Trues for a specific schema subject field.
+    """
+    resource_obj = crud.resource.get(db=db, id=id, user=current_user)
+    valid_type = True
+    try:
+        qd.dtypes.FieldType(data_type)
+    except ValueError:
+        valid_type = False
+    if not resource_obj or not valid_type:
+        raise HTTPException(
+            status_code=400,
+            detail="Either resource does not exist, or user does not have the rights for this request.",
+        )
+    celery_app.send_task(
+        "app.worker.process_schema_type_update", args=[current_user.id, resource_obj.id, field_id, data_type]
+    )
+    return {"msg": "Field data type update processing. Check your activity log to see when complete."}
 
 
 @router.post("/{id}/transform/{mimetype}", response_model=schemas.Msg)

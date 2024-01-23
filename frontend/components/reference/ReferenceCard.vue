@@ -21,12 +21,17 @@
                 <h2 v-else class="font-bold text-gray-900">{{ props.reference.name }}</h2>
               </div>
               <div class="truncate py-0.5 text-xs text-gray-500 text-right">
-                <div class="truncate py-0.5 text-xs text-gray-500">
-                  <span class="truncate font-medium text-gray-900">{{ props.reference.model_type }}</span>
-                  <span v-if="props.reference.mime_type" class="truncate font-bold text-gray-900">
-                    .{{ props.reference.mime_type }}
-                  </span>
-                </div>
+                <ul role="list" class="flex flex-row justify-end text-xs leading-5 py-0.5 truncate">
+                  <li class="flex items-center">
+                    <span class="truncate font-medium text-gray-900">{{ props.reference.model_type }}</span>
+                    <span v-if="props.reference.mime_type" class="truncate font-bold text-gray-900">
+                      .{{ props.reference.mime_type }}
+                    </span>
+                  </li>
+                  <li v-if="props.reference.isFeatured" class="flex items-center pl-2">
+                      <PaperClipIcon class="text-yellow-600 h-4 w-4 shrink-0" aria-hidden="true" />
+                  </li>
+                </ul>
                 <div class="truncate py-0.5">
                   <time :datetime="props.reference.created" class="flex-none py-0.5 text-xs text-gray-500">{{
                     readableDate(props.reference.created) }}</time>
@@ -90,6 +95,7 @@ import {
   Square3Stack3DIcon,
   Squares2X2Icon,
   TableCellsIcon,
+  PaperClipIcon
 } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar } from "@/utilities"
 import { IReference } from "@/interfaces"

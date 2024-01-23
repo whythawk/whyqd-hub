@@ -64,6 +64,26 @@ def read_reference(
     return crud.reference.get(db=db, id=id, user=current_user)
 
 
+@router.put("/{id}/featured", response_model=schemas.Reference)
+def toggle_feature_state(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: str,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Toggle reference featured state.
+    """
+    db_obj = crud.reference.get(db=db, id=id, user=current_user, responsibility=schema_types.RoleType.CURATOR)
+    if not db_obj:
+        raise HTTPException(
+            status_code=400,
+            detail="Either reference does not exist, or researcher does not have the rights for this request.",
+        )
+    db_obj = crud.pathway.toggle_featured(db=db, db_obj=db_obj)
+    return db_obj
+
+
 @router.delete("/{id}", response_model=schemas.Reference)
 def remove_reference(
     *,
