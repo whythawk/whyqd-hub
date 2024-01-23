@@ -45,6 +45,7 @@ def read_all_references(
         mime_type=mime_type,
         date_from=date_from,
         date_to=date_to,
+        isFeatured=isFeatured,
         descending=descending,
         page=page,
     )

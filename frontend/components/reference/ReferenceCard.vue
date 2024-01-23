@@ -47,13 +47,13 @@
               </li>
             </ul>
           </div>
-          <div v-if="asSchemaSubject && !asSchemaObject" class="flex items-center justify-end">
+          <!-- <div v-if="asSchemaSubject && !asSchemaObject" class="flex items-center justify-end">
             <NuxtLink :to="`/references/schema/${props.reference.id}`"
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 text-xs font-semibold">
               <ArrowsRightLeftIcon class="text-gray-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
               <span class="hidden lg:block">Set as Subject</span>
             </NuxtLink>
-          </div>
+          </div> -->
           <div v-if="!asSchemaSubject && asSchemaObject" class="flex items-center justify-end">
             <button type="button" @click.prevent="createSchemaCrosswalk"
               class="text-gray-700 hover:text-ochre-600 group flex gap-x-1 p-2 text-xs font-semibold">

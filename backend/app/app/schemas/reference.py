@@ -14,6 +14,7 @@ class ReferenceBase(BaseSchema):
     isPrivate: Optional[bool] = Field(
         True, alias="is_private", description="Whether the reference is private to roleplayers."
     )
+    isFeatured: Optional[bool] = Field(False, description="Whether the reference is featured.")
     name: Optional[str] = Field(None, description="A machine-readable name given to the reference.")
     title: Optional[str] = Field(None, description="A human-readable title given to the reference.")
     description: Optional[str] = Field(

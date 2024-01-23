@@ -72,10 +72,10 @@
 import VueTailwindDatepicker from "vue-tailwind-datepicker"
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline"
-import { useReferenceStore } from "@/stores"
+import { useSchemaStore } from "@/stores"
 import { IReferenceFilters } from "@/interfaces"
 
-const referenceStore = useReferenceStore()
+const schemaStore = useSchemaStore()
 const filters = ref({} as IReferenceFilters)
 const searchTerm = ref("")
 const dateFrom = ref("")
@@ -94,13 +94,13 @@ async function refreshReferences() {
   if (dateFrom.value && dateTo.value && dateFrom.value >= dateTo.value) dateTo.value = ""
   if (dateFrom.value) filters.value.date_from = dateFrom.value
   if (dateTo.value) filters.value.date_to = dateTo.value
-  referenceStore.setFilters(filters.value)
+  schemaStore.setFilters(filters.value)
   getFilters()
-  await referenceStore.getMulti()
+  await schemaStore.getMulti()
 }
 
 function getFilters() {
-  filters.value = { ...referenceStore.filters }
+  filters.value = { ...schemaStore.filters }
   dateFrom.value = ""
   dateTo.value = ""
   if (filters.value.date_from) dateFrom.value = filters.value.date_from
@@ -110,7 +110,7 @@ function getFilters() {
 
 async function resetFilters() {
   searchTerm.value = ""
-  referenceStore.resetFilters()
+  schemaStore.resetFilters()
   getFilters()
   await refreshReferences()
 }

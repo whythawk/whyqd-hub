@@ -25,9 +25,9 @@ export const useSchemaStore = defineStore("schemaStore", {
     settings: () => {
       return ( useSettingStore() )
     },
-    reference: () => {
-      return ( useReferenceStore() )
-    },
+    // reference: () => {
+    //   return ( useReferenceStore() )
+    // },
   },
   actions: {
     async getMulti(facets: IReferenceFilters = {}) {
@@ -35,9 +35,9 @@ export const useSchemaStore = defineStore("schemaStore", {
       if (this.authTokens.token) {
         try {
           this.settings.setPageState("loading")
-          this.facets.reference_type = "SCHEMA"
           this.setMulti([])
           if (!facets || Object.keys(facets).length === 0) facets = this.facets
+          this.facets.reference_type = "SCHEMA"
           const { data: response } = await apiReference.getMulti(this.authTokens.token, facets)
           if (response.value) {
             if (response.value.length) {

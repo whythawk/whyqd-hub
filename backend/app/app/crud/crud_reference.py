@@ -80,7 +80,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         else:
             db_objs = db_objs.filter(self.model.model_type != ReferenceType.DATASOURCE)
         if isFeatured:
-            db_objs = db_objs.filter(self.model.isFeatured)
+            db_objs = db_objs.filter(self.model.isFeatured.is_(True))
         if reference_type in [ReferenceType.DATA, ReferenceType.DATASOURCE] and mime_type:
             db_objs = db_objs.filter(self.model.mime_type == mime_type)
         if date_from and date_to and date_from > date_to:
