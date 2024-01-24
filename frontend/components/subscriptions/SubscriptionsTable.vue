@@ -4,7 +4,7 @@
   </div>
   <div v-if="appSettings.current.pageState === 'done'">
     <div class="flex-auto p-3">
-      <div class="shadow sm:overflow-hidden sm:rounded-md min-w-max">
+      <div class="shadow sm:overflow-hidden sm:rounded-md">
         <SubscriptionsUserSearch @set-request="watchSubscriberRequest" />
         <table v-if="subscriptionStore.multi.length" class="min-w-full divide-y divide-gray-300">
           <thead class="bg-gray-50">

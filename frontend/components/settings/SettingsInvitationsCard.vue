@@ -1,6 +1,6 @@
 <template>
   <div class="flex-auto p-3">
-    <div class="shadow sm:overflow-hidden sm:rounded-md min-w-max">
+    <div class="shadow sm:overflow-hidden sm:rounded-md">
       <table class="min-w-full divide-y divide-gray-300">
         <thead class="bg-gray-50">
           <tr>

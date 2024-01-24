@@ -6,6 +6,7 @@ from uuid import UUID, uuid4
 from pathlib import Path
 import posixpath
 import urllib
+import time
 import modin.pandas as pd
 import numpy as np
 from io import BufferedReader
@@ -325,6 +326,15 @@ class CRUDFiles:
     def delete_data_summary(self, *, obj_id) -> dict | None:
         for source in Path(self.summary).glob(f"{obj_id}*.SUMMARY"):
             self.core.delete_file(source=str(source))
+
+    def delete_working_directory(self, *, delay: int = 86400) -> bool:
+        # Delay is 24 hours expressed in seconds ... trying not to interfere too much with working data
+        epoch_time = int(time.time()) - delay
+        for source in Path(settings.WORKING_PATH).rglob("*"):
+            if source.is_file() and source.stat().st_mtime <= epoch_time:
+                # Only if it is a file, and has been last modified 24 hours ago
+                self.core.delete_file(source=str(source))
+        return True
 
 
 files = CRUDFiles()

@@ -1,6 +1,6 @@
 <template>
   <div class="flex-auto p-3">
-    <div class="shadow sm:overflow-hidden sm:rounded-md min-w-max">
+    <div class="shadow sm:overflow-hidden sm:rounded-md">
       <div v-if="appSettings.current.pageState === 'loading'">
         <LoadingCardSkeleton />
       </div>

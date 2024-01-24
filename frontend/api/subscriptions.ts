@@ -1,10 +1,26 @@
 import {
   ICode, IOrder, IProduct, IProductPricing, ISubscription, ISubscriptionView, ISubscriptionAdminCreate,
-  IStripeCheckoutResponse, IStripeIntent, IStripeCheckoutIntent, IOgunFilters, IUserEmail, IUserProfile
+  IStripeCheckoutResponse, IStripeIntent, IStripeCheckoutIntent, IOgunFilters, IUserEmail, IUserProfile, IMsg
 } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiSubscriptions = {
+  // ADMINISTRATION
+  async getWorkingDirectorySize(token: string) {
+    return await useFetch<IMsg>(`${apiCore.url()}/products/working`, 
+      {
+        headers: apiCore.headers(token)
+      }
+    )
+  },
+  async clearWorkingDirectory(token: string) {
+    return await useFetch<IMsg>(`${apiCore.url()}/products/working`, 
+      {
+        method: "POST",
+        headers: apiCore.headers(token)
+      }
+    )
+  },
   // SUBSCRIPTIONS & ORDERS
   async getOrders(token: string, payload: IOgunFilters = {}) {
     return await useFetch<IOrder[]>(`${apiCore.url()}/subscriptions/`, 
