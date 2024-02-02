@@ -306,22 +306,38 @@ class CRUDFiles:
                 dfs = dfs.fillna(np.nan).replace([np.nan], [None])
                 jsn_obj = dfs.to_json(path_or_buf=None, orient="records")
                 obj_name = f"{obj_id}-{sheet_name.lower()}.SUMMARY"
-                self.core.save_file(data=jsn_obj, source=str(self.summary / obj_name))
+                if self.use_spaces:
+                    spaces.update(source=jsn_obj, filename=obj_name)
+                else:
+                    self.core.save_file(data=jsn_obj, source=str(self.summary / obj_name))
         else:
             df = df.fillna(np.nan).replace([np.nan], [None])
             jsn_obj = df.to_json(path_or_buf=None, orient="records")
             obj_name = f"{obj_id}.SUMMARY"
-            self.core.save_file(data=jsn_obj, source=str(self.summary / obj_name))
+            if self.use_spaces:
+                spaces.update(source=jsn_obj, filename=obj_name)
+            else:
+                self.core.save_file(data=jsn_obj, source=str(self.summary / obj_name))
 
     def get_data_summary(self, *, obj_id, sheet_name: str | None = None) -> list:
         obj_in = None
         obj_name = f"{obj_id}.SUMMARY"
         if sheet_name:
             obj_name = f"{obj_id}-{sheet_name.lower()}.SUMMARY"
-        obj_in = self.core.load_json(source=str(self.summary / obj_name))
+        if self.use_spaces:
+            if spaces.exists(filename=obj_name):
+                obj_in = spaces.get(filename=obj_name)
+        else:
+            obj_in = self.core.load_json(source=str(self.summary / obj_name))
         if not obj_in:
             return []
         return obj_in
+
+    def recreate_data_summary(self, *, obj_id: UUID | str, datasource_id: UUID | str, obj_in: DataSourceModel):
+        data_in = DataSourceTemplateModel(**obj_in.dict())
+        data_in.uuid = obj_id  # db_obj.datasource.model ... db_obj.datasource.id
+        self.save_data_summary(obj_id=datasource_id, obj_in=data_in)
+        return self.get_data_summary(obj_id=datasource_id, sheet_name=obj_in.sheet_name)
 
     def delete_data_summary(self, *, obj_id) -> dict | None:
         for source in Path(self.summary).glob(f"{obj_id}*.SUMMARY"):

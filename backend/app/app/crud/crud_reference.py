@@ -466,6 +466,17 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             reference_in.summary = crud_files.get_data_summary(
                 obj_id=db_obj.datasource.id, sheet_name=reference_in.sheet_name
             )
+            try:
+                reference_in.summary = crud_files.get_data_summary(
+                    obj_id=db_obj.datasource.id, sheet_name=reference_in.sheet_name
+                )
+            except FileNotFoundError:
+                pass
+            if not reference_in.summary:
+                datamodel_in = self.get_data_model(resource_obj=db_obj)
+                reference_in.summary = crud_files.recreate_data_summary(
+                    obj_id=db_obj.datasource.model, datasource_id=db_obj.datasource.id, obj_in=datamodel_in
+                )
             db_model.data = reference_in
         # 2. Schema subject
         if db_obj.schema_subject_id:
@@ -513,6 +524,18 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             reference_in.summary = crud_files.get_data_summary(
                 obj_id=db_obj.transformdatasource.id, sheet_name=reference_in.sheet_name
             )
+            try:
+                reference_in.summary = crud_files.get_data_summary(
+                    obj_id=db_obj.transformdatasource.id, sheet_name=reference_in.sheet_name
+                )
+            except FileNotFoundError:
+                pass
+            if not reference_in.summary:
+                reference_in.summary = crud_files.recreate_data_summary(
+                    obj_id=db_obj.transformdatasource.model,
+                    datasource_id=db_obj.transformdatasource.id,
+                    obj_in=reference_in,
+                )
             db_model.transformdata = reference_in
         return db_model
 
