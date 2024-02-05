@@ -40,6 +40,7 @@ import { ISocketRequest } from "@/interfaces"
 const actionCore = [
   "CALCULATE",
   "CATEGORISE",
+  "COLLATE",
   "DEBLANK",
   "DEDUPE",
   "DELETE_ROWS",

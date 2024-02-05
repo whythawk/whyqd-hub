@@ -6,7 +6,9 @@
     <span class="text-cerulean-600 font-semibold">{{ props.action.destinationField }}</span>
     <img src="/img/bracket-source.svg" class="h-5 mx-1" />
     <!-- @vue-ignore -->
-    <span class="text-eucalyptus-600 font-semibold">{{ props.action.sourceField.join(', ') }}</span>
+    <span class="text-eucalyptus-600 font-semibold">
+      {{ props.action.sourceField && Array.isArray(props.action.sourceField) ? props.action.sourceField.join(', ') : props.action.sourceField }}
+    </span>
     <img src="/img/bracket-close.svg" class="h-5 ml-1" />
   </div>
 </template>

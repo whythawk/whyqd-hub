@@ -57,12 +57,12 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ setSelection: [selection: IKeyable] }>()
 const availableTerms = ref<string[]>([])
-const selectedTerm = ref("Select ...")
+const selectedTerm = ref("")
 const query = ref("")
 
 function refreshTerms() {
   availableTerms.value = []
-  selectedTerm.value = "Select ..."
+  selectedTerm.value = ""
   if (props.terms && props.terms.length) availableTerms.value = props.terms.map(({ name }) => name)
   if (props.currentTerm && props.currentTerm !== "") selectedTerm.value = props.currentTerm as string
 }
@@ -87,7 +87,7 @@ let filteredTerms = computed(() =>
 )
 
 function submitSelection() {
-  if (selectedTerm.value !== "Select ..." && selectedTerm.value !== props.currentTerm) {
+  if (selectedTerm.value && selectedTerm.value !== props.currentTerm) {
     const selection: IKeyable = {
       choice: selectedTerm.value,
       subject: props.subject

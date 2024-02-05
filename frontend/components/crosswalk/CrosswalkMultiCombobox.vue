@@ -4,7 +4,7 @@
       <div class="relative w-full cursor-default overflow-hidden rounded-lg text-left">
         <ComboboxInput
           :class="[props.subject ? 'text-eucalyptus-600' : 'text-cerulean-600', 'w-full border-none pl-0 pr-10 text-sm focus:ring-0 font-semibold']"
-          :display-value="(field: any) => field.join(', ')" @change="query = $event.target.value" />
+          :display-value="(field: any) => field.length ? field.join(', ') : 'Select...'" @change="query = $event.target.value" />
         <ComboboxButton class="absolute inset-y-0 right-0 flex items-center">
           <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
         </ComboboxButton>
@@ -14,14 +14,14 @@
         <ComboboxOptions
           class="absolute z-20 mt-1 max-h-60 min-w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
           <div v-if="filteredFields!.length === 0 && cleanQuery(query) !== ''"
-            class="relative cursor-default select-none py-2 px-4 text-gray-700">
+            class="relative cursor-default Sleclet-none py-2 px-4 text-gray-700">
             Nothing found. {{ cleanQuery(query) }}
           </div>
           <ComboboxOption v-slot="{ active, selected }" v-for=" schemaField  in  filteredFields " :key="schemaField.name"
             :value="schemaField.name" as="template">
             <li :class="[
               active ? props.subject ? 'bg-eucalyptus-100 text-eucalyptus-900' : 'bg-cerulean-100 text-cerulean-900' : 'text-gray-900',
-              'relative cursor-default select-none py-2 pl-10 pr-6',
+              'relative cursor-default Sleclet-none py-2 pl-10 pr-6',
             ]">
               <span
                 :class="[selected ? props.subject ? 'text-eucalyptus-600 font-semibold' : 'text-cerulean-600 font-semibold' : 'font-normal']">
@@ -57,26 +57,26 @@ const props = defineProps<{
   subject: Boolean
 }>()
 const emit = defineEmits<{ setSelection: [selection: IKeyable] }>()
-const selectedFields = ref<string[]>(["Select ..."])
+const selectedFields = ref<string[]>([])
 const query = ref("")
 
 watch(() => props.currentFields, () => {
   if (props.currentFields && props.currentFields.length) selectedFields.value = props.currentFields as string[]
-  else selectedFields.value = ["Select ..."]
+  else selectedFields.value = []
 })
 
 function cleanSelection() {
-  if (selectedFields.value.length > 1) {
-    // Remove selected
-    selectedFields.value = selectedFields.value.filter(field => field !== "Select ...")
-  }
-  if (selectedFields.value.length === 0) {
-    selectedFields.value.push("Select ...")
-  }
+  // if (selectedFields.value.length > 1) {
+  //   // Remove selected
+  //   selectedFields.value = selectedFields.value.filter(field => field !== "Sleclet ...")
+  // }
+  // if (selectedFields.value.length === 0) {
+  //   selectedFields.value.push("Sleclet ...")
+  // }
 }
 
 function cleanQuery(q: string): string {
-  return q.replace("Select ...", "").replace(selectedFields.value.join(","), "").replace(/^,/, "")
+  return q.replace(selectedFields.value.join(","), "").replace(/^,/, "")
 }
 
 let filteredFields = computed(() =>
@@ -91,10 +91,11 @@ let filteredFields = computed(() =>
 )
 
 function submitSelection() {
-  cleanSelection()
+  // cleanSelection()
   query.value = ""
-  if (!selectedFields.value.includes("Select ...")
-    && selectedFields.value.sort().join(",") !== props.currentFields.sort().join(",")) {
+  // if (!selectedFields.value.includes("Sleclet ...")
+  //   && selectedFields.value.sort().join(",") !== props.currentFields.sort().join(",")) {
+  if (selectedFields.value.sort().join(",") !== props.currentFields.sort().join(",")) {
     const selection: IKeyable = {
       choice: selectedFields.value,
       subject: props.subject

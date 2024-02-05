@@ -4,7 +4,7 @@
       <div class="relative w-full cursor-default overflow-hidden rounded-lg text-left">
         <ComboboxInput
           :class="[props.subject ? 'text-eucalyptus-600' : 'text-cerulean-600', 'w-full border-none pl-0 pr-10 text-sm focus:ring-0 font-semibold']"
-          :display-value="(field: any) => field.join(', ')" @change="query = $event.target.value" />
+          :display-value="(field: any) => field.length ? field.join(', ') : 'Select...'" @change="query = $event.target.value" />
         <ComboboxButton class="absolute inset-y-0 right-0 flex items-center">
           <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
         </ComboboxButton>
@@ -58,7 +58,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ setSelection: [selection: IKeyable] }>()
 const availableTerms = ref<string[]>([])
-const selectedTerms = ref<string[]>(["Select ..."])
+const selectedTerms = ref<string[]>([])
 const query = ref("")
 
 watch(() => [props.currentTerms, props.terms], () => {
@@ -67,23 +67,23 @@ watch(() => [props.currentTerms, props.terms], () => {
 
 function refreshTerms() {
   availableTerms.value = []
-  selectedTerms.value = ["Select ..."]
+  selectedTerms.value = []
   if (props.terms && props.terms.length) availableTerms.value = props.terms.map(({ name }) => name)
   if (props.currentTerms && props.currentTerms.length) selectedTerms.value = [...props.currentTerms] as string[]
 }
 
 function cleanSelection() {
-  if (selectedTerms.value.length > 1) {
-    // Remove selected
-    selectedTerms.value = selectedTerms.value.filter(field => field !== "Select ...")
-  }
-  if (selectedTerms.value.length === 0) {
-    selectedTerms.value.push("Select ...")
-  }
+  // if (selectedTerms.value.length > 1) {
+  //   // Remove selected
+  //   selectedTerms.value = selectedTerms.value.filter(field => field !== "Select ...")
+  // }
+  // if (selectedTerms.value.length === 0) {
+  //   selectedTerms.value.push("Select ...")
+  // }
 }
 
 function cleanQuery(q: string): string {
-  return q.replace("Select ...", "").replace(selectedTerms.value.join(","), "").replace(/^,/, "")
+  return q.replace(selectedTerms.value.join(","), "").replace(/^,/, "")
 }
 
 let filteredTerms = computed(() =>
@@ -98,11 +98,11 @@ let filteredTerms = computed(() =>
 )
 
 function submitSelection() {
-  cleanSelection()
+  // cleanSelection()
   query.value = ""
   if (props.currentTerms
     && props.currentTerms.length
-    && !selectedTerms.value.includes("Select ...")
+    && selectedTerms.value.length
     && selectedTerms.value.sort().join(",") !== props.currentTerms.sort().join(",")) {
     const selection: IKeyable = {
       choice: selectedTerms.value,

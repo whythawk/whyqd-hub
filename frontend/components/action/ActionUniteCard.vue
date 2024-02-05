@@ -3,7 +3,9 @@
     <img src="/img/bracket-open.svg" class="h-5 mr-1" />
     <span class="text-ochre-600 font-semibold">{{ props.action.action.split('_').join('&#x202F;') }}</span>
     <img src="/img/bracket-destination.svg" class="h-5 mx-1" />
-    <span class="text-cerulean-600 font-semibold">{{ props.action.destinationField }}</span>
+    <span class="text-cerulean-600 font-semibold">
+      {{ props.action.destinationField && Array.isArray(props.action.destinationField) && props.action.destinationField.length ? props.action.destinationField[0] : props.action.destinationField }}
+    </span>
     <img src="/img/bracket-source.svg" class="h-5 mx-1" />
     <span class="text-eucalyptus-600">'{{ props.action.sourceTerm }}'</span>
     <img src="/img/bracket-divider.svg" class="h-5 mx-1" />

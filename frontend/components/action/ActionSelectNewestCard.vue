@@ -22,7 +22,7 @@ const props = defineProps<{
 const sourceField = ref("")
 
 onMounted(async () => {
-  if (props.action.sourceField && props.action.sourceField.length !== 0) {
+  if (props.action.sourceField && Array.isArray(props.action.sourceField) && props.action.sourceField.length !== 0) {
     sourceField.value = props.action.sourceField.map((x: any) => `${x[0]} ${x[1]} ${x[2]}`).join(', ')
   }
 })

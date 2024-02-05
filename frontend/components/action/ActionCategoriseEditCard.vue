@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center">
     <img src="/img/bracket-open.svg" class="h-5 mr-1" />
-    <span class="text-ochre-600 font-semibold cursor-move">{{ props.action.action.split('_').join('&#x202F;') }}</span>
+    <span class="text-ochre-600 font-semibold">{{ props.action.action.split('_').join('&#x202F;') }}</span>
     <img src="/img/bracket-destination.svg" class="h-5 mx-1" />
     <CrosswalkSingleCombobox :current-field="selectedDestinationField" :schema="props.schemaObject" :subject="false"
       @set-selection="watchSelection" />
@@ -27,10 +27,10 @@ const props = defineProps<{
   schemaObject: IResourceSchemaReference
 }>()
 const emit = defineEmits<{ setRequest: [request: ISocketRequest] }>()
-const selectedDestinationField = ref("Select ...")
-const selectedDestinationTerm = ref("Select ...")
-const selectedSourceTerms = ref<string[]>(["Select ..."])
-const selectedSourceField = ref("Select ...")
+const selectedDestinationField = ref("")
+const selectedDestinationTerm = ref("")
+const selectedSourceTerms = ref<string[]>([])
+const selectedSourceField = ref("")
 
 watch(() => [selectedDestinationField.value, selectedSourceField.value, selectedDestinationTerm.value, selectedSourceTerms.value], () => {
   submitRequest()
@@ -38,7 +38,7 @@ watch(() => [selectedDestinationField.value, selectedSourceField.value, selected
 
 function getSelectedDestinationTerms() {
   let availableTerms
-  if (selectedDestinationField.value && selectedDestinationField.value !== "Select ...") {
+  if (selectedDestinationField.value) {
     availableTerms = props.schemaObject.fields?.find((field) => field.name === selectedDestinationField.value
       && field.constraints && field.constraints.enum && field.constraints.enum.length)
   }
@@ -47,7 +47,7 @@ function getSelectedDestinationTerms() {
 }
 function getSelectedSourceTerms() {
   let availableTerms
-  if (selectedSourceField.value && selectedSourceField.value !== "Select ...") {
+  if (selectedSourceField.value) {
     availableTerms = props.schemaSubject.fields?.find((field) => field.name === selectedSourceField.value
       && field.constraints && field.constraints.enum && field.constraints.enum.length)
   }
@@ -69,25 +69,18 @@ function watchSelectionTerm(selection: IKeyable) {
 }
 
 function submitRequest() {
-  if (
-    (selectedDestinationField.value !== "Select ..."
-      && selectedSourceField.value !== "Select ..."
-      && selectedDestinationTerm.value !== "Select ..."
-      && !selectedSourceTerms.value.includes("Select ..."))
-  ) {
-    let state = "addAction"
-    if (props.action.uuid !== "") state = "updateAction"
-    let data = { ...props.action }
-    data.destinationField = selectedDestinationField.value
-    data.sourceField = [selectedSourceField.value]
-    data.destinationTerm = selectedDestinationTerm.value
-    data.sourceTerm = selectedSourceTerms.value
-    const request: ISocketRequest = {
-      state: state,
-      data
-    }
-    emit("setRequest", request)
+  let state = "addAction"
+  if (props.action.uuid !== "") state = "updateAction"
+  let data = { ...props.action }
+  data.destinationField = selectedDestinationField.value
+  data.sourceField = [selectedSourceField.value]
+  data.destinationTerm = selectedDestinationTerm.value
+  data.sourceTerm = selectedSourceTerms.value
+  const request: ISocketRequest = {
+    state: state,
+    data
   }
+  emit("setRequest", request)
 }
 
 

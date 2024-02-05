@@ -6,7 +6,7 @@
     <CrosswalkSingleCombobox :current-field="selectedDestinationField" :schema="props.schemaObject" :subject="false"
       @set-selection="watchSelection" />
     <img src="/img/bracket-source.svg" class="h-5 mx-1" />
-    <CrosswalkInputWildCard :wildTerm="newSourceTerm" :is-list="false" @set-wild="watchSourceTerm" />
+    <CrosswalkInputWildCard :wildTerm="props.action.sourceTerm" :is-list="false" @set-wild="watchSourceTerm" />
     <img src="/img/bracket-close.svg" class="h-5 ml-1" />
   </div>
 </template>
@@ -19,8 +19,8 @@ const props = defineProps<{
   schemaObject: IResourceSchemaReference
 }>()
 const emit = defineEmits<{ setRequest: [request: ISocketRequest] }>()
-const selectedDestinationField = ref("Select ...")
-const newSourceTerm = ref("Set ...")
+const selectedDestinationField = ref("")
+const newSourceTerm = ref("")
 
 function watchSourceTerm(request: IKeyable) {
   newSourceTerm.value = request.term
@@ -38,8 +38,8 @@ function watchSelection(selection: IKeyable) {
 
 function submitRequest() {
   if (
-    selectedDestinationField.value !== "Select ..."
-    && newSourceTerm.value !== "Set ..."
+    selectedDestinationField.value
+    && newSourceTerm.value
     && (
       newSourceTerm.value !== props.action.sourceTerm
       || selectedDestinationField.value !== props.action.destinationField

@@ -23,8 +23,8 @@ const props = defineProps<{
   schemaObject: IResourceSchemaReference
 }>()
 const emit = defineEmits<{ setRequest: [request: ISocketRequest] }>()
-const selectedDestinationField = ref("Select ...")
-const selectedSourceField = ref("Select ...")
+const selectedDestinationField = ref("")
+const selectedSourceField = ref("")
 let newRows = [] as number[]
 
 function watchNewRows(request: IKeyable) {
@@ -46,8 +46,7 @@ function submitRequest() {
   if (
     newRows && newRows.length
     && newRows.every((t) => !isNaN(t))
-    && (selectedDestinationField.value !== "Select ..."
-      && selectedSourceField.value !== "Select ...")
+    && (selectedDestinationField.value && selectedSourceField.value)
     && (selectedDestinationField.value !== props.action.destinationField
       || selectedSourceField.value !== props.action.sourceField
       || newRows.sort().join(",") !== props.action.rows!.sort().join(",")
@@ -68,7 +67,6 @@ function submitRequest() {
 }
 
 onMounted(async () => {
-  console.log("pivot", props.action.sourceField)
   if (props.action.uuid !== "") {
     selectedDestinationField.value = props.action.destinationField as string
     selectedSourceField.value = props.action.sourceField as string

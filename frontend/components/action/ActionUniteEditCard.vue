@@ -1,16 +1,27 @@
 <template>
-  <div class="flex items-center">
-    <img src="/img/bracket-open.svg" class="h-5 mr-1" />
-    <span class="text-ochre-600 font-semibold cursor-move">{{ props.action.action.split('_').join('&#x202F;') }}</span>
-    <img src="/img/bracket-destination.svg" class="h-5 mx-1" />
-    <CrosswalkSingleCombobox :current-field="selectedDestinationField" :schema="props.schemaObject" :subject="false"
-      @set-selection="watchSelection" />
-    <img src="/img/bracket-source.svg" class="h-5 mx-1" />
-    <CrosswalkInputWildCard :wildTerm="props.action.sourceTerm" :is-list="false" excluded="::" @set-wild="watchByTerm" />
-    <img src="/img/bracket-divider.svg" class="h-5 mx-1" />
-    <CrosswalkMultiCombobox :current-fields="selectedSourceField" :schema="props.schemaSubject" :subject="true"
-      @set-selection="watchSelection" />
-    <img src="/img/bracket-close.svg" class="h-5 ml-1" />
+  <div>
+    <div class="flex items-center">
+      <img src="/img/bracket-open.svg" class="h-5 mr-1" />
+      <span class="text-ochre-600 font-semibold cursor-move">{{ props.action.action.split('_').join('&#x202F;') }}</span>
+      <img src="/img/bracket-destination.svg" class="h-5 mx-1" />
+      <CrosswalkSingleCombobox :current-field="selectedDestinationField" :schema="props.schemaObject" :subject="false"
+        @set-selection="watchSelection" />
+      <img src="/img/bracket-source.svg" class="h-5 mx-1" />
+      <CrosswalkInputWildCard :wildTerm="props.action.sourceTerm" :is-list="false" :excluded="excluded" @set-wild="watchByTerm" />
+      <img src="/img/bracket-divider.svg" class="h-5 mx-1" />
+      <CrosswalkMultiCombobox :current-fields="selectedSourceField" :schema="props.schemaSubject" :subject="true"
+        @set-selection="watchSelection" />
+      <img src="/img/bracket-close.svg" class="h-5 ml-1" />
+    </div>
+    <div>
+      <div class="mx-auto py-1 flex items-center">
+        <h3 class="text-sm text-eucalyptus-600 font-semibold">
+          Source order
+        </h3>
+        <div aria-hidden="true" class="h-5 w-px bg-gray-300 ml-4" />
+        <CrosswalkMultiOrderbox :current-fields="selectedSourceField" @set-selection="watchOrderSelection" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -23,17 +34,19 @@ const props = defineProps<{
   schemaObject: IResourceSchemaReference
 }>()
 const emit = defineEmits<{ setRequest: [request: ISocketRequest] }>()
-const selectedDestinationField = ref("Select ...")
-const selectedSourceField = ref<string[]>(["Select ..."])
-let byTerm = ""
+const selectedDestinationField = ref("")
+const selectedSourceField = ref<string[]>([])
+const byTerm = ref("")
+const excluded = "::"
 
 function watchByTerm(request: IKeyable) {
-  if (request.term && request.term !== "::") byTerm = request.term
-  submitRequest()
+  if (request.term !== excluded) byTerm.value = request.term
 }
-watch(() => [selectedDestinationField.value, selectedSourceField.value], () => {
+
+watch(() => [selectedDestinationField.value, selectedSourceField.value, byTerm.value], () => {
   submitRequest()
 })
+
 function watchSelection(selection: IKeyable) {
   if (selection && Object.keys(selection).length) {
     if (selection.subject) selectedSourceField.value = selection.choice
@@ -41,23 +54,33 @@ function watchSelection(selection: IKeyable) {
   }
 }
 
+function watchOrderSelection(selection: string[]) {
+  selectedSourceField.value = selection
+}
+
 function submitRequest() {
+  // console.log("submitRequest", (
+  //     selectedDestinationField.value, selectedSourceField.value.length, byTerm.value !== excluded
+  //   )
+  // )
   if (
-    (selectedDestinationField.value !== "Select ..."
-      && !selectedSourceField.value.includes("Select ..."))
+    selectedDestinationField.value
     && selectedSourceField.value.length
-    && selectedDestinationField.value !== props.action.destinationField
+    // && (selectedDestinationField.value !== props.action.destinationField
+    //   || selectedSourceField.value !== props.action.sourceField)
+    && byTerm.value !== excluded
   ) {
     let state = "addAction"
     if (props.action.uuid !== "") state = "updateAction"
     let data = { ...props.action }
     data.destinationField = selectedDestinationField.value
     data.sourceField = selectedSourceField.value
-    if (byTerm && byTerm !== "::") data.sourceTerm = byTerm
+    data.sourceTerm = byTerm.value
     const request: ISocketRequest = {
       state: state,
       data
     }
+    // console.log("setRequest", request)
     emit("setRequest", request)
   }
 }
@@ -66,6 +89,7 @@ onMounted(async () => {
   if (props.action.uuid !== "") {
     selectedDestinationField.value = props.action.destinationField as string
     selectedSourceField.value = props.action.sourceField as string[]
+    byTerm.value = props.action.sourceTerm ? props.action.sourceTerm as string : ""
   }
 })
 </script>

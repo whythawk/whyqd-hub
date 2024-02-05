@@ -22,7 +22,7 @@
                   <div class="md:col-span-3 rounded-lg py-2 px-3 ring-1 ring-inset ring-gray-200">
                     <h2 class="flex border-b border-gray-200 text-xs items-center py-2 px-1 font-medium">
                       <BoltIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                      <span class="mx-1 text-gray-500">Workspace</span>
+                      <span class="mx-1 text-gray-500">Workspace | editing: {{ editingAction }}</span>
                     </h2>
                     <div class="space-y-4 max-h-[650px] 2xl:max-h-[1100px] min-h-full overflow-y-auto mt-2">
                       <div class="mx-2 min-h-full" @dragstart="handleDragStart" @dragenter="handleDragEnter"
@@ -40,7 +40,7 @@
                           </div>
                         </div>
                         <ul v-if="draftActions && draftActions.length" role="list">
-                          <li v-for="(action, aIdx) in draftActions"
+                          <!-- <li v-for="(action, aIdx) in draftActions"
                             :key="`action-${action.uuid ? action.uuid : 'add-' + aIdx}`"
                             :id="`action-${action.uuid ? action.uuid : 'add-' + aIdx}`" draggable="true"
                             class="bg-white rounded-lg" @dragstart="handleDragStart" @dragenter="handleDragEnter"
@@ -48,6 +48,20 @@
                             @dragend="handleDragEnd">
                             <ActionEditCard :edit="action" :schema-subject="crosswalkStore.draft.schema_subject"
                               :schema-object="crosswalkStore.draft.schema_object" @set-request="watchRequestSocket" />
+                          </li> -->
+                          <li v-for="(action, aIdx) in draftActions"
+                            :key="`action-${action.uuid ? action.uuid : 'add-' + aIdx}`"
+                            :id="`action-${action.uuid ? action.uuid : 'add-' + aIdx}`" 
+                            :draggable="!editingAction"
+                            class="bg-white rounded-lg" @dragstart="handleDragStart" @dragenter="handleDragEnter"
+                            @dragover="handleDragOver" @dragleave="handleDragLeave" @drop="handleDrop"
+                            @dragend="handleDragEnd">
+                              <ActionEditCard v-if="!action.uuid || action.uuid === editingActionID" :edit="action" 
+                                :schema-subject="crosswalkStore.draft.schema_subject"
+                                :schema-object="crosswalkStore.draft.schema_object" 
+                                @set-request="watchRequestSocket"
+                                @reject-request="watchEditActionRequest" />
+                              <ActionCard v-else :action="action" :can-edit="true" @edit-request="watchEditActionRequest" />
                           </li>
                         </ul>
                       </div>
@@ -171,6 +185,8 @@ const heading = ref("")
 const avatar = ref("")
 const saveApproach = ref("Update")
 const showAddAction = ref(false)
+const editingActionID = ref("")
+const editingAction = ref(false)
 const tabs = [
   { name: "Data source", icon: TableCellsIcon },
   { name: "Schema subject", icon: Squares2X2Icon },
@@ -224,6 +240,12 @@ async function watchEditHeadingRequest(request: string) {
       if (saveApproach.value === 'Create') link = `/resources/${route.params.id}`
       return await navigateTo(link)
   }
+}
+
+async function watchEditActionRequest(request: string) {
+  if (!editingActionID.value && !request) resetActions()
+  editingActionID.value = request
+  editingAction.value = request ? true : false
 }
 
 function resetActions() {
@@ -284,6 +306,13 @@ async function watchResponseSocket(response: ISocketResponse) {
     case "addAction":
       // Hide the add panel and switch the buttons
       showAddAction.value = false
+      editingActionID.value = ""
+      editingAction.value = false
+      break
+    case "updateAction":
+      // Close and reset the editing
+      editingActionID.value = ""
+      editingAction.value = false
       break
     case "save":
       // backend closes the socket itself
@@ -382,14 +411,17 @@ function getActionID(text: string): string {
 }
 
 function handleDragStart(e: any) {
-  e.currentTarget.className = e.currentTarget.className.replace(
-    "bg-white",
-    "bg-cerulean-100"
-  )
-  if (getActionID(e.currentTarget.id)) {
-    dragID.value = getActionID(e.currentTarget.id)
-    e.dataTransfer.effectAllowed = "move"
-    e.dataTransfer.setData("id", dragID.value)
+  if (!editingAction.value) {
+    e.currentTarget.className = e.currentTarget.className.replace(
+      "bg-white",
+      "bg-cerulean-100"
+    )
+    console.log("handleDragStart", getActionID(e.currentTarget.id))
+    if (getActionID(e.currentTarget.id)) {
+      dragID.value = getActionID(e.currentTarget.id)
+      e.dataTransfer.effectAllowed = "move"
+      e.dataTransfer.setData("id", dragID.value)
+    }
   }
 }
 
@@ -423,7 +455,7 @@ function handleDrop(e: any) {
   e.stopPropagation()
   e.preventDefault()
   const hasData = e.dataTransfer.getData("id")
-  console.log("dropped", getActionID(e.currentTarget.id))
+  // console.log("dropped", getActionID(e.currentTarget.id))
   if (hasData === "ADD_ACTION") {
     // Initialise a new ACTION
     const addAction: IActionModel = {
@@ -431,6 +463,8 @@ function handleDrop(e: any) {
       action: e.dataTransfer.getData("addAction") as IActionType
     }
     draftActions.value.unshift(addAction)
+    editingAction.value = true
+    editingActionID.value = ""
   } else {
     resetActions()
     const dropID = getActionID(e.currentTarget.id)

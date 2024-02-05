@@ -21,8 +21,8 @@ const props = defineProps<{
   schemaObject: IResourceSchemaReference
 }>()
 const emit = defineEmits<{ setRequest: [request: ISocketRequest] }>()
-const selectedDestinationField = ref("Select ...")
-const selectedSourceField = ref("Select ...")
+const selectedDestinationField = ref("")
+const selectedSourceField = ref("")
 
 watch(() => [selectedDestinationField.value, selectedSourceField.value], () => {
   submitRequest()
@@ -37,8 +37,8 @@ function watchSelection(selection: IKeyable) {
 
 function submitRequest() {
   if (
-    (selectedDestinationField.value !== "Select ..."
-      && selectedSourceField.value !== "Select ...")
+    selectedDestinationField.value
+    && selectedSourceField.value
     && (selectedDestinationField.value !== props.action.destinationField
       // @ts-ignore
       || selectedSourceField.value !== props.action.sourceField!.join(', '))

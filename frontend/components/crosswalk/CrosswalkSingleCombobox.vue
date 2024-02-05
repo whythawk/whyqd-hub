@@ -4,7 +4,7 @@
       <div class="relative w-full cursor-default overflow-hidden rounded-lg text-left">
         <ComboboxInput
           :class="[props.subject ? 'text-eucalyptus-600' : 'text-cerulean-600', 'w-full border-none pl-0 pr-10 text-sm focus:ring-0 font-semibold']"
-          :display-value="(field: any) => field" @change="query = $event.target.value" />
+          :display-value="(field: any) => field ? field : 'Select...'" @change="query = $event.target.value" />
         <ComboboxButton class="absolute inset-y-0 right-0 flex items-center">
           <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
         </ComboboxButton>
@@ -58,7 +58,7 @@ const props = defineProps<{
   extra?: any
 }>()
 const emit = defineEmits<{ setSelection: [selection: IKeyable] }>()
-const selectedField = ref("Select ...")
+const selectedField = ref("")
 const query = ref("")
 
 watch(() => props.currentField, () => {
@@ -81,7 +81,7 @@ let filteredFields = computed(() =>
 )
 
 function submitSelection() {
-  if (selectedField.value !== "Select ..." && selectedField.value !== props.currentField) {
+  if (selectedField.value !== props.currentField) {
     let selection: IKeyable = {
       choice: selectedField.value,
       subject: props.subject

@@ -1,9 +1,11 @@
 <template>
   <div class="relative">
-    <input type="text" v-model="newWildTerm" @keydown="watchWildTerm"
-      class="block w-full rounded-md border-0 pl-0 pr-10 text-eucalyptus-600  focus:ring-1 focus:ring-inset focus:ring-eucalyptus-600 text-sm" />
-    <button @click.prevent="submitWildTerm" class="absolute inset-y-0 right-0 flex items-center">
-      <ArrowRightCircleIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+    <input type="text" v-model="newWildTerm" placeholder="Set ..." @keydown="watchWildTerm"
+      class="block w-full rounded-md border-0 pl-1 pr-10 text-eucalyptus-600 placeholder:text-eucalyptus-600 focus:ring-1 focus:ring-inset focus:ring-eucalyptus-600 text-sm" />
+    <button @click.prevent="submitWildTerm" class="absolute inset-y-0 right-0 pr-1 flex items-center">
+      <ArrowRightCircleIcon 
+        :class="[hasChanged ? 'text-sienna-600 hover:bg-sienna-50 rounded-full' : 'text-gray-400', 'h-5 w-5']" 
+        aria-hidden="true" />
     </button>
   </div>
 </template>
@@ -18,11 +20,14 @@ const props = defineProps<{
   exclude?: string
 }>()
 const emit = defineEmits<{ setWild: [request: IKeyable] }>()
-const newWildTerm = ref("Set ...")
+const newWildTerm = ref("")
+const hasChanged = ref(false)
 
-watch(() => [props.wildTerm], () => {
-  refreshWildTerm()
-})
+// watch(() => newWildTerm.value, () => {
+//   if (newWildTerm.value !== props.wildTerm) selectedFields.value = props.currentFields as string[]
+//   else selectedFields.value = []
+// })
+
 function refreshWildTerm() {
   if (props.wildTerm) {
     if (props.isList && typeof props.wildTerm !== "string" && props.wildTerm.length)
@@ -30,15 +35,19 @@ function refreshWildTerm() {
     else newWildTerm.value = props.wildTerm as string
   }
 }
+
 function watchWildTerm(event: any) {
+  hasChanged.value = true
   if (event.key === "Enter") submitWildTerm()
 }
 
 function submitWildTerm() {
-  if (!newWildTerm.value) newWildTerm.value = "Set ..."
+  let request: IKeyable = {
+    term: newWildTerm.value ? newWildTerm.value : ""
+  }
   if (
-    newWildTerm.value !== "Set ..."
-    || (
+    // Can be "", i.e. empty
+    (
       // Check isList of numbers
       props.isList
       && newWildTerm.value.split(",").every((t) => !isNaN(+t))
@@ -47,11 +56,12 @@ function submitWildTerm() {
       props.exclude && newWildTerm.value !== props.exclude
     )
   ) {
-    const request: IKeyable = {
-      term: props.isList ? newWildTerm.value.split(",").map((t) => +t) : newWildTerm.value
+    request = {
+      term: props.isList ? newWildTerm.value.split(",").map((t) => +t) : newWildTerm.value ? newWildTerm.value : ""
     }
-    emit("setWild", request)
   }
+  hasChanged.value = false
+  emit("setWild", request)
 }
 
 onMounted(async () => {

@@ -26,7 +26,7 @@
                   <CrosswalkSingleCombobox :current-field="term[0]" :schema="props.schemaSubject" :subject="true"
                     :extra="tIdx" @set-selection="watchSelectionName" />
                   <img src="/img/bracket-divider.svg" class="h-5 mx-1" />
-                  <CrosswalkSingleCombobox :current-field="term[2]" :schema="props.schemaSubject" :subject="true"
+                  <CrosswalkSingleCombobox :current-field="(term[2] as string)" :schema="props.schemaSubject" :subject="true"
                     :extra="tIdx" @set-selection="watchSelectionDate" />
                 </div>
                 <div v-else class="flex justify-between items-center w-full">
@@ -119,9 +119,9 @@ function validateSelectTerms() {
   for (const term of selectedTerms.value) {
     if (
       !(term.length === 3
-        && term[0] !== "Select ..."
+        && term[0]
         && term[1] === "+"
-        && term[2] !== "Select ...")
+        && term[2])
     ) valid = false
   }
   return valid
@@ -133,7 +133,7 @@ function validateNonSelectTerms() {
     if (
       !(term.length === 2
         && modifiers.includes(term[0])
-        && term[1] !== "Select ...")
+        && term[1])
     ) valid = false
   }
   return valid
@@ -155,8 +155,8 @@ function submitSelection() {
 function addTerm(): void {
   if (!selectedTerms.value) selectedTerms.value = [] as [IActionModifierType, string][] | [string, IActionModifierType, string][]
   let newTerm
-  if (props.isSelect) newTerm = ["Select ...", "+", "Select ..."]
-  else newTerm = ["Set ...", "Select ..."]
+  if (props.isSelect) newTerm = ["", "+", ""]
+  else newTerm = ["", ""]
   selectedTerms.value.splice(selectedTerms.value.length, 1, newTerm)
 }
 

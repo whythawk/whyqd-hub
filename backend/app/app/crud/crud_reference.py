@@ -463,9 +463,6 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             reference_in.sheet_name = reference_model.sheet_name
             reference_in.mimeType = reference_model.mime
             reference_in.summarykeys = [c.name for c in reference_model.columns]
-            reference_in.summary = crud_files.get_data_summary(
-                obj_id=db_obj.datasource.id, sheet_name=reference_in.sheet_name
-            )
             try:
                 reference_in.summary = crud_files.get_data_summary(
                     obj_id=db_obj.datasource.id, sheet_name=reference_in.sheet_name
@@ -521,16 +518,14 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             reference_in.sheet_name = reference_model.sheet_name
             reference_in.mimeType = reference_model.mime
             reference_in.summarykeys = [c.name for c in reference_model.columns]
-            reference_in.summary = crud_files.get_data_summary(
-                obj_id=db_obj.transformdatasource.id, sheet_name=reference_in.sheet_name
-            )
             try:
                 reference_in.summary = crud_files.get_data_summary(
                     obj_id=db_obj.transformdatasource.id, sheet_name=reference_in.sheet_name
                 )
             except FileNotFoundError:
                 pass
-            if not reference_in.summary:
+            if not reference_in.summary and reference_in.mimeType:
+                # Something wrong with mime here, need to get mime from the transformdatasource definition
                 reference_in.summary = crud_files.recreate_data_summary(
                     obj_id=db_obj.transformdatasource.model,
                     datasource_id=db_obj.transformdatasource.id,
