@@ -5,6 +5,7 @@ import { ISchema, IVersion, ICitation } from "./"
 export type IActionType =
   | "CALCULATE"
   | "CATEGORISE"
+  | "COLLATE"
   | "DEBLANK"
   | "DEDUPE"
   | "DELETE_ROWS"
@@ -18,7 +19,7 @@ export type IActionType =
   | "SEPARATE"
   | "UNITE"
 
-export type IActionModifierType = "+" | "-"
+export type IActionModifierType = "+" | "-" | "~"
 
 export interface IActionModifier {
   name: IActionModifierType
@@ -47,7 +48,7 @@ export interface IActionModel {
   destinationField?: string | string[]
   destinationTerm?: boolean | string
   sourceTerm?: string | string[]
-  sourceField?: string | string[] | [IActionModifierType, string][] | [string, IActionModifierType, string][]
+  sourceField?: string | string[] | [IActionModifierType, string][] | [string, IActionModifierType, string][] | [IActionModifierType | string][]
   rows?: number[]
 }
 

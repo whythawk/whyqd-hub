@@ -31,6 +31,12 @@ function convertActionModelToScript(m: IActionModel): string | null {
       const dTerm = m.sourceTerm.map( x => typeof x === "boolean" ? x ? 'True' : 'False' : `'${x}'`)
       // @ts-ignore
       return `${m.action} > '${m.destinationField}'::'${m.destinationTerm}' < '${m.sourceField}'::[${dTerm}]`
+    case "COLLATE":
+      // "COLLATE > 'destination_field' < ['source_field', 'source_field', ~,  etc.]"
+      if (m.destinationField && !Array.isArray(m.destinationField) && Array.isArray(m.sourceField) && m.sourceTerm !== "::") {
+        const sTerm = m.sourceField.map(x => ["~"].some(e => e === x) ? x : `'${x}'`)
+        return `${m.action} > '${m.destinationField}' < [${sTerm}]`
+      }
     case "DEBLANK":
       // "DEBLANK"
       return `${m.action}`
@@ -86,10 +92,15 @@ function convertActionModelToScript(m: IActionModel): string | null {
       }
     case "UNITE":
       // "UNITE > 'destination_field' < 'by'::['source_field', 'source_field', etc.]"
-      if (m.destinationField && !Array.isArray(m.destinationField) && Array.isArray(m.sourceField) && m.sourceTerm) {
-        const sTerm = m.sourceField.map( x => `'${x}'`)
-        return `${m.action} > '${m.destinationField}' < '${m.sourceTerm}'::[${sTerm}]`
+      if (m.destinationField && (!Array.isArray(m.destinationField) || (Array.isArray(m.destinationField) && m.destinationField.length === 1)) && Array.isArray(m.sourceField) && m.sourceTerm !== "::") {
+        const sTerm = m.sourceField.map(x => `'${x}'`)
+        if (Array.isArray(m.destinationField)) return `${m.action} > '${m.destinationField[0]}' < '${m.sourceTerm}'::[${sTerm}]`
+        else return `${m.action} > '${m.destinationField}' < '${m.sourceTerm}'::[${sTerm}]`
       }
+      // if (m.destinationField && !Array.isArray(m.destinationField) && Array.isArray(m.sourceField) && m.sourceTerm !== "::") {
+      //   const sTerm = m.sourceField.map( x => `'${x}'`)
+      //   return `${m.action} > '${m.destinationField}' < '${m.sourceTerm}'::[${sTerm}]`
+      // }
   }
   return null
 }
