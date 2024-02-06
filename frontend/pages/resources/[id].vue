@@ -8,11 +8,16 @@
         @set-edit-request="watchHeadingRequest" />
       <div class="mb-6 border-b border-gray-200 py-3 md:px-8">
         <div class="flex w-full items-center justify-between">
-          <div class="group flex flex-row text-xs font-medium text-gray-700">
-            <MapPinIcon class="text-gray-700 h-4 w-4 shrink-0" aria-hidden="true" />
-            <span class="ml-1">
-              {{ resourceStore.term.state }}
-            </span>
+          <div>
+            <div class="group flex flex-row text-xs font-medium text-gray-700">
+              <MapPinIcon class="text-gray-700 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span class="ml-1">
+                {{ resourceStore.term.state }}
+              </span>
+            </div>
+            <p v-if="resourceStore.term.latest_activity && resourceStore.term.latest_activity.alert" class="text-xs leading-6 text-gray-500">
+              {{ resourceStore.term.latest_activity.message }}
+            </p>
           </div>
           <div>
             <div class="flex justify-between gap-x-4">

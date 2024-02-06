@@ -96,6 +96,7 @@ export interface IResourceManager {
   transformdata?: IResourceDataReference
   task?: IModelSummary
   project_id?: string
+  latest_activity: IResourceActivity
 }
 
 export interface IResourceCrosswalkManager {
@@ -112,6 +113,7 @@ export interface IResourceCrosswalkManager {
   crosswalk: IResourceCrosswalkReference
   schema_object: IResourceSchemaReference
   task?: IModelSummary
+  latest_activity: IResourceActivity
 }
 
 export interface IResourceFilters {

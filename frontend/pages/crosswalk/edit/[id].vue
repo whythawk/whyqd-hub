@@ -23,7 +23,7 @@
                     <h2 class="flex border-b border-gray-200 text-xs items-center py-2 px-1 font-medium justify-between">
                       <div class="flex items-center">
                         <BoltIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                        <span class="mx-1 text-gray-500">Workspace | {{ saveApproach }}</span>
+                        <span class="mx-1 text-gray-500">Workspace</span>
                       </div>
                       <div class="flex items-center">
                         <PencilIcon v-if="editingAction" class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />

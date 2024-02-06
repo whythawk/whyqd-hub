@@ -6,26 +6,34 @@
     <div v-if="appSettings.current.pageState === 'done' && crosswalkStore.term && crosswalkStore.term.name">
       <CommonHeadingView purpose="Crosswalk" :name="crosswalkStore.term.name" :title="crosswalkStore.term.title"
         @set-edit-request="watchHeadingRequest" />
-      <dl class="divide-y divide-gray-100">
-        <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Name</dt>
-          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ crosswalkStore.term.crosswalk.name
-          }}</dd>
+      <div class="mb-6 border-b border-gray-200 py-3 md:px-8">
+        <div class="flex w-full items-center justify-between">
+          <div>
+            <div class="group flex flex-row text-xs font-medium text-gray-700 leading-8 items-center">
+              <MapPinIcon class="text-gray-700 h-4 w-4 shrink-0" aria-hidden="true" />
+              <span class="ml-1">
+                {{ crosswalkStore.term.state }}
+              </span>
+            </div>
+            <p v-if="crosswalkStore.term.latest_activity && crosswalkStore.term.latest_activity.alert" class="text-xs text-gray-500">
+              {{ crosswalkStore.term.latest_activity.message }}
+            </p>
+          </div>
+          <div>
+            <NuxtLink
+              :to="`/resources/${crosswalkStore.term.id}`"
+              class="group flex text-sm flex-row text-gray-700 hover:text-ochre-600 gap-x-1 font-semibold items-center">
+              <RectangleGroupIcon class="h-5 w-5 shrink-0" aria-hidden="true" />
+              <span class="ml-1">
+                {{ crosswalkStore.term.crosswalk.title }}
+              </span>
+            </NuxtLink>
+            <p class="text-xs text-center text-gray-500">{{ crosswalkStore.term.crosswalk.name }}</p>
+          </div>
         </div>
-        <div v-if="crosswalkStore.term.crosswalk.title" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Title</dt>
-          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ crosswalkStore.term.crosswalk.title
-          }}</dd>
-        </div>
-        <div v-if="crosswalkStore.term.crosswalk.description" class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Description</dt>
-          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {{ crosswalkStore.term.crosswalk.description }}
-          </dd>
-        </div>
-      </dl>
+      </div>
       <div class="space-y-2 mx-2">
-        <h2 class="text-sm font-semibold leading-7 text-gray-900 pt-2">Actions</h2>
+        <h2 class="text-sm font-semibold leading-7 text-gray-900">Actions</h2>
         <ul v-if="crosswalkStore.term.crosswalk.actions && crosswalkStore.term.crosswalk.actions.length" role="list">
           <li v-for="(action, aIdx) in crosswalkStore.term.crosswalk.actions" :key="`action-${aIdx}`">
             <ActionCard :action="action" :last-card="aIdx === crosswalkStore.term.crosswalk.actions.length - 1" />
@@ -56,6 +64,7 @@
 </template>
 
 <script setup lang="ts">
+import { MapPinIcon, RectangleGroupIcon } from "@heroicons/vue/24/outline"
 import { useSettingStore, useCrosswalkStore, useReferenceStore } from "@/stores"
 
 definePageMeta({

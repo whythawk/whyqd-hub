@@ -23,7 +23,7 @@
               <span v-if="props.task.accrualPeriodicity">{{ props.task.accrualPeriodicity }}</span>
               <span v-else>never</span>
               <time v-if="props.task.latestResource" :datetime="props.task.modified"
-                class="flex-none py-0.5 text-xs text-gray-500">
+                class="flex-none py-0.5 text-xs text-gray-500 hidden lg:block">
                 <span class="text-sm text-gray-400 px-2">&middot;</span>
                 {{ readableDate(props.task.latestResource.modified as string) }}
               </time>
@@ -39,14 +39,14 @@
             <NuxtLink :to="`/import/task/${props.task.id}`"
               class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 p-2 pl-0 font-semibold text-xs items-center">
               <ArrowUpTrayIcon class="text-cerulean-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>Import data</span>
+              <span class="hidden lg:block">Import data</span>
             </NuxtLink>
           </li>
           <li v-if="props.task.source && isValidHttpUrl(props.task.source)" class="relative">
             <a :href="props.task.source" target="_blank"
               class="text-cerulean-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold text-xs items-center">
               <LinkIcon class="text-cerulean-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>Source</span>
+              <span class="hidden lg:block">Source</span>
             </a>
           </li>
         </ul>

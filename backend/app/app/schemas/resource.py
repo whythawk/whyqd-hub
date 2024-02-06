@@ -141,6 +141,7 @@ class ResourceManager(ResourceBase):
     transformdata: Optional[ResourceDataReference] = Field(None, description="Transform data table reference.")
     task: Optional[BaseSummarySchema] = Field(None, description="Associated task table reference.")
     project_id: Optional[UUID] = Field(None, description="Project model reference.")
+    latest_activity: ResourceActivity = Field(..., description="Summary of latest activity")
 
     class Config:
         orm_mode = True
@@ -155,6 +156,7 @@ class ResourceCrosswalkManager(ResourceBase):
     crosswalk: Optional[ResourceCrosswalkReference] = Field(None, description="Crosswalk table reference.")
     schema_object: Optional[ResourceSchemaReference] = Field(None, description="Schema object table reference.")
     task: Optional[BaseSummarySchema] = Field(None, description="Associated task table reference.")
+    latest_activity: ResourceActivity = Field(..., description="Summary of latest activity")
 
     class Config:
         orm_mode = True
