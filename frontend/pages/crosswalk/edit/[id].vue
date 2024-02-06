@@ -20,9 +20,22 @@
                   <ActionTemplateCard @set-request="watchRequestSocket" />
                   <!-- Action workspace column -->
                   <div class="md:col-span-3 rounded-lg py-2 px-3 ring-1 ring-inset ring-gray-200">
-                    <h2 class="flex border-b border-gray-200 text-xs items-center py-2 px-1 font-medium">
-                      <BoltIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                      <span class="mx-1 text-gray-500">Workspace | editing: {{ editingAction }}</span>
+                    <h2 class="flex border-b border-gray-200 text-xs items-center py-2 px-1 font-medium justify-between">
+                      <div class="flex items-center">
+                        <BoltIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                        <span class="mx-1 text-gray-500">Workspace | {{ saveApproach }}</span>
+                      </div>
+                      <div class="flex items-center">
+                        <PencilIcon v-if="editingAction" class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                        <ArrowsUpDownIcon v-else class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                        <button type="button" @click="refreshConnection" class="group inline-flex justify-center">
+                          <ArrowPathIcon 
+                            :class="[streaming ? 'text-eucalyptus-600 bg-eucalyptus-50' : 'text-sienna-600 bg-sienna-100', 
+                                      'ml-1 h-5 w-5 flex-shrink-0 rounded-full group-hover:text-ochre-600 group-hover:bg-ochre-50']"
+                            aria-hidden="true" />
+                          <span class="sr-only">Refresh Crosswalk Connection</span>
+                        </button>
+                      </div>
                     </h2>
                     <div class="space-y-4 max-h-[650px] 2xl:max-h-[1100px] min-h-full overflow-y-auto mt-2">
                       <div class="mx-2 min-h-full" @dragstart="handleDragStart" @dragenter="handleDragEnter"
@@ -159,7 +172,7 @@ import WebSocketAsPromised from "websocket-as-promised"
 import { storeToRefs } from "pinia"
 import { Menu, MenuButton, MenuItems, MenuItem, TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue"
 import {
-  ArrowsRightLeftIcon, ArrowPathIcon, ArrowUpTrayIcon, Bars3BottomLeftIcon, BoltIcon, ChevronDownIcon,
+  ArrowsUpDownIcon, PencilIcon, ArrowPathIcon, Bars3BottomLeftIcon, BoltIcon, ChevronDownIcon,
   ExclamationCircleIcon, QuestionMarkCircleIcon, Squares2X2Icon, TableCellsIcon, XMarkIcon
 } from "@heroicons/vue/24/outline"
 import { IResourceCrosswalkManager, IActionModel, IActionType, IKeyable, ISocketRequest, ISocketResponse, } from "@/interfaces"
@@ -220,14 +233,39 @@ async function initialiseDraft(data: IKeyable = {}) {
   }
 }
 
+async function refreshConnection() {
+  await initialiseSocket()
+  if (
+    crosswalkStore.draft
+    && Object.keys(crosswalkStore.draft).length !== 0
+  ) {
+    const data = {
+      metadata: {
+        name: crosswalkStore.draft.crosswalk.name,
+        title: crosswalkStore.draft.crosswalk.title,
+        description: crosswalkStore.draft.crosswalk.description,
+      },
+      actions: [] as string[]
+    }
+    if (draftActions.value && draftActions.value.length)
+      data.actions = convertActionModelList(draftActions.value)
+    await watchRequestSocket({
+      state: "loadCrosswalk",
+      data
+    })
+  }
+}
+
 async function watchEditHeadingRequest(request: string) {
   switch (request) {
     case "reset":
-      crosswalkStore.resetDraft()
+      appSettings.setPageState("loading")
+      crosswalkStore.resetActionDraft()
       await watchRequestSocket({
         state: "initialiseCrosswalk",
         data: {}
       })
+      appSettings.setPageState("done")
       break
     case "save":
       await watchRequestSocket({
@@ -236,9 +274,11 @@ async function watchEditHeadingRequest(request: string) {
       })
       break
     case "cancel":
-      let link = `/crosswalk/${route.params.id}`
-      if (saveApproach.value === 'Create') link = `/resources/${route.params.id}`
-      return await navigateTo(link)
+      await watchRequestSocket({
+        state: "close",
+        data: {}
+      })
+      break
   }
 }
 
@@ -314,17 +354,17 @@ async function watchResponseSocket(response: ISocketResponse) {
       editingActionID.value = ""
       editingAction.value = false
       break
-    case "save":
+    case "close":
       // backend closes the socket itself
       // redirect to the crosswalk page
+      saveDraft = false
+      streaming.value = false
+      closeSocket()
       if (response.data && response.data.id) {
-        streaming.value = false
-        closeSocket()
         crosswalkStore.resetDraft()
         return await navigateTo(`/crosswalk/${response.data.id}`)
       }
-      saveDraft = false
-      break
+      return await navigateTo(`/resources/${route.params.id}`)
     case "error":
       if (!crosswalkStore.draft || Object.keys(crosswalkStore.draft).length === 0)
         throw createError({ statusCode: 404, statusMessage: "Page Not Found", fatal: true })
@@ -334,9 +374,11 @@ async function watchResponseSocket(response: ISocketResponse) {
         icon: "error"
       })
       saveDraft = false
+      streaming.value = false
       break
   }
   if (response.data && saveDraft) {
+    streaming.value = true
     if (response.data.actions && response.data.actions.length)
       crosswalkStore.setActionDraft(response.data.actions as IActionModel[])
     else crosswalkStore.resetActionDraft()

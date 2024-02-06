@@ -79,6 +79,5 @@ async function rejectRequest() {
 async function watchRequestSocket(request: ISocketRequest) {
   changeRequest.value = request
   changeRequested.value = true
-  console.log("acceptRequest", changeRequest.value)
 }
 </script>

@@ -18,6 +18,7 @@ from whyqd.models import DataSourceModel, SchemaModel, CrosswalkModel, Transform
 from app.core.config import settings
 from app.schema_types import MimeType, ReferenceType
 from app.schemas.templates import DataSourceTemplateModel, CrosswalkTemplateModel
+from app.schemas.resource import ResourceDataReference
 from app.crud.crud_spaces import spaces
 
 if TYPE_CHECKING:
@@ -333,9 +334,11 @@ class CRUDFiles:
             return []
         return obj_in
 
-    def recreate_data_summary(self, *, obj_id: UUID | str, datasource_id: UUID | str, obj_in: DataSourceModel):
+    def recreate_data_summary(self, *, obj_id: UUID | str, datasource_id: UUID | str, obj_in: DataSourceModel | ResourceDataReference):
         data_in = DataSourceTemplateModel(**obj_in.dict())
         data_in.uuid = obj_id  # db_obj.datasource.model ... db_obj.datasource.id
+        if "mimeType" in obj_in.dict():
+            data_in.mime = obj_in.mimeType
         self.save_data_summary(obj_id=datasource_id, obj_in=data_in)
         return self.get_data_summary(obj_id=datasource_id, sheet_name=obj_in.sheet_name)
 

@@ -162,6 +162,11 @@ async def create_or_edit_crosswalk(*, db: Session = Depends(deps.get_db), id: st
                                 responsibility=schema_types.RoleType.WRANGLER,
                             )
                         response["data"] = {"id": str(crosswalk_obj.id)}
+                    # CLOSE CROSSWALK #################################
+                    if state == "close" and initialised:
+                        response["data"] = None
+                        if crosswalk_obj:
+                            response["data"] = {"id": str(crosswalk_obj.id)}
                         break
                     if state and initialised and state not in ["setMetadata"]:
                         data = []
@@ -170,8 +175,8 @@ async def create_or_edit_crosswalk(*, db: Session = Depends(deps.get_db), id: st
                             action = crosswalk_dfn.actions.parse(script=action.script)
                             data.append(crud.reference.parse_action_model(uuid=uuid, term=action).dict(by_alias=True))
                         response["data"] = {"actions": data}
-                except ValidationError as e:
-                    response = {"state": "error", "error": e}
+                except (ValidationError, SyntaxError) as e:
+                    response = {"state": "error", "error": str(e)}
                 ########################################################################
                 print("RESPOND-------------------------------------------------------")
                 print(response)

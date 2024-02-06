@@ -157,6 +157,7 @@ function addTerm(): void {
   let newTerm
   if (props.isSelect) newTerm = ["", "+", ""]
   else newTerm = ["", ""]
+  // @ts-ignore
   selectedTerms.value.splice(selectedTerms.value.length, 1, newTerm)
 }
 

@@ -32,7 +32,7 @@ const selectedDestinationTerm = ref("")
 const selectedSourceTerms = ref<string[]>([])
 const selectedSourceField = ref("")
 
-watch(() => [selectedDestinationField.value, selectedSourceField.value, selectedDestinationTerm.value, selectedSourceTerms.value], () => {
+watch(() => [selectedDestinationField.value, selectedSourceField.value, selectedDestinationTerm.value, selectedSourceTerms.value, selectedSourceTerms.value.length], () => {
   submitRequest()
 })
 
@@ -45,6 +45,7 @@ function getSelectedDestinationTerms() {
   if (availableTerms && availableTerms.constraints) return availableTerms.constraints.enum as IKeyable[]
   else return [] as IKeyable[]
 }
+
 function getSelectedSourceTerms() {
   let availableTerms
   if (selectedSourceField.value) {
@@ -61,6 +62,7 @@ function watchSelection(selection: IKeyable) {
     else selectedDestinationField.value = selection.choice
   }
 }
+
 function watchSelectionTerm(selection: IKeyable) {
   if (selection && Object.keys(selection).length) {
     if (selection.subject) selectedSourceTerms.value = [...selection.choice]
@@ -75,7 +77,7 @@ function submitRequest() {
   data.destinationField = selectedDestinationField.value
   data.sourceField = [selectedSourceField.value]
   data.destinationTerm = selectedDestinationTerm.value
-  data.sourceTerm = selectedSourceTerms.value
+  data.sourceTerm = [ ...selectedSourceTerms.value]
   const request: ISocketRequest = {
     state: state,
     data

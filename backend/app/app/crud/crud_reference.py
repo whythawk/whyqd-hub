@@ -496,7 +496,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             reference_model = self.get_model(
                 db=db, id=db_obj.transformdata.id, user=user, responsibility=responsibility
             )
-            reference_in = ResourceDataReference.from_orm(db_obj.transformdata)
+            reference_in = ResourceDataReference.from_orm(db_obj.transformdatasource)
             # Note, providing the transform model here, not the data model
             reference_in.links = [
                 ResourceModelLinks(
@@ -515,8 +515,8 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             reference_in.name = db_obj.transform.name
             reference_in.title = db_obj.transform.title
             reference_in.description = db_obj.transform.description
-            reference_in.sheet_name = reference_model.sheet_name
-            reference_in.mimeType = reference_model.mime
+            # reference_in.sheet_name = reference_model.sheet_name
+            # reference_in.mimeType = reference_model.mime
             reference_in.summarykeys = [c.name for c in reference_model.columns]
             try:
                 reference_in.summary = crud_files.get_data_summary(

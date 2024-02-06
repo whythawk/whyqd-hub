@@ -42,7 +42,7 @@
         <button type="button" @click.prevent="watchEditRequest('cancel')"
           class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
           <XMarkIcon class="md:-ml-0.5 h-4 w-4 text-gray-400" aria-hidden="true" />
-          <span class="hidden md:block">Cancel</span>
+          <span class="hidden md:block">Close</span>
         </button>
         <button type="button" @click.prevent="watchEditRequest('save')"
           class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">

@@ -100,9 +100,7 @@ let filteredTerms = computed(() =>
 function submitSelection() {
   // cleanSelection()
   query.value = ""
-  if (props.currentTerms
-    && props.currentTerms.length
-    && selectedTerms.value.length
+  if (selectedTerms.value.length
     && selectedTerms.value.sort().join(",") !== props.currentTerms.sort().join(",")) {
     const selection: IKeyable = {
       choice: selectedTerms.value,
