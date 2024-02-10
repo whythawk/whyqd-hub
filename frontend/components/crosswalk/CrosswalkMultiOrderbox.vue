@@ -2,14 +2,14 @@
     <div class="ml-4 mt-0">
       <div class="-m-1 flex flex-wrap items-center">
         <span v-for="selectedField in selectedFields" 
-          :key="selectedField" :id="selectedField" :draggable="true"
+          :key="selectedField.key" :id="selectedField.key" :draggable="true"
           @dragstart="handleDragStart" @dragenter="handleDragEnter" @dragover="handleDragOver"
           @dragleave="handleDragLeave" @drop="handleDrop" @dragend="handleDragEnd"
           class="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900 cursor-move">
-          <span>{{ selectedField }}</span>
-          <button type="button" @click.prevent="removeOrderSelection(selectedField)"
+          <span>{{ selectedField.value }}</span>
+          <button type="button" @click.prevent="removeOrderSelection(selectedField.key)"
             class="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500">
-            <span class="sr-only">Remove filter for {{ selectedField }}</span>
+            <span class="sr-only">Remove filter for {{ selectedField.value }}</span>
             <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
               <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
             </svg>
@@ -20,29 +20,45 @@
 </template>
 
 <script setup lang="ts">
+import { IKeyable } from "@/interfaces"
 
 const props = defineProps<{
   currentFields: String[],
 }>()
 const emit = defineEmits<{ setSelection: [selection: string[]] }>()
-const selectedFields = ref<string[]>([])
+const selectedFields = ref<IKeyable[]>([])
 const dragID = ref("" as string)
-const draggedFields = ref<string[]>([])
+const draggedFields = ref<IKeyable[]>([])
 
 watch(() => props.currentFields, () => {
-  if (props.currentFields && props.currentFields.length) selectedFields.value = props.currentFields as string[]
-  else selectedFields.value = []
+  resetSelectedFields()
 })
 
-watch(() => selectedFields.value, () => {
-  if (selectedFields.value.length || props.currentFields.length) {
-    emit("setSelection", selectedFields.value)
-  }
-})
-
-function removeOrderSelection(item: string) {
-  selectedFields.value = selectedFields.value.filter((selected) => selected !== item)
+function removeOrderSelection(key: string) {
+  selectedFields.value = selectedFields.value.filter((selected) => selected.key !== key)
+  emitSelectedFields()
 }
+
+function emitSelectedFields() {
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+  emit("setSelection", selectedFields.value.map((x) => x.value))
+}
+
+function resetSelectedFields() {
+  // NOTE: currently only does this for the '~' modifier, but can be extended
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+  // https://stackoverflow.com/a/19842865
+  const modifiers: String[] = ["~"]
+  selectedFields.value = []
+  if (props.currentFields && props.currentFields.length)
+    selectedFields.value = props.currentFields.map((x) => (
+      !modifiers.includes(x) ? { key: x, value: x } : { key: "id" + Math.random().toString(16).slice(4), value: x })
+    )
+}
+
+onMounted(async () => {
+  resetSelectedFields()
+})
 
 // DRAG N DROP
 // https://web.dev/drag-and-drop/
@@ -91,16 +107,17 @@ function handleDrop(e: any) {
   if (dragID.value !== dropID) {
     draggedFields.value = [...selectedFields.value]
     const frIdx = draggedFields.value.findIndex(
-      (field) => field === dragID.value
+      (field) => field.key === dragID.value
     )
     const toIdx = draggedFields.value.findIndex(
-      (field) => field === dropID
+      (field) => field.key === dropID
     )
     // Because TypeScript, in its infinite wisdom, has no concept of `-1`
-    const dragged = draggedFields.value.slice(frIdx)[0]
+    const dragged = { ...draggedFields.value.slice(frIdx)[0] }
     draggedFields.value.splice(frIdx, 1)
     draggedFields.value.splice(toIdx, 0, dragged)
     selectedFields.value = [...draggedFields.value]
+    emitSelectedFields()
   }
   e.currentTarget.className = e.currentTarget.className.replace(
     "bg-cerulean-100",
@@ -116,8 +133,4 @@ function handleDragEnd(e: any) {
     "bg-white"
   )
 }
-
-onMounted(async () => {
-  if (props.currentFields && props.currentFields.length) selectedFields.value = props.currentFields as string[]
-})
 </script>

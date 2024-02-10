@@ -57,7 +57,7 @@ function watchOrderSelection(selection: string[]) {
 }
 
 function addModifier() {
-  console.log("~")
+  console.log("push ~")
   selectedSourceField.value.push("~")
 }
 
