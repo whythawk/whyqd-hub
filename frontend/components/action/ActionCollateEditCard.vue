@@ -42,8 +42,9 @@ const selectedDestinationField = ref("")
 const selectedSourceField = ref<string[]>([])
 
 watch(() => [selectedDestinationField.value, selectedSourceField.value], () => {
-  submitRequest()
-})
+    submitRequest()
+  }
+)
 
 function watchSelection(selection: IKeyable) {
   if (selection && Object.keys(selection).length) {
@@ -57,8 +58,9 @@ function watchOrderSelection(selection: string[]) {
 }
 
 function addModifier() {
-  console.log("push ~")
-  selectedSourceField.value.push("~")
+  let tempFields: string[] = [...selectedSourceField.value]
+  tempFields.push("~")
+  selectedSourceField.value = [...tempFields]
 }
 
 function submitRequest() {
