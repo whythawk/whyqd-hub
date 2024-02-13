@@ -56,11 +56,11 @@ class CRUDResource(CRUDWhyqdBase[Resource, ResourceCreate, ResourceUpdate]):
         if date_to:
             if isinstance(date_to, str):
                 date_to = datetime.strptime(date_to, "%Y-%m-%d")
-            db_objs = db_objs.filter(self.model.latest_activity.created <= date_to)
+            db_objs = db_objs.filter(self.model.latest_activity <= date_to)
         if date_from:
             if isinstance(date_from, str):
                 date_from = datetime.strptime(date_from, "%Y-%m-%d")
-            db_objs = db_objs.filter(self.model.latest_activity.created >= date_from)
+            db_objs = db_objs.filter(self.model.latest_activity >= date_from)
         if match:
             db_objs = db_objs.filter(
                 (

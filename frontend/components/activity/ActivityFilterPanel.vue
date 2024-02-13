@@ -99,9 +99,14 @@
           </div>
         </fieldset>
       </div>
-      <div class="flex flex-row justify-end">
+      <div class="flex flex-row justify-between pt-4">
+        <div v-if="projectStore.isCustodian && filterPath" class="group relative flex pl-8 items-center">
+          <ShareIcon class="mr-2 h-5 w-5 flex-none text-gray-400 group-hover:text-ochre-600" aria-hidden="true" />
+          <span class="text-xs text-gray-600 group-hover:text-ochre-600">{{ filterPath }}</span>
+        </div>
+        <div v-else class="group relative flex pl-8 items-center">&nbsp;</div>
         <button type="submit" @click="refreshActivities"
-          class="w-20 justify-center rounded-md border border-transparent bg-ochre-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-ochre-700 focus:outline-none focus:ring-2 focus:ring-ochre-600 focus:ring-offset-2">
+          class="flex-0 w-20 justify-center rounded-md border border-transparent bg-ochre-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-ochre-700 focus:outline-none focus:ring-2 focus:ring-ochre-600 focus:ring-offset-2">
           Filter
         </button>
       </div>
@@ -112,13 +117,16 @@
 <script setup lang="ts">
 import VueTailwindDatepicker from "vue-tailwind-datepicker"
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
-import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline"
-import { useActivityStore } from "@/stores"
-import { IActivityFilters } from "@/interfaces"
+import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon, ShareIcon } from "@heroicons/vue/24/outline"
+import { useActivityStore, useProjectStore } from "@/stores"
+import { apiCore } from "@/api"
+import { IActivityFilters, IKeyable } from "@/interfaces"
 
 const route = useRoute()
 const activityStore = useActivityStore()
+const projectStore = useProjectStore()
 const filters = ref({} as IActivityFilters)
+const filterPath = ref("")
 const searchTerm = ref("")
 const dateFrom = ref("")
 const dateTo = ref("")
@@ -159,6 +167,7 @@ async function getAppropriateMulti() {
       break
     case "PROJECT":
       await activityStore.getMultiByProject(route.params.id as string)
+      // getSerialisedFilters()
       break
   }
 }
@@ -184,6 +193,23 @@ function getFilters() {
   if (filters.value.match) searchTerm.value = filters.value.match
 }
 
+function removeEmpty(obj: IActivityFilters): IKeyable {
+  // https://stackoverflow.com/a/38340730
+  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== null && v !== ""))
+}
+
+function getSerialisedFilters() {
+  if (route.path.includes("/project/") && route.params.id) {
+    const filters: IKeyable = removeEmpty(activityStore.filters)
+    // https://stackoverflow.com/a/57529723
+    const serialised = new URLSearchParams(filters).toString()
+    console.log("serialised", `${apiCore.url()}/activity/project/${route.params.id as string}?${serialised}`)
+    filterPath.value = `${apiCore.url()}/activity/project/${route.params.id as string}?${serialised}`
+  } else {
+    filterPath.value = ""
+  }
+}
+
 async function resetFilters() {
   searchTerm.value = ""
   activityStore.resetFilters()
@@ -195,6 +221,7 @@ onMounted(async () => {
   if (route.path.includes("/task/")) appropriateMulti.value = "TASK"
   if (route.path.includes("/project/")) appropriateMulti.value = "PROJECT"
   getFilters()
+  getSerialisedFilters()
 })
 
 </script>
