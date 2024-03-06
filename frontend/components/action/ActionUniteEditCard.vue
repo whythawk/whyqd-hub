@@ -59,15 +59,9 @@ function watchOrderSelection(selection: string[]) {
 }
 
 function submitRequest() {
-  // console.log("submitRequest", (
-  //     selectedDestinationField.value, selectedSourceField.value.length, byTerm.value !== excluded
-  //   )
-  // )
   if (
     selectedDestinationField.value
     && selectedSourceField.value.length
-    // && (selectedDestinationField.value !== props.action.destinationField
-    //   || selectedSourceField.value !== props.action.sourceField)
     && byTerm.value !== excluded
   ) {
     let state = "addAction"
@@ -80,7 +74,6 @@ function submitRequest() {
       state: state,
       data
     }
-    // console.log("setRequest", request)
     emit("setRequest", request)
   }
 }
