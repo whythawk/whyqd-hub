@@ -334,7 +334,9 @@ class CRUDFiles:
             return []
         return obj_in
 
-    def recreate_data_summary(self, *, obj_id: UUID | str, datasource_id: UUID | str, obj_in: DataSourceModel | ResourceDataReference):
+    def recreate_data_summary(
+        self, *, obj_id: UUID | str, datasource_id: UUID | str, obj_in: DataSourceModel | ResourceDataReference
+    ):
         data_in = DataSourceTemplateModel(**obj_in.dict())
         data_in.uuid = obj_id  # db_obj.datasource.model ... db_obj.datasource.id
         if "mimeType" in obj_in.dict():
@@ -346,11 +348,17 @@ class CRUDFiles:
         for source in Path(self.summary).glob(f"{obj_id}*.SUMMARY"):
             self.core.delete_file(source=str(source))
 
-    def delete_working_directory(self, *, delay: int = 86400) -> bool:
+    def delete_working_directory(self, *, delay: int = 86400, keep_summary: bool = True) -> bool:
         # Delay is 24 hours expressed in seconds ... trying not to interfere too much with working data
         epoch_time = int(time.time()) - delay
         for source in Path(settings.WORKING_PATH).rglob("*"):
             if source.is_file() and source.stat().st_mtime <= epoch_time:
+                if (
+                    keep_summary
+                    and source.suffix == ".SUMMARY"
+                    and not any(x.startswith(".Trash") for x in source.parts)
+                ):
+                    continue
                 # Only if it is a file, and has been last modified 24 hours ago
                 self.core.delete_file(source=str(source))
         return True

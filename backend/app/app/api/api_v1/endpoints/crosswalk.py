@@ -175,7 +175,7 @@ async def create_or_edit_crosswalk(*, db: Session = Depends(deps.get_db), id: st
                             action = crosswalk_dfn.actions.parse(script=action.script)
                             data.append(crud.reference.parse_action_model(uuid=uuid, term=action).dict(by_alias=True))
                         response["data"] = {"actions": data}
-                except (ValidationError, SyntaxError) as e:
+                except (ValidationError, SyntaxError, TypeError, ValueError) as e:
                     response = {"state": "error", "error": str(e)}
                 ########################################################################
                 print("RESPOND-------------------------------------------------------")
