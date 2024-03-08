@@ -32,6 +32,13 @@
                     @click.prevent="submit(tr[td as keyof ISubscriptionView] as string)">
                     {{ tr[td as keyof ISubscriptionView] }}
                   </button></span>
+                <span v-if="['remove'].includes(td)">
+                  <button @click.prevent="removeSubscription(tr.id)"
+                    class="text-sienna-700 hover:text-ochre-600 group flex gap-x-1 p-2 font-semibold">
+                    <TrashIcon class="text-sienna-700 group-hover:text-ochre-600 h-4 w-4 shrink-0" aria-hidden="true" />
+                    <span class="sr-only">Remove</span>
+                  </button>
+                </span>
               </td>
             </tr>
           </tbody>
@@ -43,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+import { TrashIcon } from "@heroicons/vue/24/outline"
 import { useSubscriptionsStore, useSettingStore } from "@/stores"
 import { readableDate } from "@/utilities"
 import { IKeyable, ISubscriptionView } from "@/interfaces"
@@ -57,6 +65,7 @@ const defaultHeaders: string[] = [
   "ends",
   "override",
   "subscriber",
+  "remove",
 ]
 const printableHeaders: IKeyable = {
   created: "Created",
@@ -65,6 +74,7 @@ const printableHeaders: IKeyable = {
   ends: "Ends",
   override: "Override",
   subscriber: "Subscriber",
+  remove: "",
 }
 const emit = defineEmits<{ setRequest: [request: boolean] }>()
 
@@ -75,6 +85,10 @@ watch(() => [route.query], async () => {
 async function updateMulti() {
   if (route.query && route.query.page) subscriptionStore.setPage(route.query.page as string)
   await subscriptionStore.getMulti()
+}
+
+async function removeSubscription(subscriberKey: string) {
+  await subscriptionStore.removeSubscription(subscriberKey)
 }
 
 onMounted(async () => {

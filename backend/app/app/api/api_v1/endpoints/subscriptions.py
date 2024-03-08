@@ -91,6 +91,20 @@ def create_subscription(
     return crud.subscription.create(db=db, obj_in=subscription_in)
 
 
+@router.delete("/{id}", response_model=schemas.Msg)
+def remove_subscription(
+    *,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_active_superuser),
+    id: str,
+) -> Any:
+    """
+    Remove a subscription
+    """
+    crud.subscription.remove(db=db, id=id)
+    return {"msg": "Subscription has been successfully removed."}
+
+
 @router.post("/order", response_model=schemas.StripeCheckoutRedirect)
 def create_subscription_order(
     *,

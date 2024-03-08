@@ -67,6 +67,15 @@ export const apiSubscriptions = {
       }
     )
   },
+  async removeSubscription(token: string, key: string) {
+    return await useFetch<IMsg>(
+      `${apiCore.url()}/subscriptions/${key}`, 
+      {
+        method: "DELETE",
+        headers: apiCore.headers(token),
+      }
+    )
+  },
   async getLatestSubscription(token: string) {
     return await useFetch<ISubscription>(
       `${apiCore.url()}/subscriptions/latest`,

@@ -144,6 +144,23 @@ export const useSubscriptionsStore = defineStore("subscriptionsStore", {
         this.settings.setPageState("error")
       }
     },
+    async removeSubscription(key: string) {
+      await this.authTokens.refreshTokens()
+      if (this.authTokens.token) {
+        try {
+          const { data: response } = await apiSubscriptions.removeSubscription(this.authTokens.token, key)
+          if (response.value) this.getMulti()
+        } catch (error) {
+          this.settings.setPageState("error")
+          const toasts = useToastStore()
+          toasts.addNotice({
+            title: "Deletion error",
+            content: "Could not remove subscriber. Please check your details, or internet connection, and try again.",
+            icon: "error"
+          })
+        }
+      }
+    },
     async createStripeCheckout(payload: IStripeCheckoutIntent) {
       await this.authTokens.refreshTokens()
       if (this.authTokens.token) {
