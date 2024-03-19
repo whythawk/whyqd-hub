@@ -6,13 +6,16 @@
           @dragstart="handleDragStart" @dragenter="handleDragEnter" @dragover="handleDragOver"
           @dragleave="handleDragLeave" @drop="handleDrop" @dragend="handleDragEnd"
           class="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900 cursor-move">
+          <button type="button" @click.prevent="duplicateOrderSelection(selectedField.key)"
+            class="mr-1 inline-flex flex-shrink-0 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600">
+            <span class="sr-only">Duplicate term for {{ selectedField.id }}</span>
+            <PlusIcon class="h-4 w-4" aria-hidden="true" />
+          </button>
           <span>{{ selectedField.value }}</span>
           <button type="button" @click.prevent="removeOrderSelection(selectedField.key)"
-            class="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500">
-            <span class="sr-only">Remove filter for {{ selectedField.value }}</span>
-            <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
-              <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
-            </svg>
+            class="ml-1 inline-flex flex-shrink-0 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600">
+            <span class="sr-only">Remove term for {{ selectedField.value }}</span>
+            <XMarkIcon class="h-4 w-4" aria-hidden="true" />
           </button>
         </span>
       </div>
@@ -20,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+import { PlusIcon, XMarkIcon } from "@heroicons/vue/24/outline"
 import { IKeyable } from "@/interfaces"
 
 const props = defineProps<{
@@ -33,6 +37,19 @@ const draggedFields = ref<IKeyable[]>([])
 watch(() => props.currentFields, () => {
   resetSelectedFields()
 })
+
+function duplicateOrderSelection(key: string) {
+  let idx = selectedFields.value.findIndex(selected => selected.key === key)
+  if (idx !== -1) {
+    let value = selectedFields.value[idx].value
+    selectedFields.value.splice(
+      idx + 1,
+      0,
+      { key: "id" + Math.random().toString(16).slice(4), value }
+    )
+    emitSelectedFields()
+  }
+}
 
 function removeOrderSelection(key: string) {
   selectedFields.value = selectedFields.value.filter((selected) => selected.key !== key)
@@ -48,11 +65,11 @@ function resetSelectedFields() {
   // NOTE: currently only does this for the '~' modifier, but can be extended
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
   // https://stackoverflow.com/a/19842865
-  const modifiers: String[] = ["~"]
+  // const modifiers: String[] = ["~"]
   selectedFields.value = []
   if (props.currentFields && props.currentFields.length)
     selectedFields.value = props.currentFields.map((x) => (
-      !modifiers.includes(x) ? { key: x, value: x } : { key: "id" + Math.random().toString(16).slice(4), value: x })
+      { key: "id" + Math.random().toString(16).slice(4), value: x })
     )
 }
 
