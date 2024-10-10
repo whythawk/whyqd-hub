@@ -890,6 +890,12 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
                         schema_object_in = None
         if schema_object_in:
             resource_in.schema_object_id = schema_object_in.id
+        # Create a temporary BUSY resource so if anything goes wrong it is still flagged ###############################
+        resource_in.id = uuid4()
+        resource_in.state = StateType.BUSY
+        temporary_resource_obj = crud_resource.create(db=db, obj_in=resource_in, user=user)
+        message = f"Importing data source ({datasource_in.name})."
+        self._record_activity(db=db, user=user, db_obj=temporary_resource_obj, message=message)
         # Import source and derive data model, or identify duplicate ###################################################
         datasource = qd.DataSourceDefinition()
         source_path = crud_files.get_source_path(
@@ -1017,6 +1023,8 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             if data_in.sheet_name:
                 message = f"Data source ({datasource_in.name}, {data_in.sheet_name}) successfully imported and ready for processing."
             self._record_activity(db=db, user=user, db_obj=resource_obj, message=message)
+        # Delete temporary resource ####################################################################################
+        crud_resource.remove(db=db, id=temporary_resource_obj.id, user=user, responsibility=RoleType.SEEKER)
 
     def create_schema_to_schema_crosswalk(
         self,
