@@ -10,3 +10,4 @@ from .role import RoleType  # noqa: F401
 from .subscription_event import SubscriptionEventType  # noqa: F401
 from .subscription import SubscriptionType  # noqa: F401
 from .invitation_response import InvitationResponseType  # noqa: F401
+from .frequency import FrequencyType  # noqa: F401

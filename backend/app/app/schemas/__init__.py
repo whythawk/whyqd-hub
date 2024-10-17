@@ -37,6 +37,7 @@ from .invitation import InvitationBase, InvitationCreate, InvitationUpdate, Invi
 from .templates import DataSourceTemplateModel, CrosswalkTemplateModel  # noqa: F401
 
 from .role import RoleBase, RoleCreate, RoleUpdate, Role, RoleSummary  # noqa: F401
+from .report import ReportData  # noqa: F401
 
 # SUBSCRIPTIONS
 from .product import ProductCreate, ProductUpdate, Product, ProductInDB, ProductPricingView  # noqa: F401
