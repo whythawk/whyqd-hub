@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { IMimeType } from "./"
+import type { IMimeType } from "./"
 
 export interface IDataUpload {
   mime: IMimeType

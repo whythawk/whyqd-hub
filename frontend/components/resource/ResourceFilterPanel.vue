@@ -73,7 +73,7 @@ import VueTailwindDatepicker from "vue-tailwind-datepicker"
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline"
 import { useResourceStore } from "@/stores"
-import { IResourceFilters } from "@/interfaces"
+import type { IResourceFilters } from "@/interfaces"
 
 const route = useRoute()
 const resourceStore = useResourceStore()

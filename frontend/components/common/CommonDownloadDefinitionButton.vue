@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { ArrowDownOnSquareStackIcon, ArrowDownTrayIcon } from "@heroicons/vue/24/outline"
-import { IReference } from "@/interfaces"
+import type { IReference } from "@/interfaces"
 import { useTokenStore, useToastStore } from "@/stores"
 import { apiData } from "@/api"
 
@@ -72,7 +72,7 @@ async function getDownload(key: string, download: string, datasource: boolean) {
           }
         } else {
           const { data: response } = await apiData.getSourceDownload(tokenStore.token, key)
-          console.log(response.value, IMimeReference[props.reference.mime_type])
+          // console.log(response.value, IMimeReference[props.reference.mime_type])
           if (response.value && props.reference.mime_type) {
             return returnDownload(response.value, props.reference.name, IMimeReference[props.reference.mime_type])
           }

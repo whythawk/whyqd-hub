@@ -1,4 +1,4 @@
-import { IAccrualPolicyType, IAccrualType, IFrequencyType, IMimeType } from "./"
+import type { IAccrualPolicyType, IAccrualType, IFrequencyType, IMimeType } from "./"
 
 export interface IDublinCore {
   // https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3

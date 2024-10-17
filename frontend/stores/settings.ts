@@ -1,4 +1,4 @@
-import { IPageStatusType } from "@/interfaces"
+import type { IPageStatusType } from "@/interfaces"
 
 export const useSettingStore = defineStore("settingStore", {
   state: () => ({

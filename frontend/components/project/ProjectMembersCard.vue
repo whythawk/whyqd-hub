@@ -83,7 +83,7 @@
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption, } from "@headlessui/vue"
 import { CheckCircleIcon, CheckIcon, ChevronUpDownIcon, TrashIcon } from "@heroicons/vue/24/outline"
 import { useProjectStore, useAuthStore } from "@/stores"
-import { IOgunFilters, IResearcherRoleType } from "@/interfaces"
+import type { IOgunFilters, IResearcherRoleType } from "@/interfaces"
 import { readableDate } from "@/utilities"
 
 const route = useRoute()

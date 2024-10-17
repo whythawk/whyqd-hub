@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { IDentifier, IVersion, IField, IFieldType, IMimeType } from "./"
+import type { IDentifier, IVersion, IField, IFieldType, IMimeType } from "./"
 
 // month https://stackoverflow.com/a/18648314/295606
 export interface ICitation {

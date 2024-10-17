@@ -55,7 +55,7 @@
 import WebSocketAsPromised from "websocket-as-promised"
 import { storeToRefs } from "pinia"
 import { ArrowUpTrayIcon, ExclamationCircleIcon, MinusCircleIcon, PencilSquareIcon, PlusCircleIcon, Squares2X2Icon } from "@heroicons/vue/24/outline"
-import { ISchemaCreate, IFieldCreate, IKeyable, ISocketRequest, ISocketResponse, } from "@/interfaces"
+import type { ISchemaCreate, IFieldCreate, IKeyable, ISocketRequest, ISocketResponse, } from "@/interfaces"
 import { apiSchema } from "@/api"
 import { useSettingStore, useSchemaStore, useToastStore } from "@/stores"
 import { getAvatar } from "@/utilities"

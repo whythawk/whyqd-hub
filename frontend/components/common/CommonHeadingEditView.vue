@@ -62,7 +62,7 @@ import {
   ExclamationCircleIcon, QuestionMarkCircleIcon, Squares2X2Icon, Square3Stack3DIcon, TableCellsIcon, XMarkIcon
 } from "@heroicons/vue/24/outline"
 import { getAvatar } from "@/utilities"
-import { IKeyable } from "@/interfaces";
+import type { IKeyable } from "@/interfaces";
 
 const props = defineProps<{
   purpose: string,

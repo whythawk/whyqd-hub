@@ -91,7 +91,7 @@
 <script setup lang="ts">
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption, } from "@headlessui/vue"
 import { ChevronUpDownIcon } from "@heroicons/vue/20/solid"
-import { IFieldCreate, ICategoryCreate } from "@/interfaces"
+import type { IFieldCreate, ICategoryCreate } from "@/interfaces"
 import { capitalizeFirst } from "@/utilities"
 import { useTokenStore, useToastStore } from "@/stores"
 import { apiResource } from "@/api"

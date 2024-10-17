@@ -1,5 +1,5 @@
 import { Buffer } from "buffer"
-import {  IKeyable } from "@/interfaces"
+import type { IKeyable } from "@/interfaces"
 
 function generateUUID(): string {
   // Reference: https://stackoverflow.com/a/2117523/709884

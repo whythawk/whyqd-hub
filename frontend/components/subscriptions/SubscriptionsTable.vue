@@ -53,7 +53,7 @@
 import { TrashIcon } from "@heroicons/vue/24/outline"
 import { useSubscriptionsStore, useSettingStore } from "@/stores"
 import { readableDate } from "@/utilities"
-import { IKeyable, ISubscriptionView } from "@/interfaces"
+import type { IKeyable, ISubscriptionView } from "@/interfaces"
 
 const route = useRoute()
 const appSettings = useSettingStore()

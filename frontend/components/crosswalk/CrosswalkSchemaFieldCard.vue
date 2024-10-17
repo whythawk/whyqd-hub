@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { IFieldCreate, ICategoryCreate, IActionModel } from "@/interfaces"
+import type { IFieldCreate, ICategoryCreate, IActionModel } from "@/interfaces"
 import { capitalizeFirst } from "@/utilities"
 
 function hasField() {

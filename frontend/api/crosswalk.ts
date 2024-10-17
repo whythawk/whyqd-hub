@@ -1,5 +1,5 @@
 import WebSocketAsPromised from "websocket-as-promised"
-import { IResourceCrosswalkManager } from "@/interfaces"
+import type { IResourceCrosswalkManager } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiCrosswalk = {

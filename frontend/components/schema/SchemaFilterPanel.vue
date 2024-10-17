@@ -73,7 +73,7 @@ import VueTailwindDatepicker from "vue-tailwind-datepicker"
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline"
 import { useSchemaStore } from "@/stores"
-import { IReferenceFilters } from "@/interfaces"
+import type { IReferenceFilters } from "@/interfaces"
 
 const schemaStore = useSchemaStore()
 const filters = ref({} as IReferenceFilters)

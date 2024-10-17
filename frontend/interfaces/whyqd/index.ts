@@ -1,7 +1,8 @@
-import {
+import type {
   IAccrualPolicyType,
   IAccrualType,
   IFrequencyType,
+  IFrequencySubType,
   IMimeType,
   IResearcherRoleType,
   IReferenceType,
@@ -10,11 +11,13 @@ import {
   InvitationResponseType,
 } from "./schema_types"
 
-import { IUserSummary, IModelSummary, ICitation } from "./utilities"
-import { IActivity, IResourceActivity, IActivityFilters, IPinnedResource } from "./activities"
-import { IVersion } from "./version"
+import type { IDublinCore, IDublinCoreIdentifier, IDublinCoreInDB, IDublinCoreTerms } from "./dublin_core"
 
-import {
+import type { IUserSummary, IModelSummary, ICitation } from "./utilities"
+import type { IActivity, IResourceActivity, IActivityFilters, IActivityReportFilters, IActivityReport, IPinnedResource } from "./activities"
+import type { IVersion } from "./version"
+
+import type {
   IDentifier,
   ICategoryCreate,
   ICategory,
@@ -25,7 +28,7 @@ import {
   ISchemaCreate,
   ISchema,
 } from "./schema"
-import {
+import type {
   IActionType,
   IActionModifierType,
   IActionModifier,
@@ -33,8 +36,8 @@ import {
   IActionModel,
   ICrosswalkCreate,
 } from "./crosswalk"
-import { IReference, IReferenceTemplate, IDataSourceTemplate, ICrosswalkTemplate, IReferenceFilters } from "./reference"
-import {
+import type { IReference, IReferenceTemplate, IDataSourceTemplate, ICrosswalkTemplate, IReferenceFilters } from "./reference"
+import type {
   IResource,
   IResourceActivitySummary,
   IResourceDataReference,
@@ -43,25 +46,32 @@ import {
   IResourceCrosswalkManager,
   IResourceFilters
 } from "./resource"
-import { ITask, IScheduledTask, ITaskFilters, ITaskScheduleFilters } from "./task"
-import { IProject, IProjectFilters, IProjectRole, IProjectInvitation } from "./project"
+import type { ITask, IScheduledTask, ITaskFilters, ITaskScheduleFilters } from "./task"
+import type { IProject, IProjectFilters, IProjectRole, IProjectInvitation } from "./project"
 
-export {
+export type {
   IAccrualPolicyType,
   IAccrualType,
   IFrequencyType,
+  IFrequencySubType,
   IMimeType,
   IResearcherRoleType,
   IReferenceType,
   IFieldType,
   IStatusType,
   InvitationResponseType,
+  IDublinCore,
+  IDublinCoreIdentifier,
+  IDublinCoreInDB,
+  IDublinCoreTerms,
   IUserSummary,
   IModelSummary,
   ICitation,
   IActivity,
   IResourceActivity,
   IActivityFilters,
+  IActivityReportFilters,
+  IActivityReport,
   IPinnedResource,
   IVersion,
   IDentifier,

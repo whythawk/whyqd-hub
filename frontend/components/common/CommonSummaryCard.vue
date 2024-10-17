@@ -19,7 +19,7 @@ import {
   ArrowsRightLeftIcon, BeakerIcon, CubeIcon, Squares2X2Icon, Square3Stack3DIcon, TableCellsIcon
 } from "@heroicons/vue/24/outline"
 import { getAvatar } from "@/utilities"
-import { IModelSummary, IKeyable } from "@/interfaces"
+import type { IModelSummary, IKeyable } from "@/interfaces"
 
 const props = defineProps<{
   summary: IModelSummary,

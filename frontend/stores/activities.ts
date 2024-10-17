@@ -1,4 +1,4 @@
-import { IResourceActivitySummary, IActivityFilters } from "@/interfaces"
+import type { IResourceActivitySummary, IActivityFilters } from "@/interfaces"
 import { useTokenStore } from "./tokens"
 import { useSettingStore } from "./settings"
 import { apiActivity } from "@/api"

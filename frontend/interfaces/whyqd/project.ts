@@ -1,8 +1,8 @@
-import {
+import type {
   IAccrualPolicyType, IAccrualType, IFrequencyType,
   IModelSummary, InvitationResponseType, IResearcherRoleType
 } from "./"
-import { IProfileSummary } from "../"
+import type { IProfileSummary } from "../"
 
 export interface IProject {
   // https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3

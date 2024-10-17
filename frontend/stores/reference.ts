@@ -1,4 +1,4 @@
-import { IMimeType, IReference, IReferenceFilters } from "@/interfaces"
+import type { IMimeType, IReference, IReferenceFilters } from "@/interfaces"
 import { useTokenStore } from "./tokens"
 import { useSettingStore } from "./settings"
 import { useToastStore } from "./toasts"

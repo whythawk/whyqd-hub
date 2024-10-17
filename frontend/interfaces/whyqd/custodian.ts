@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import {
+import type {
   IDublinCore,
   IDublinCoreTerms,
   IDublinCoreIdentifier,
@@ -11,7 +11,7 @@ import {
   IStatusType,
 } from "./"
 
-import { IUserProfile } from "@/interfaces"
+import type { IUserProfile } from "@/interfaces"
 
 // https://www.typescriptlang.org/docs/handbook/2/objects.html#extending-types
 export interface IProjectCreate extends IDublinCore, IDublinCoreInDB {}

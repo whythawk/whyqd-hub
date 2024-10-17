@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { IActionModel, IActionModifierType, IKeyable, IResourceSchemaReference, ISocketRequest } from "@/interfaces"
+import type { IActionModel, IActionModifierType, IKeyable, IResourceSchemaReference, ISocketRequest } from "@/interfaces"
 
 const props = defineProps<{
   action: IActionModel

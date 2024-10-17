@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ICitation } from "@/interfaces"
+import type { ICitation } from "@/interfaces"
 
 const props = defineProps<{
   citation?: ICitation

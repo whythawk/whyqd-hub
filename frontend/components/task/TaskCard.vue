@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import { ArrowsRightLeftIcon, BeakerIcon, RectangleGroupIcon, Squares2X2Icon, SquaresPlusIcon, ArrowUpTrayIcon } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar } from "@/utilities"
-import { ITask, IReferenceFilters } from "@/interfaces"
+import type { ITask, IReferenceFilters } from "@/interfaces"
 import { useReferenceStore, useTaskStore, useProjectStore } from "@/stores"
 
 const route = useRoute()

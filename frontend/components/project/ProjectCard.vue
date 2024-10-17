@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { CalendarIcon, BellIcon, FolderPlusIcon, Square3Stack3DIcon, Squares2X2Icon, SquaresPlusIcon, TagIcon, UserGroupIcon } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar } from "@/utilities"
-import { IProject, IReferenceFilters } from "@/interfaces"
+import type { IProject, IReferenceFilters } from "@/interfaces"
 import { useReferenceStore, useTaskStore } from "@/stores"
 
 const route = useRoute()

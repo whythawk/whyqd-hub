@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ISendEmail } from "@/interfaces"
+import type { ISendEmail } from "@/interfaces"
 import { useToastStore } from "@/stores"
 import { apiService } from "@/api"
 

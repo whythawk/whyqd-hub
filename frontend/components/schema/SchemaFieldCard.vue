@@ -102,7 +102,7 @@
 <script setup lang="ts">
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { ChevronUpIcon } from "@heroicons/vue/20/solid"
-import { IFieldCreate } from "@/interfaces"
+import type { IFieldCreate } from "@/interfaces"
 import { capitalizeFirst } from "@/utilities"
 
 const props = defineProps<{

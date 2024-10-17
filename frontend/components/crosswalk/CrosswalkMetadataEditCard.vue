@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
-import { ISocketRequest, IKeyable } from "@/interfaces"
+import type { ISocketRequest, IKeyable } from "@/interfaces"
 import { useCrosswalkStore } from "@/stores"
 import { nameSpace } from "@/utilities"
 

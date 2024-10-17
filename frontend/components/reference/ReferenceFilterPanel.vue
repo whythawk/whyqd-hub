@@ -105,7 +105,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline"
 import { capitalizeFirst } from "@/utilities"
 import { useReferenceStore } from "@/stores"
-import { IReferenceFilters } from "@/interfaces"
+import type { IReferenceFilters } from "@/interfaces"
 
 const referenceStore = useReferenceStore()
 const filters = ref({} as IReferenceFilters)

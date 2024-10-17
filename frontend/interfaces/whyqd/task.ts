@@ -1,4 +1,4 @@
-import { IAccrualPolicyType, IAccrualType, IFrequencyType, IModelSummary } from "./"
+import type { IAccrualPolicyType, IAccrualType, IFrequencyType, IModelSummary } from "./"
 
 export interface ITask {
   // https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3

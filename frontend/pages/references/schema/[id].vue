@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { useSettingStore, useReferenceStore } from "@/stores"
-import { IReferenceFilters } from "@/interfaces"
+import type { IReferenceFilters } from "@/interfaces"
 
 definePageMeta({
   middleware: ["authenticated"],

@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { IResourceSchemaReference, IActionModel } from "@/interfaces"
+import type { IResourceSchemaReference, IActionModel } from "@/interfaces"
 
 function getActionModel(key: string): IActionModel {
   let axn

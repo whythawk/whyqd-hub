@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { ISchema, IVersion, ICitation } from "./"
+import type { ISchema, IVersion, ICitation } from "./"
 
 export type IActionType =
   | "CALCULATE"

@@ -218,7 +218,7 @@ import {
 } from "@headlessui/vue"
 import { CheckIcon, ChevronUpDownIcon, EllipsisVerticalIcon } from "@heroicons/vue/20/solid"
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/vue/24/outline"
-import { ISocketRequest, IFieldCreate, IConstraintsCreate, ICategoryCreate } from "@/interfaces"
+import type { ISocketRequest, IFieldCreate, IConstraintsCreate, ICategoryCreate } from "@/interfaces"
 import { useToastStore } from "@/stores"
 import { capitalizeFirst, generateUUID } from "@/utilities"
 

@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { MapPinIcon, Square3Stack3DIcon } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar } from "@/utilities"
-import { IResourceManager, IResource } from "@/interfaces"
+import type { IResourceManager, IResource } from "@/interfaces"
 
 const avatar = shallowRef("")
 

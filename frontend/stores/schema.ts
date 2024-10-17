@@ -1,4 +1,4 @@
-import { IReference, ISchema, ISchemaCreate, IField, IFieldCreate, ICitation, IReferenceFilters } from "@/interfaces"
+import type { IReference, ISchema, ISchemaCreate, IField, IFieldCreate, ICitation, IReferenceFilters } from "@/interfaces"
 import { useTokenStore } from "./tokens"
 import { useSettingStore } from "./settings"
 import { useReferenceStore } from "./reference"

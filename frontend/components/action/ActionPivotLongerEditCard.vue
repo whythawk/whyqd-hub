@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { IActionModel, IKeyable, IResourceSchemaReference, ISocketRequest } from "@/interfaces"
+import type { IActionModel, IKeyable, IResourceSchemaReference, ISocketRequest } from "@/interfaces"
 
 const props = defineProps<{
   action: IActionModel

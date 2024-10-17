@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { IKeyable } from "@/interfaces"
+import type { IKeyable } from "@/interfaces"
 
 const props = defineProps<{
   tableHeaders: String[]

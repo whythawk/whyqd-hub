@@ -120,7 +120,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon, ShareIcon } from "@heroicons/vue/24/outline"
 import { useActivityStore, useProjectStore } from "@/stores"
 import { apiCore } from "@/api"
-import { IActivityFilters, IKeyable } from "@/interfaces"
+import type { IActivityFilters, IKeyable } from "@/interfaces"
 
 const route = useRoute()
 const activityStore = useActivityStore()
@@ -203,7 +203,7 @@ function getSerialisedFilters() {
     const filters: IKeyable = removeEmpty(activityStore.filters)
     // https://stackoverflow.com/a/57529723
     const serialised = new URLSearchParams(filters).toString()
-    console.log("serialised", `${apiCore.url()}/activity/project/${route.params.id as string}?${serialised}`)
+    // console.log("serialised", `${apiCore.url()}/activity/project/${route.params.id as string}?${serialised}`)
     filterPath.value = `${apiCore.url()}/activity/project/${route.params.id as string}?${serialised}`
   } else {
     filterPath.value = ""

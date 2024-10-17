@@ -1,4 +1,4 @@
-import {
+import type {
   IActionModifierType,
   IActionModel,
 } from "@/interfaces"

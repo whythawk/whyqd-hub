@@ -24,7 +24,7 @@
 import { fileOpen } from "browser-fs-access"
 import { ArrowsRightLeftIcon, CubeIcon, Squares2X2Icon, TableCellsIcon, } from "@heroicons/vue/24/outline"
 import { useToastStore } from "@/stores"
-import { IKeyable } from "@/interfaces"
+import type { IKeyable } from "@/interfaces"
 
 const toast = useToastStore()
 const importer: IKeyable = {

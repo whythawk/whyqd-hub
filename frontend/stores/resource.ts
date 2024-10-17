@@ -1,4 +1,4 @@
-import {
+import type {
   IResource, IResourceManager, IResourceFilters
 } from "@/interfaces"
 import { useTokenStore } from "./tokens"

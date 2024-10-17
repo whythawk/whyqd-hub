@@ -83,7 +83,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
 import { BeakerIcon, BellIcon, BoltIcon, ChevronDownIcon, RectangleGroupIcon, Square3Stack3DIcon, } from "@heroicons/vue/24/outline"
 import { readableDate, capitalizeFirst, splitWordify, getAvatar } from "@/utilities"
-import { IActivity, IModelSummary } from "@/interfaces"
+import type { IActivity, IModelSummary } from "@/interfaces"
 
 const summary = shallowRef({} as IModelSummary)
 const summaryAvatar = shallowRef("")

@@ -160,7 +160,7 @@ import VueTailwindDatepicker from "vue-tailwind-datepicker"
 import { Disclosure, DisclosureButton, DisclosurePanel, Listbox, ListboxButton, ListboxOptions, ListboxOption, Switch } from "@headlessui/vue"
 import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon, CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/24/outline"
 import { useTaskStore } from "@/stores"
-import { ITaskFilters, IKeyable } from "@/interfaces"
+import type { ITaskFilters, IKeyable } from "@/interfaces"
 
 const route = useRoute()
 const taskStore = useTaskStore()

@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { ISubscriptionProfile } from "./subscriptions"
+import type { ISubscriptionProfile } from "./subscriptions"
 
 export interface IUserProfile {
   id: string

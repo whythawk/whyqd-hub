@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { IMsg } from "@/interfaces"
+import type { IMsg } from "@/interfaces"
 import { useTokenStore, useToastStore } from "@/stores"
 import { apiSubscriptions } from "@/api"
 

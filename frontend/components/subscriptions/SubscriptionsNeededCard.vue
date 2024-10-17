@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { CreditCardIcon } from "@heroicons/vue/20/solid"
-import { IProductTypes } from "@/interfaces"
+import type { IProductTypes } from "@/interfaces"
 
 const props = defineProps<{
   needed: IProductTypes

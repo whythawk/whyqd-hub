@@ -1,6 +1,6 @@
 
 /* eslint-disable camelcase */
-import { IStatusType } from "./"
+import type { IStatusType } from "./"
 
 export interface IUserSummary {
   email: string

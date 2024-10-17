@@ -60,7 +60,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { ChevronUpIcon } from "@heroicons/vue/20/solid"
 import { storeToRefs } from "pinia"
-import { ISocketRequest, ISchemaCreate } from "@/interfaces"
+import type { ISocketRequest, ISchemaCreate } from "@/interfaces"
 import { useSchemaStore } from "@/stores"
 import { nameSpace } from "@/utilities"
 

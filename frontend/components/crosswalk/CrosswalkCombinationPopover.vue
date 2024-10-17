@@ -78,7 +78,7 @@ import {
   Listbox, ListboxButton, ListboxOptions, ListboxOption, Popover, PopoverButton, PopoverPanel, TransitionRoot
 } from "@headlessui/vue"
 import { CheckIcon, ChevronDownIcon, ChevronUpDownIcon, MinusCircleIcon, PlusCircleIcon } from "@heroicons/vue/20/solid"
-import { IActionModel, IKeyable, IResourceSchemaReference, IActionModifierType } from "@/interfaces"
+import type { IActionModel, IKeyable, IResourceSchemaReference, IActionModifierType } from "@/interfaces"
 
 const props = defineProps<{
   action: IActionModel,

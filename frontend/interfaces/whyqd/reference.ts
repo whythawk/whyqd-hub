@@ -1,5 +1,5 @@
 
-import { IReferenceType, IMimeType, IResearcherRoleType, ICitation, IActionScript, } from "./"
+import type { IReferenceType, IMimeType, IResearcherRoleType, ICitation, IActionScript, } from "./"
 
 export interface IReference {
   id: string

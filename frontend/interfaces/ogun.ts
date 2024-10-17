@@ -1,5 +1,5 @@
 
-import { IResearcherRoleType } from "./whyqd"
+import type { IResearcherRoleType } from "./whyqd"
 
 export interface IOgunCreate {
   id: string

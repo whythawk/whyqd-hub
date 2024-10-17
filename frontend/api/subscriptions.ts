@@ -1,4 +1,4 @@
-import {
+import type {
   ICode, IOrder, IProduct, IProductPricing, ISubscription, ISubscriptionView, ISubscriptionAdminCreate,
   IStripeCheckoutResponse, IStripeIntent, IStripeCheckoutIntent, IOgunFilters, IUserEmail, IUserProfile, IMsg
 } from "@/interfaces"

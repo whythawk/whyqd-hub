@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/vue/24/outline"
-import { IActionModel, IResourceSchemaReference, ISocketRequest } from "@/interfaces"
+import type { IActionModel, IResourceSchemaReference, ISocketRequest } from "@/interfaces"
 
 const props = defineProps<{
   edit: IActionModel,

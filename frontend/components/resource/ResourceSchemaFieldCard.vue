@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { IFieldCreate, ICategoryCreate } from "@/interfaces"
+import type { IFieldCreate, ICategoryCreate } from "@/interfaces"
 import { capitalizeFirst } from "@/utilities"
 
 const props = defineProps<{

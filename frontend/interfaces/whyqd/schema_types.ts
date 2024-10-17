@@ -27,6 +27,11 @@ export type IFrequencyType =
   | "continuous"
   | "irregular"
 
+export type IFrequencySubType =
+| "MONTH"
+| "QUARTER"
+| "YEAR"
+
 export type IMimeType = "CSV" | "XLS" | "XLSX" | "PARQUET" | "FEATHER"
 
 export type IResearcherRoleType =

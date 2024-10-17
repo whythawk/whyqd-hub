@@ -124,7 +124,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { ArrowPathIcon, ArrowUpTrayIcon } from "@heroicons/vue/24/outline"
 import { ChevronUpIcon } from "@heroicons/vue/20/solid"
 import { useSubscriptionsStore, useSettingStore } from "@/stores"
-import { IProduct } from "@/interfaces"
+import type { IProduct } from "@/interfaces"
 
 const appSettings = useSettingStore()
 const subscriptionStore = useSubscriptionsStore()

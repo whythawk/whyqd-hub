@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { apiAuth } from "@/api"
 import { useTokenStore, useSettingStore } from "@/stores"
-import { IOgunFilters, IUserProfile } from "@/interfaces"
+import type { IOgunFilters, IUserProfile } from "@/interfaces"
 
 const route = useRoute()
 const router = useRouter()

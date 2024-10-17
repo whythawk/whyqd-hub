@@ -16,7 +16,7 @@
             <td class="px-3 py-3.5 text-left text-sm text-gray-900">
               <time :datetime="invite.created">{{ readableDate(invite.created as string) }}</time>
             </td>
-            <td class="px-3 py-3.5 text-left text-sm truncate text-gray-900">{{ getProjectName(invite.project) }}</td>
+            <td class="px-3 py-3.5 text-left text-sm truncate text-gray-900">{{ getProjectName(invite.project as IModelSummary) }}</td>
             <td class="px-3 py-3.5 text-left text-sm text-gray-900">{{ invite.sender.email }}</td>
             <td class="pl-3 py-3.5 justify-center items-center text-sm text-gray-900">
               <button @click.prevent="acceptInvitation(invite.id)"
@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { CheckIcon, TrashIcon } from "@heroicons/vue/24/outline"
 import { useProjectStore } from "@/stores"
-import { IOgunFilters, IModelSummary } from "@/interfaces"
+import type { IOgunFilters, IModelSummary } from "@/interfaces"
 import { readableDate } from "@/utilities"
 
 const route = useRoute()

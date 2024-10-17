@@ -1,4 +1,4 @@
-import {
+import type {
   ITask, IScheduledTask, ITaskFilters
 } from "@/interfaces"
 import { useTokenStore } from "./tokens"

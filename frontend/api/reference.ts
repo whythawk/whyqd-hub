@@ -1,4 +1,4 @@
-import { IReference, IReferenceFilters } from "@/interfaces"
+import type { IReference, IReferenceFilters } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiReference = {

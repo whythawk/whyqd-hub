@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { IFieldType, IVersion, ICitation } from "./"
+import type { IFieldType, IVersion, ICitation } from "./"
 
 export interface IDentifier {
   uuid: string

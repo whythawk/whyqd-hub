@@ -1,4 +1,4 @@
-import { IOgunCreate, IOgunUser, IOgunFilters, IMsg, IResearcherRoleType } from "@/interfaces"
+import type { IOgunCreate, IOgunUser, IOgunFilters, IMsg, IResearcherRoleType } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiOgun = {

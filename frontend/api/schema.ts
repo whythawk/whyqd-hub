@@ -1,5 +1,5 @@
 import WebSocketAsPromised from "websocket-as-promised"
-import { ISchema, IResourceManager } from "@/interfaces"
+import type { ISchema, IResourceManager } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiSchema = {

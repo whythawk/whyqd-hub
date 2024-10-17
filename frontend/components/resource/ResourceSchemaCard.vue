@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { Disclosure, DisclosureButton, DisclosurePanel, } from "@headlessui/vue"
 import { ArrowDownOnSquareStackIcon, ChevronDownIcon, Squares2X2Icon, } from "@heroicons/vue/24/outline"
-import { IStatusType, IResourceSchemaReference, IKeyable } from "@/interfaces"
+import type { IStatusType, IResourceSchemaReference, IKeyable } from "@/interfaces"
 import { readableDate } from "@/utilities"
 import { useTokenStore, useToastStore } from "@/stores"
 import { apiData } from "@/api"

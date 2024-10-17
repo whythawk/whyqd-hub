@@ -98,7 +98,7 @@ import {
   PaperClipIcon
 } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar } from "@/utilities"
-import { IReference } from "@/interfaces"
+import type { IReference } from "@/interfaces"
 import { useProjectStore, useTaskStore, useResourceStore } from "@/stores"
 
 const route = useRoute()

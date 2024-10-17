@@ -1,4 +1,4 @@
-import { IProject, IProjectFilters, IProjectRole, IProjectInvitation, IResearcherRoleType, IOgunFilters } from "@/interfaces"
+import type { IProject, IProjectFilters, IProjectRole, IProjectInvitation, IResearcherRoleType, IOgunFilters } from "@/interfaces"
 import { useTokenStore } from "./tokens"
 import { useSettingStore } from "./settings"
 import { useToastStore } from "./toasts"

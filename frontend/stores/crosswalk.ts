@@ -1,4 +1,4 @@
-import { IResourceCrosswalkManager, ICrosswalkCreate, IActionModel, IKeyable,  } from "@/interfaces"
+import type { IResourceCrosswalkManager, ICrosswalkCreate, IActionModel, IKeyable,  } from "@/interfaces"
 import { useTokenStore } from "./tokens"
 import { useSettingStore } from "./settings"
 import { apiCrosswalk } from "@/api"

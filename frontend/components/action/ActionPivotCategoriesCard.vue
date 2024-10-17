@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { IActionModel } from "@/interfaces"
+import type { IActionModel } from "@/interfaces"
 
 const props = defineProps<{
   action: IActionModel

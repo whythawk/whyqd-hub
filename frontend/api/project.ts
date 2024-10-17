@@ -1,4 +1,4 @@
-import { IProject, IProjectFilters, IProjectRole, IProjectInvitation, IResearcherRoleType } from "@/interfaces"
+import type { IProject, IProjectFilters, IProjectRole, IProjectInvitation, IResearcherRoleType } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiProject = {

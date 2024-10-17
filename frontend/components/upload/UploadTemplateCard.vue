@@ -136,7 +136,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Listbox, ListboxButton, ListboxOptions, ListboxOption, } from "@headlessui/vue"
 import { CheckIcon, ChevronUpDownIcon, ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { TableCellsIcon } from "@heroicons/vue/24/outline"
-import { IDataSourceTemplate, IKeyable } from "@/interfaces"
+import type { IDataSourceTemplate, IKeyable } from "@/interfaces"
 import { useTokenStore, useToastStore } from "@/stores"
 import { apiData } from "@/api"
 import { isValidHttpUrl } from "@/utilities"

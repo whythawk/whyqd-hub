@@ -96,7 +96,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { EllipsisVerticalIcon, CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid"
 import { PlusCircleIcon, MinusCircleIcon, PaperClipIcon } from "@heroicons/vue/24/outline"
-import { IFieldCreate } from "@/interfaces"
+import type { IFieldCreate } from "@/interfaces"
 import { capitalizeFirst } from "@/utilities"
 
 const emit = defineEmits<{ setRequest: [request: string] }>()

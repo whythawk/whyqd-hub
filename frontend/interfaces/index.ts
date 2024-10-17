@@ -1,4 +1,4 @@
-import {
+import type {
   IUserProfile,
   IUserProfileUpdate,
   IUserProfileCreate,
@@ -6,13 +6,13 @@ import {
   IUserEmail, 
   IProfileSummary
 } from "./profile"
-import {
+import type {
   IOgunCreate,
   IOgunUser,
   IOgunToken,
   IOgunFilters,
 } from "./ogun"
-import {
+import type {
   IPageStatusType,
   ITokenResponse,
   IWebToken,
@@ -25,7 +25,7 @@ import {
   ISocketRequest,
   ISocketResponse,
 } from "./utilities"
-import {
+import type {
   ICurrencyTypes,
   ISubscriptionEventTypes,
   ICode,
@@ -43,10 +43,11 @@ import {
   ISubscriptionView,
   ISubscriptionAdminCreate,
 } from "./subscriptions"
-import {
+import type {
   IAccrualPolicyType,
   IAccrualType,
   IFrequencyType,
+  IFrequencySubType,
   IMimeType,
   IResearcherRoleType,
   IReferenceType,
@@ -59,6 +60,8 @@ import {
   IActivity,
   IResourceActivity,
   IActivityFilters,
+  IActivityReportFilters,
+  IActivityReport,
   IPinnedResource,
   IVersion,
   IDentifier,
@@ -98,7 +101,7 @@ import {
   IProjectInvitation,
 } from "./whyqd"
   
-export {
+export type {
   IUserProfile,
   IUserProfileUpdate,
   IUserProfileCreate,
@@ -139,6 +142,7 @@ export {
   IAccrualPolicyType,
   IAccrualType,
   IFrequencyType,
+  IFrequencySubType,
   IMimeType,
   IResearcherRoleType,
   IReferenceType,
@@ -151,6 +155,8 @@ export {
   IActivity,
   IResourceActivity,
   IActivityFilters,
+  IActivityReportFilters,
+  IActivityReport,
   IPinnedResource,
   IVersion,
   IDentifier,

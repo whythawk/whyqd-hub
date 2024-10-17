@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { PlusCircleIcon } from "@heroicons/vue/24/outline"
-import { IActionModel } from "@/interfaces"
+import type { IActionModel } from "@/interfaces"
 
 const props = defineProps<{
   action: IActionModel,

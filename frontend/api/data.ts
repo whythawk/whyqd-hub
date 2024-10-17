@@ -1,4 +1,4 @@
-import { IMsg, IKeyable } from "@/interfaces"
+import type { IMsg, IKeyable } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiData = {

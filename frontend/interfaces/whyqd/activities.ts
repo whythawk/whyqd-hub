@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
-import { IReferenceType, IUserSummary, IModelSummary, IStatusType } from "./"
+import type { IReferenceType, IUserSummary, IModelSummary, IStatusType, IFrequencySubType } from "./"
+import type { IKeyable } from "../utilities"
 
 export interface IActivity {
   id: string
@@ -32,6 +33,29 @@ export interface IActivityFilters {
   excludeComplete?: boolean
   prioritised?: boolean
   page?: number
+}
+
+
+export interface IActivityReportFilters {
+  project_id?: string
+  task_id?: string
+  frequency?: IFrequencySubType
+  state?: IStatusType
+  date_from?: string
+  date_to?: string
+}
+
+export interface IActivityReport {
+  project_id?: string
+  project_name?: string
+  task_id?: string
+  task_name?: string
+  frequency?: IFrequencySubType
+  state?: IStatusType
+  date_from?: string
+  date_to?: string
+  count?: number
+  data?: IKeyable[]
 }
 
 // REVIEW

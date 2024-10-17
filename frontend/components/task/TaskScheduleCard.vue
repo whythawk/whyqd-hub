@@ -88,7 +88,7 @@
 <script setup lang="ts">
 import { BeakerIcon, RectangleGroupIcon, ArrowUpTrayIcon, LinkIcon } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar, isValidHttpUrl } from "@/utilities"
-import { IScheduledTask } from "@/interfaces"
+import type { IScheduledTask } from "@/interfaces"
 import { useTaskStore, useProjectStore } from "@/stores"
 
 const route = useRoute()

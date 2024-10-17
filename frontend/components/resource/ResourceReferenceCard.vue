@@ -83,7 +83,7 @@ import {
   Squares2X2Icon,
   TrashIcon,
 } from "@heroicons/vue/24/outline"
-import { IStatusType, IModelSummary, IKeyable, IReferenceType, IResourceManager, IReferenceFilters } from "@/interfaces"
+import type { IStatusType, IModelSummary, IKeyable, IReferenceType, IResourceManager, IReferenceFilters } from "@/interfaces"
 import { readableDate } from "@/utilities"
 import { useTokenStore, useToastStore, useReferenceStore, useResourceStore } from "@/stores"
 import { apiData, apiResource } from "@/api"

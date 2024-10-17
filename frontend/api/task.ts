@@ -1,4 +1,4 @@
-import { ITask, IScheduledTask, ITaskFilters } from "@/interfaces"
+import type { ITask, IScheduledTask, ITaskFilters } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiTask = {

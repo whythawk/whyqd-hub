@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { BeakerIcon, MapPinIcon, Square3Stack3DIcon, BellIcon, BoltIcon, LinkIcon  } from "@heroicons/vue/24/outline"
 import { readableDate, getAvatar, isValidHttpUrl } from "@/utilities"
-import { IResourceActivitySummary } from "@/interfaces"
+import type { IResourceActivitySummary } from "@/interfaces"
 
 const avatar = shallowRef("")
 const stateValue = {

@@ -1,4 +1,4 @@
-import { IResourceActivitySummary, IActivityFilters } from "@/interfaces"
+import type { IResourceActivitySummary, IActivityFilters, IActivityReportFilters, IActivityReport } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiActivity = {
@@ -21,6 +21,14 @@ export const apiActivity = {
   },
   async getMultiByProject(token: string, project_key: string, payload: IActivityFilters = {}) {
     return await useFetch<IResourceActivitySummary[]>(`${apiCore.url()}/activity/project/${project_key}`, 
+      {
+        headers: apiCore.headers(token),
+        query: payload,
+      }
+    )
+  },
+  async getReport(token: string, payload: IActivityReportFilters = {}) {
+    return await useFetch<IActivityReport>(`${apiCore.url()}/activity/report`, 
       {
         headers: apiCore.headers(token),
         query: payload,

@@ -175,7 +175,7 @@ import {
   ArrowsUpDownIcon, PencilIcon, ArrowPathIcon, Bars3BottomLeftIcon, BoltIcon, ChevronDownIcon,
   ExclamationCircleIcon, QuestionMarkCircleIcon, Squares2X2Icon, TableCellsIcon, XMarkIcon
 } from "@heroicons/vue/24/outline"
-import { IResourceCrosswalkManager, IActionModel, IActionType, IKeyable, ISocketRequest, ISocketResponse, } from "@/interfaces"
+import type { IResourceCrosswalkManager, IActionModel, IActionType, IKeyable, ISocketRequest, ISocketResponse, } from "@/interfaces"
 import { apiCrosswalk } from "@/api"
 import { useSettingStore, useToastStore, useCrosswalkStore } from "@/stores"
 import { getAvatar, convertActionModelList, convertActionModelToScript } from "@/utilities"

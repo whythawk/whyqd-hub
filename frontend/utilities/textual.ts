@@ -1,6 +1,6 @@
 import { createAvatar } from "@dicebear/core"
 import * as bottts from "@dicebear/bottts"
-import { IMimeType } from "@/interfaces"
+import type { IMimeType } from "@/interfaces"
 
 function readableDate(term: Date | string, showYear: boolean = true) {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString

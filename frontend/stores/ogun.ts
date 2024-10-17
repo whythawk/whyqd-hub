@@ -1,4 +1,4 @@
-import { IOgunUser, IOgunFilters  } from "@/interfaces"
+import type { IOgunUser, IOgunFilters  } from "@/interfaces"
 import { useTokenStore } from "./tokens"
 import { useToastStore } from "./toasts"
 import { useSettingStore } from "./settings"

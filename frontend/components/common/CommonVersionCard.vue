@@ -9,14 +9,17 @@
     <p class="flex-auto py-0.5 text-xs leading-5 text-gray-500">
       <span class="font-medium text-gray-900">{{ version.name }}</span> {{ version.description }}
     </p>
-    <time :datetime="version.updated" class="flex-none py-0.5 text-xs leading-5 text-gray-500">{{
-      readableDate(version.updated) }}</time>
+    <time v-if="version.updated" 
+      :datetime="version.updated.toLocaleDateString('en-GB')" 
+      class="flex-none py-0.5 text-xs leading-5 text-gray-500">
+      {{ readableDate(version.updated) }}
+    </time>
   </div>
 </template>
 
 <script setup lang="ts">
 import { readableDate } from "@/utilities"
-import { IVersion } from "@/interfaces"
+import type { IVersion } from "@/interfaces"
 
 const props = defineProps<{
   version: IVersion,

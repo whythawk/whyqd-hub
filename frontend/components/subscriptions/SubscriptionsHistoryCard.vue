@@ -90,7 +90,7 @@ import { CreditCardIcon, LinkIcon } from "@heroicons/vue/20/solid"
 import { storeToRefs } from "pinia"
 import { useAuthStore, useSubscriptionsStore, useSettingStore } from "@/stores"
 import { readableNumber, readableDate } from "@/utilities"
-import { IKeyable, IOrder } from "@/interfaces"
+import type { IKeyable, IOrder } from "@/interfaces"
 
 const route = useRoute()
 const authStore = useAuthStore()

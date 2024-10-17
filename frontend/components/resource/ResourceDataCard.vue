@@ -181,7 +181,7 @@ import {
   TableCellsIcon,
   TrashIcon,
 } from "@heroicons/vue/24/outline"
-import { IStatusType, IResourceDataReference, IKeyable } from "@/interfaces"
+import type { IStatusType, IResourceDataReference, IKeyable } from "@/interfaces"
 import { readableDate, getMimeType } from "@/utilities"
 import { useTokenStore, useToastStore, useResourceStore, useAuthStore } from "@/stores"
 import { apiData, apiResource } from "@/api"

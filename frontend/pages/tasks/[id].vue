@@ -216,7 +216,7 @@ import {
   LinkIcon,
 } from "@heroicons/vue/24/outline"
 import { readableDate, isValidHttpUrl } from "@/utilities"
-import { ICitation, IReferenceFilters } from "@/interfaces"
+import type { ICitation, IReferenceFilters } from "@/interfaces"
 import { useSettingStore, useTaskStore, useReferenceStore } from "@/stores"
 
 definePageMeta({

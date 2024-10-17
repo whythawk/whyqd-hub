@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { IActionModel, ISocketRequest } from "@/interfaces"
+import type { IActionModel, ISocketRequest } from "@/interfaces"
 
 const props = defineProps<{
   action: IActionModel

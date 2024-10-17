@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { StopCircleIcon } from "@heroicons/vue/24/outline"
-import { IActionModel, IKeyable, IResourceSchemaReference, ISocketRequest } from "@/interfaces"
+import type { IActionModel, IKeyable, IResourceSchemaReference, ISocketRequest } from "@/interfaces"
 
 const props = defineProps<{
   action: IActionModel

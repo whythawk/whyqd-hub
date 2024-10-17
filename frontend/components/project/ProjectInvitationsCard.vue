@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { TrashIcon } from "@heroicons/vue/24/outline"
 import { useProjectStore } from "@/stores"
-import { IOgunFilters } from "@/interfaces"
+import type { IOgunFilters } from "@/interfaces"
 import { readableDate } from "@/utilities"
 
 const route = useRoute()

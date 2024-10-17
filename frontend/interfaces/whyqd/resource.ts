@@ -1,5 +1,5 @@
-import { IKeyable } from "../utilities"
-import { IMimeType, IStatusType, IReferenceType, IModelSummary, IFieldCreate, IActionModel, IResourceActivity } from "./"
+import type { IKeyable } from "../utilities"
+import type { IMimeType, IStatusType, IReferenceType, IModelSummary, IFieldCreate, IActionModel, IResourceActivity } from "./"
 
 export interface IResource {
   // https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3

@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { IKeyable, IActionModel, ISocketRequest } from "@/interfaces"
+import type { IKeyable, IActionModel, ISocketRequest } from "@/interfaces"
 
 const props = defineProps<{
   action: IActionModel

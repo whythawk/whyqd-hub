@@ -95,7 +95,7 @@
 <script setup lang="ts">
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from "@headlessui/vue"
 import { CheckIcon } from "@heroicons/vue/20/solid"
-import {
+import type {
   IStripeCheckoutIntent,
   IProductPricing,
   ICode,

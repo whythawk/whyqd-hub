@@ -1,4 +1,4 @@
-import { IResource, IResourceManager, IResourceFilters, IDataSourceTemplate, IMsg } from "@/interfaces"
+import type { IResource, IResourceManager, IResourceFilters, IDataSourceTemplate, IMsg } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiResource = {

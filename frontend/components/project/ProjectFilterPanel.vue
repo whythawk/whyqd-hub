@@ -59,7 +59,7 @@ import VueTailwindDatepicker from "vue-tailwind-datepicker"
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue"
 import { ArrowPathIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/outline"
 import { useProjectStore } from "@/stores"
-import { IProjectFilters } from "@/interfaces"
+import type { IProjectFilters } from "@/interfaces"
 
 const projectStore = useProjectStore()
 const filters = ref({} as IProjectFilters)

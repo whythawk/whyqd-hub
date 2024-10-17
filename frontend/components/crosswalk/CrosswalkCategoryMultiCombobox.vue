@@ -49,7 +49,7 @@ import {
   TransitionRoot,
 } from "@headlessui/vue"
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/vue/24/outline"
-import { IKeyable } from "@/interfaces"
+import type { IKeyable } from "@/interfaces"
 
 const props = defineProps<{
   currentTerms: String[],

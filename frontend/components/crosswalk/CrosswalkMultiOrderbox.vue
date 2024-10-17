@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { PlusIcon, XMarkIcon } from "@heroicons/vue/24/outline"
-import { IKeyable } from "@/interfaces"
+import type { IKeyable } from "@/interfaces"
 
 const props = defineProps<{
   currentFields: String[],
