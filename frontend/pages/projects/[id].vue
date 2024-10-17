@@ -6,6 +6,7 @@
     <div v-if="appSettings.current.pageState === 'done' && projectStore.term && projectStore.term.name">
       <CommonHeadingView purpose="Project" :name="projectStore.term.name" :title="projectStore.term.title"
         @set-edit-request="watchHeadingRequest" />
+      <ActivityChart />
       <TabGroup>
         <TabList class="flex space-x-8 border-b border-gray-200 text-xs">
           <Tab v-for="tab in navigation" :key="`tab-${tab.id}`" as="template" v-slot="{ selected }">
@@ -167,6 +168,9 @@
           <TabPanel>
             <ProjectInvitationsCard :project="(route.params.id as string)" />
           </TabPanel>
+          <TabPanel>
+            <ProjectInvitationsCard :project="(route.params.id as string)" />
+          </TabPanel>
         </TabPanels>
       </TabGroup>
     </div>
@@ -175,9 +179,10 @@
 
 <script setup lang="ts">
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue"
-import { BeakerIcon, EnvelopeIcon, Square3Stack3DIcon, SquaresPlusIcon, TrashIcon, UserGroupIcon } from "@heroicons/vue/24/outline"
+import {
+  BeakerIcon, EnvelopeIcon, Square3Stack3DIcon, SquaresPlusIcon, TrashIcon, UserGroupIcon, CommandLineIcon } from "@heroicons/vue/24/outline"
 import { readableDate } from "@/utilities"
-import { ICitation, IReferenceFilters } from "@/interfaces"
+import type { ICitation, IKeyable, IReferenceFilters } from "@/interfaces"
 import { useSettingStore, useProjectStore, useReferenceStore } from "@/stores"
 
 definePageMeta({
@@ -188,10 +193,10 @@ const appSettings = useSettingStore()
 const route = useRoute()
 const projectStore = useProjectStore()
 const citation = ref({} as ICitation)
-let navigation = [
+let navigation = ref<IKeyable[]>([
   { name: "Metadata", id: "METADATA", icon: BeakerIcon },
   { name: "Members", id: "MEMBERS", icon: UserGroupIcon },
-]
+])
 
 async function watchHeadingRequest(request: string) {
   switch (request) {
@@ -238,8 +243,10 @@ onMounted(async () => {
   await projectStore.getTerm(route.params.id as string)
   if (!projectStore.term || Object.keys(projectStore.term).length === 0)
     throw createError({ statusCode: 404, statusMessage: "Page Not Found", fatal: true })
-  if (projectStore.isCustodian)
-    navigation.push({ name: "Invitations", id: "INVITATIONS", icon: EnvelopeIcon })
+  if (projectStore.isCustodian) {
+    navigation.value.push({ name: "Invitations", id: "INVITATIONS", icon: EnvelopeIcon })
+    // navigation.value.push({ name: "API", id: "API", icon: CommandLineIcon })
+  }
   setCitation()
 })
 

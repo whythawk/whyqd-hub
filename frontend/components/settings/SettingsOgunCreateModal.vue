@@ -87,7 +87,7 @@ import {
 import { CommandLineIcon, ChevronDownIcon, XMarkIcon } from "@heroicons/vue/24/outline"
 import { useToastStore, useOgunStore } from "@/stores"
 import { apiOgun } from "@/api"
-import { IResearcherRoleType, IOgunCreate } from "@/interfaces"
+import type { IResearcherRoleType, IOgunCreate } from "@/interfaces"
 
 const ogunStore = useOgunStore()
 const toastStore = useToastStore()

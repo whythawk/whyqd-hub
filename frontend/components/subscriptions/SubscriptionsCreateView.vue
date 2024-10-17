@@ -66,7 +66,7 @@
 
 <script setup lang="ts">
 import VueTailwindDatepicker from "vue-tailwind-datepicker"
-import { ISubscriptionAdminCreate, IProductTypes } from "@/interfaces"
+import type { ISubscriptionAdminCreate, IProductTypes } from "@/interfaces"
 import { useSubscriptionsStore } from "@/stores"
 
 const subscriptionStore = useSubscriptionsStore()
