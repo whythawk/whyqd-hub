@@ -1,7 +1,9 @@
 from __future__ import annotations
-from typing import Generic, Type, TypeVar
+from typing import Generic, Type, TypeVar, Sequence
 
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import inspect
+from sqlalchemy.orm import ONETOMANY
 from pydantic import BaseModel
 from sqlalchemy.orm import Session, Query
 from uuid import UUID
@@ -21,7 +23,7 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class CRUDWhyqdBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, model: Type[ModelType], joins: list[tuple(Type[ModelType], Type[ModelType])] = []):
+    def __init__(self, model: Type[ModelType], joins: list[tuple[Type[ModelType], Type[ModelType]]] = []):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
 
@@ -124,7 +126,7 @@ class CRUDWhyqdBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db_obj = self.get(db=db, id=id, user=user, responsibility=responsibility)
         if not db_obj or not (update_data.get("id") and db_obj.id == update_data["id"]):
             raise ValueError("Reference does not exist or insufficient permissions for the task.")
-        obj_data = jsonable_encoder(db_obj)
+        obj_data = self.model_encoder(db_obj)
         for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
@@ -179,3 +181,36 @@ class CRUDWhyqdBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             db_query = db_query.join(dbj)
             db_filter = db_filter | (self._get_filter(db_model=dbq, user=user, responsibilities=responsibilities))
         return db_query.filter(db_filter)
+
+    def model_encoder(self, model: ModelType, **kwargs) -> dict:
+        """
+        Safely converts a model instance into a dict, so it can be JSON-encoded.
+
+        :param model: Model instance, but for convenience will accept any value.
+        :param kwargs: Additional kwargs to pass to :py:func:`jsonable_encoder`.
+
+        :see: https://github.com/tiangolo/fastapi/discussions/9026
+        :see: https://github.com/sqlalchemy/sqlalchemy/issues/9785
+        https://github.com/fastapi/fastapi/discussions/9026#discussioncomment-7493716
+        Note: Doesn't account for one-to-one and many-to-many relationships, mostly because OP hadn't yet worked out how best to do this
+        """
+        if isinstance(model, Base):
+            mapper = inspect(model).mapper
+
+            # Add non-relationship values.
+            cleaned = {key: getattr(model, key) for key in mapper.columns.keys()}
+
+            # Add "parent" (one-to-many) relations.
+            cleaned.update(
+                {
+                    key: [self.model_encoder(value) for value in getattr(model, key)]
+                    for key, relationship in mapper.relationships.items()
+                    if relationship.direction == ONETOMANY
+                }
+            )
+        elif isinstance(model, Sequence):
+            cleaned = [self.model_encoder(value) for value in model]
+        else:
+            cleaned = model
+
+        return jsonable_encoder(cleaned, **kwargs)
