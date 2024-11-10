@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from datetime import datetime
 from uuid import UUID, uuid4
 from sqlalchemy.orm import Session, Query  # , aliased
@@ -769,6 +769,84 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         )
         return db_query.filter(db_filter)
 
+    def _get_filters(self, *, user: User, responsibilities: list[RoleType]) -> list[Any]:
+        # Join-based conditions for Task and Project (only create joins when necessary)
+        reference_filter = self._get_filter(db_model=self.model, user=user, responsibilities=responsibilities)
+        resource_filter = self._get_filter(db_model=Resource, user=user, responsibilities=responsibilities)
+        task_filter = self._get_filter(db_model=Task, user=user, responsibilities=responsibilities)
+        project_filter = self._get_filter(db_model=Project, user=user, responsibilities=responsibilities)
+        # Reference filters
+        return [
+            ~(self.model.is_private),
+            reference_filter,
+            ((Resource.datasource_id == self.model.id) & resource_filter),
+            ((Resource.datasource_id == self.model.id) & (Resource.task_id == Task.id) & task_filter),
+            (
+                (Resource.datasource_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & project_filter
+            ),
+            ((Resource.data_id == self.model.id) & resource_filter),
+            ((Resource.data_id == self.model.id) & (Resource.task_id == Task.id) & task_filter),
+            (
+                (Resource.data_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & project_filter
+            ),
+            ((Resource.schema_subject_id == self.model.id) & resource_filter),
+            ((Resource.schema_subject_id == self.model.id) & (Resource.task_id == Task.id) & task_filter),
+            (
+                (Resource.schema_subject_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & project_filter
+            ),
+            ((Resource.crosswalk_id == self.model.id) & resource_filter),
+            ((Resource.crosswalk_id == self.model.id) & (Resource.task_id == Task.id) & task_filter),
+            (
+                (Resource.crosswalk_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & project_filter
+            ),
+            ((Resource.schema_object_id == self.model.id) & resource_filter),
+            ((Resource.schema_object_id == self.model.id) & (Resource.task_id == Task.id) & task_filter),
+            (
+                (Resource.schema_object_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & project_filter
+            ),
+            ((Resource.transform_id == self.model.id) & resource_filter),
+            ((Resource.transform_id == self.model.id) & (Resource.task_id == Task.id) & task_filter),
+            (
+                (Resource.transform_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & project_filter
+            ),
+            ((Resource.transformdata_id == self.model.id) & resource_filter),
+            ((Resource.transformdata_id == self.model.id) & (Resource.task_id == Task.id) & task_filter),
+            (
+                (Resource.transformdata_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & project_filter
+            ),
+            ((Resource.transformdatasource_id == self.model.id) & resource_filter),
+            ((Resource.transformdatasource_id == self.model.id) & (Resource.task_id == Task.id) & task_filter),
+            (
+                (Resource.transformdatasource_id == self.model.id)
+                & (Resource.task_id == Task.id)
+                & (Task.project_id == Project.id)
+                & project_filter
+            ),
+            (self.model.task_schema.any(Task.schema).where(task_filter)),
+            (self.model.project_schema.any(Project.schema).where(project_filter)),
+        ]
+
     # def _has_role(self, db: Session, *, user: User, responsibility: RoleType, resource_objs: list[Resource]) -> bool:
     #     for db_obj in resource_objs:
     #         if crud_resource.has_role(db=db, user=user, responsibility=responsibility, db_obj=db_obj):
@@ -1335,7 +1413,12 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         db_obj = db.query(self.model).filter(self.model.model == model_id)
         if not user.is_superuser:
             responsibilities = crud_role._get_responsibility(responsibility=responsibility)
-            db_obj = self._get_query(db_query=db_obj, user=user, responsibilities=responsibilities)
+            # db_obj = self._get_query(db_query=db_obj, user=user, responsibilities=responsibilities)
+            db_filters = self._get_filters(user=user, responsibilities=responsibilities)
+            for db_filter in db_filters:
+                db_response = db_obj.filter(db_filter).first()
+                if db_response:
+                    return db_response
         return db_obj.first()
 
     def get_model(
@@ -1387,10 +1470,18 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         db_objs = db.query(self.model).filter(self.model.hash == hash)
         if task:
             db_objs = db_objs.filter(self.model.schema_subjects.any(Resource.task_id == task.id))
-        if not user.is_superuser:
-            responsibilities = crud_role._get_responsibility(responsibility=responsibility)
-            db_objs = self._get_query(db_query=db_objs, user=user, responsibilities=responsibilities)
-        return db_objs.all()
+        if user.is_superuser:
+            return db_objs.all()
+        # For everyone else
+        responsibilities = crud_role._get_responsibility(responsibility=responsibility)
+        # db_objs = self._get_query(db_query=db_objs, user=user, responsibilities=responsibilities)
+        db_filters = self._get_filters(user=user, responsibilities=responsibilities)
+        db_response = set()
+        for db_filter in db_filters:
+            response = set(db_objs.filter(db_filter).all())
+            if response:
+                db_response.update(response)
+        return list(db_response)
 
     def find_crosswalk_prospects(
         self,
@@ -1407,10 +1498,18 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         )
         if task:
             db_objs = db_objs.filter(self.model.schema_subjects.any(Resource.task_id == task.id))
-        if not user.is_superuser:
+        if user.is_superuser:
+            db_response = db_objs.all()
+        else:
             responsibilities = crud_role._get_responsibility(responsibility=responsibility)
-            db_objs = self._get_query(db_query=db_objs, user=user, responsibilities=responsibilities)
-        return {db_obj.crosswalk for db_obj in db_objs.all()}
+            # db_objs = self._get_query(db_query=db_objs, user=user, responsibilities=responsibilities)
+            db_filters = self._get_filters(user=user, responsibilities=responsibilities)
+            db_response = set()
+            for db_filter in db_filters:
+                response = set(db_objs.filter(db_filter).all())
+                if response:
+                    db_response.update(response)
+        return {db_obj.crosswalk for db_obj in db_response}
 
     def find_schema_prospects(
         self,
