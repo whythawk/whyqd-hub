@@ -1411,15 +1411,16 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         self, db: Session, *, model_id: UUID | str, user: User, responsibility: RoleType = RoleType.SEEKER
     ) -> Reference | None:
         db_obj = db.query(self.model).filter(self.model.model == model_id)
-        if not user.is_superuser:
-            responsibilities = crud_role._get_responsibility(responsibility=responsibility)
-            # db_obj = self._get_query(db_query=db_obj, user=user, responsibilities=responsibilities)
-            db_filters = self._get_filters(user=user, responsibilities=responsibilities)
-            for db_filter in db_filters:
-                db_response = db_obj.filter(db_filter).first()
-                if db_response:
-                    return db_response
-        return db_obj.first()
+        if user.is_superuser:
+            return db_obj.first()
+        responsibilities = crud_role._get_responsibility(responsibility=responsibility)
+        # db_obj = self._get_query(db_query=db_obj, user=user, responsibilities=responsibilities)
+        db_filters = self._get_filters(user=user, responsibilities=responsibilities)
+        for db_filter in db_filters:
+            db_response = db_obj.filter(db_filter).first()
+            if db_response:
+                return db_response
+        return None
 
     def get_model(
         self,
