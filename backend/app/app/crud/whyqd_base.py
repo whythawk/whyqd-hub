@@ -126,13 +126,12 @@ class CRUDWhyqdBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db_obj = self.get(db=db, id=id, user=user, responsibility=responsibility)
         if not db_obj or not (update_data.get("id") and db_obj.id == update_data["id"]):
             raise ValueError("Reference does not exist or insufficient permissions for the task.")
-        obj_data = jsonable_encoder(db_obj)
-        # try:
-        #     obj_data = self.model_encoder(db_obj)
-        # except TypeError:
-        #     # Crosswalk saves cause this error, but others may too
-        #     # `model_encoder` was purely to deal with `schema` reference weirdness
-        #     obj_data = jsonable_encoder(db_obj)
+        # obj_data = jsonable_encoder(db_obj)
+        try:
+            obj_data = jsonable_encoder(db_obj)
+        except RecursionError:
+            # `model_encoder` was purely to deal with `schema` reference weirdness
+            obj_data = self.model_encoder(db_obj)
         for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
