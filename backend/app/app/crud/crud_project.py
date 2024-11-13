@@ -83,7 +83,7 @@ class CRUDProject(CRUDWhyqdBase[Project, ProjectCreate, ProjectUpdate]):
     ) -> Project | None:
         obj_in = ProjectUpdate.from_orm(db_obj)
         obj_in.schema_id = schema_obj.id
-        return self.update(db=db, id=db_obj.id, obj_in=obj_in, user=user, responsibility=responsibility)
+        return super().update(db=db, id=db_obj.id, obj_in=obj_in, user=user, responsibility=responsibility)
 
     def remove_schema(
         self,
