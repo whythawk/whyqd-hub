@@ -51,7 +51,7 @@ class CRUDRole(CRUDBase[Role, RoleCreate, RoleUpdate]):
             .all()
         )
         for obj in db_objs:
-            obj_in = RoleUpdate.from_orm(obj).dict()
+            obj_in = RoleUpdate.model_validate(obj).dict()
             for term in ["created", "id", self._get_by_type(db_obj=old_obj)]:
                 # The two resources don't have to be the same so pop it here
                 obj_in.pop(term, None)
@@ -60,12 +60,12 @@ class CRUDRole(CRUDBase[Role, RoleCreate, RoleUpdate]):
             super().create(db=db, obj_in=obj_in)
 
     def update(self, db: Session, *, db_obj: Role, responsibility: RoleType = RoleType.SEEKER) -> Role:
-        obj_in = RoleUpdate.from_orm(db_obj)
+        obj_in = RoleUpdate.model_validate(db_obj)
         obj_in.responsibility = responsibility
         return super().update(db=db, db_obj=db_obj, obj_in=obj_in)
 
     def validate(self, db: Session, *, db_obj: Role) -> Role:
-        obj_in = RoleUpdate.from_orm(db_obj)
+        obj_in = RoleUpdate.model_validate(db_obj)
         obj_in.is_validated = True
         return super().update(db=db, db_obj=db_obj, obj_in=obj_in)
 

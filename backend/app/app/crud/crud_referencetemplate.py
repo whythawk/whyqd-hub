@@ -97,7 +97,7 @@ class CRUDReferenceTemplate(CRUDWhyqdBase[ReferenceTemplate, ReferenceTemplateCr
         ):
             raise ValueError(f"{template_in.name} mismatch.")
         template_in = crud_files.create_or_update(user=user, obj_in=template_in, obj_type=db_obj.model_type)
-        obj_in = ReferenceTemplateUpdate.from_orm(db_obj).dict()
+        obj_in = ReferenceTemplateUpdate.model_validate(db_obj).dict()
         obj_in["name"] = template_in.name
         obj_in["title"] = template_in.title
         obj_in["description"] = template_in.description

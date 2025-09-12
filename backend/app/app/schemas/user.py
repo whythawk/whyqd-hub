@@ -78,7 +78,7 @@ class User(UserInDBBase):
     @classmethod
     def evaluate_lazy_subscriptions(cls, v):
         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
-        # Call PydanticModel.from_orm(dbQuery)
+        # Call PydanticModel.model_validate(dbQuery)
         if isinstance(v, Query):
             expires = datetime.utcnow() - timedelta(days=1)  # 1 day grace
             v = (
@@ -104,7 +104,7 @@ class UserInDB(UserInDBBase):
 #     @validator("subscriptions", pre=True)
 #     def evaluate_lazy_subscriptions(cls, v):
 #         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
-#         # Call PydanticModel.from_orm(dbQuery)
+#         # Call PydanticModel.model_validate(dbQuery)
 #         if isinstance(v, Query):
 #             expires = datetime.utcnow() - timedelta(days=1)  # 1 day grace
 #             v = (
@@ -123,7 +123,7 @@ class UserInDB(UserInDBBase):
 #     @validator("subscriptions", pre=True)
 #     def evaluate_lazy_subscriptions(cls, v):
 #         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
-#         # Call PydanticModel.from_orm(dbQuery)
+#         # Call PydanticModel.model_validate(dbQuery)
 #         if isinstance(v, Query):
 #             return (
 #                 v.filter(SubscriptionMDL.subscription_event_type == SubscriptionEventType.RENEWED)

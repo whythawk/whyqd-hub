@@ -95,7 +95,7 @@ class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
         if not db_obj:
             return None
         # Rework the last order
-        obj_in = OrderInDB.from_orm(db_obj).dict()
+        obj_in = OrderInDB.model_validate(db_obj).dict()
         obj_in.pop("id", None)
         obj_in.pop("created", None)
         obj_in["subscription_id"] = subscription_id

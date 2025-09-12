@@ -130,7 +130,7 @@ class Task(TaskBase):
     @classmethod
     def evaluate_lazy_resources(cls, v):
         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
-        # Call PydanticModel.from_orm(dbQuery)
+        # Call PydanticModel.model_validate(dbQuery)
         if isinstance(v, Query):
             return v.filter("state" != StateType.COMPLETE.value).count()
         return None
@@ -152,7 +152,7 @@ class ScheduledTask(TaskBase):
     @classmethod
     def evaluate_lazy_resources(cls, v):
         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
-        # Call PydanticModel.from_orm(dbQuery)
+        # Call PydanticModel.model_validate(dbQuery)
         if isinstance(v, Query):
             return v.filter("state" != StateType.COMPLETE.value).count()
         return None

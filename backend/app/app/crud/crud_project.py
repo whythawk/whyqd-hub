@@ -81,7 +81,7 @@ class CRUDProject(CRUDWhyqdBase[Project, ProjectCreate, ProjectUpdate]):
         user: User,
         responsibility: RoleType = RoleType.CURATOR,
     ) -> Project | None:
-        obj_in = ProjectUpdate.from_orm(db_obj)
+        obj_in = ProjectUpdate.model_validate(db_obj)
         obj_in.schema_id = schema_obj.id
         return super().update(db=db, id=db_obj.id, obj_in=obj_in, user=user, responsibility=responsibility)
 

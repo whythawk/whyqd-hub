@@ -52,25 +52,25 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return user
 
     def validate_email(self, db: Session, *, db_obj: User) -> User:
-        obj_in = UserUpdate(**UserInDB.from_orm(db_obj).dict())
+        obj_in = UserUpdate(**UserInDB.model_validate(db_obj).dict())
         obj_in.email_validated = True
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)
 
     def activate_totp(self, db: Session, *, db_obj: User, totp_in: NewTOTP) -> User:
-        obj_in = UserUpdate(**UserInDB.from_orm(db_obj).dict())
+        obj_in = UserUpdate(**UserInDB.model_validate(db_obj).dict())
         obj_in = obj_in.dict(exclude_unset=True)
         obj_in["totp_secret"] = totp_in.secret
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)
 
     def deactivate_totp(self, db: Session, *, db_obj: User) -> User:
-        obj_in = UserUpdate(**UserInDB.from_orm(db_obj).dict())
+        obj_in = UserUpdate(**UserInDB.model_validate(db_obj).dict())
         obj_in = obj_in.dict(exclude_unset=True)
         obj_in["totp_secret"] = None
         obj_in["totp_counter"] = None
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)
 
     def update_totp_counter(self, db: Session, *, db_obj: User, new_counter: int) -> User:
-        obj_in = UserUpdate(**UserInDB.from_orm(db_obj).dict())
+        obj_in = UserUpdate(**UserInDB.model_validate(db_obj).dict())
         obj_in = obj_in.dict(exclude_unset=True)
         obj_in["totp_counter"] = new_counter
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)

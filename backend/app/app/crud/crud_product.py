@@ -35,7 +35,7 @@ class CRUDPrice(CRUDBase[Price, PriceCreate, PriceUpdate]):
         price_set = db.query(self.model).filter(self.model.currency == currency).all()
         for p in price_set:
             if p.product:
-                product = products.get(p.product.name, ProductPricingView.from_orm(p.product))
+                product = products.get(p.product.name, ProductPricingView.model_validate(p.product))
                 product.currency = currency
                 if p.per_annum > 0:
                     product.per_annum = PriceUpdate(**{"id": p.id, "currency": currency, "per_annum": p.per_annum})

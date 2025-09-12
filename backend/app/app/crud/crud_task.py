@@ -34,7 +34,7 @@ class CRUDTask(CRUDWhyqdBase[Task, TaskCreate, TaskUpdate]):
         user: User,
         responsibility: RoleType = RoleType.CURATOR,
     ) -> Task | None:
-        task_in = TaskUpdate.from_orm(db_obj)
+        task_in = TaskUpdate.model_validate(db_obj)
         task_in.project_id = project_obj.id
         return super().update(db=db, id=db_obj.id, obj_in=task_in, user=user, responsibility=responsibility)
 
@@ -46,7 +46,7 @@ class CRUDTask(CRUDWhyqdBase[Task, TaskCreate, TaskUpdate]):
         user: User,
         responsibility: RoleType = RoleType.CURATOR,
     ) -> Task | None:
-        task_in = TaskUpdate.from_orm(db_obj)
+        task_in = TaskUpdate.model_validate(db_obj)
         task_in.project_id = None
         return super().update(db=db, id=db_obj.id, obj_in=task_in, user=user, responsibility=responsibility)
 
@@ -74,7 +74,7 @@ class CRUDTask(CRUDWhyqdBase[Task, TaskCreate, TaskUpdate]):
         db_obj = self.get(db=db, id=id, user=user, responsibility=responsibility)
         if not db_obj:
             raise ValueError("Reference does not exist or insufficient permissions for the task.")
-        task_in = TaskUpdate.from_orm(db_obj)
+        task_in = TaskUpdate.model_validate(db_obj)
         if template_obj.model_type == ReferenceType.CROSSWALK:
             task_in.crosswalk_id = template_obj.id
         if template_obj.model_type == ReferenceType.DATASOURCE:
@@ -95,7 +95,7 @@ class CRUDTask(CRUDWhyqdBase[Task, TaskCreate, TaskUpdate]):
         db_obj = self.get(db=db, id=id, user=user, responsibility=responsibility)
         if not db_obj:
             raise ValueError("Reference does not exist or insufficient permissions for the task.")
-        task_in = TaskUpdate.from_orm(db_obj)
+        task_in = TaskUpdate.model_validate(db_obj)
         if template_type == ReferenceType.CROSSWALK:
             task_in.crosswalk_id = None
         if template_type == ReferenceType.DATASOURCE:

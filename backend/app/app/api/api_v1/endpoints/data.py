@@ -79,9 +79,11 @@ async def create_upload_files_for_task(
             sourceURL = task_obj.source
         if sourceURL and sourceURL.strip() != task_obj.source:
             # Update the task source url
-            task_in = schemas.TaskUpdate.from_orm(task_obj)
+            task_in = schemas.TaskUpdate.model_validate(task_obj)
             task_in.source = sourceURL.strip()
-            task_obj = crud.task.update(db=db, id=id, obj_in=task_in, user=current_user, responsibility=schema_types.RoleType.WRANGLER)
+            task_obj = crud.task.update(
+                db=db, id=id, obj_in=task_in, user=current_user, responsibility=schema_types.RoleType.WRANGLER
+            )
         # END: Update source url
         try:
             datasource_in = crud.files.import_source_from_upload(source=source, datasource_in=data)
@@ -91,7 +93,9 @@ async def create_upload_files_for_task(
                 detail=e,
             )
         datasource_in = json.loads(datasource_in.json(by_alias=True))
-        celery_app.send_task("app.worker.process_data_import", args=[current_user.id, datasource_in, sourceURL, task_obj.id])
+        celery_app.send_task(
+            "app.worker.process_data_import", args=[current_user.id, datasource_in, sourceURL, task_obj.id]
+        )
     return {
         "msg": "Source files successfully uploaded. Check your activity log to see when they're ready to process further."
     }

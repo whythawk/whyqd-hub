@@ -245,6 +245,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
                 raise ValueError("Hash failed `enforce_hash_consistency`. Updated hash is different.")
         reference_in = crud_files.create_or_update(user=user, obj_in=reference_in, obj_type=reference_type)
         obj_in = ReferenceUpdate.from_orm(db_obj).dict()
+        obj_in = ReferenceUpdate.model_validate(db_obj).dict()
         obj_in["name"] = reference_in.name
         obj_in["title"] = reference_in.title
         obj_in["description"] = reference_in.description
@@ -441,11 +442,13 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         if not db_obj:
             return None
         db_model = ResourceManager.from_orm(db_obj)
+        db_model = ResourceManager.model_validate(db_obj)
         # GET EACH REFERENCE MODEL
         # 1. Data source
         if db_obj.datasource_id and db_obj.data_id:
             reference_model = self.get_model(db=db, id=db_obj.data.id, user=user, responsibility=responsibility)
             reference_in = ResourceDataReference.from_orm(db_obj.data)
+            reference_in = ResourceDataReference.model_validate(db_obj.data)
             reference_in.links = [
                 ResourceModelLinks(
                     **{
@@ -481,6 +484,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
                 db=db, id=db_obj.schema_subject.id, user=user, responsibility=responsibility
             )
             reference_in = ResourceSchemaReference.from_orm(db_obj.schema_subject)
+            reference_in = ResourceSchemaReference.model_validate(db_obj.schema_subject)
             reference_in.links = [
                 ResourceModelLinks(
                     **{
@@ -497,6 +501,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
                 db=db, id=db_obj.transformdata.id, user=user, responsibility=responsibility
             )
             reference_in = ResourceDataReference.from_orm(db_obj.transformdatasource)
+            reference_in = ResourceDataReference.model_validate(db_obj.transformdatasource)
             # Note, providing the transform model here, not the data model
             reference_in.links = [
                 ResourceModelLinks(
@@ -541,11 +546,13 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         if not obj_dfn:
             return None
         db_model = ResourceCrosswalkManager.from_orm(db_obj)
+        db_model = ResourceCrosswalkManager.model_validate(db_obj)
         # GET EACH REFERENCE MODEL
         # 1. Data source
         if db_obj.datasource and db_obj.data:
             reference_model = self.get_model(db=db, id=db_obj.data.id, user=user, responsibility=responsibility)
             reference_in = ResourceDataReference.from_orm(db_obj.data)
+            reference_in = ResourceDataReference.model_validate(db_obj.data)
             reference_in.links = [
                 ResourceModelLinks(
                     **{
@@ -573,6 +580,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
                 db=db, id=db_obj.schema_subject.id, user=user, responsibility=responsibility
             )
             reference_in = ResourceSchemaReference.from_orm(db_obj.schema_subject)
+            reference_in = ResourceSchemaReference.model_validate(db_obj.schema_subject)
             reference_in.links = [
                 ResourceModelLinks(
                     **{
@@ -589,6 +597,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
                 db=db, id=db_obj.schema_object.id, user=user, responsibility=responsibility
             )
             reference_in = ResourceSchemaReference.from_orm(db_obj.schema_object)
+            reference_in = ResourceSchemaReference.model_validate(db_obj.schema_object)
             reference_in.links = [
                 ResourceModelLinks(
                     **{
@@ -603,6 +612,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
         reference_in = ResourceCrosswalkReference(**{"created": datetime.now()})
         if db_obj.crosswalk:
             reference_in = ResourceCrosswalkReference.from_orm(db_obj.crosswalk)
+            reference_in = ResourceCrosswalkReference.model_validate(db_obj.crosswalk)
             reference_in.links = [
                 ResourceModelLinks(
                     **{
@@ -910,6 +920,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
     ) -> Reference:
         # Featured schema, used for listing destination / object schemas
         obj_in = ResourceSchemaReference.from_orm(db_obj)
+        obj_in = ResourceSchemaReference.model_validate(db_obj)
         obj_in.isFeatured = True
         if db_obj.isFeatured:
             obj_in.isFeatured = False
@@ -1375,6 +1386,7 @@ class CRUDReference(CRUDWhyqdBase[Reference, ReferenceCreate, ReferenceUpdate]):
             )
             # Update Resource
             resource_in = ResourceUpdate.from_orm(resource_obj)
+            resource_in = ResourceUpdate.model_validate(resource_obj)
             resource_in.transformdatasource_id = transformdatasource_obj.id
             resource_in.transformdata_id = transformdata_obj.id
             resource_in.transform_id = transform_obj.id

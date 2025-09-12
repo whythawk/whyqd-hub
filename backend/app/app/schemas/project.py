@@ -126,7 +126,7 @@ class Project(ProjectBase):
     # @validator("tasks", pre=True)
     # def evaluate_lazy_tasks(cls, v):
     #     # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
-    #     # Call PydanticModel.from_orm(dbQuery)
+    #     # Call PydanticModel.model_validate(dbQuery)
     #     if isinstance(v, Query):
     #         return v.order_by(desc("name")).all()
     #     return v
@@ -135,6 +135,6 @@ class Project(ProjectBase):
     @classmethod
     def evaluate_lazy_auths(cls, v):
         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
-        # Call PydanticModel.from_orm(dbQuery)
+        # Call PydanticModel.model_validate(dbQuery)
         if isinstance(v, Query):
             return v.all()

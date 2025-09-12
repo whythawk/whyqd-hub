@@ -190,7 +190,7 @@ class CRUDResource(CRUDWhyqdBase[Resource, ResourceCreate, ResourceUpdate]):
         user: User,
         responsibility: RoleType = RoleType.CURATOR,
     ) -> Resource | None:
-        obj_in = ResourceUpdate.from_orm(db_obj)
+        obj_in = ResourceUpdate.model_validate(db_obj)
         obj_in.state = state
         return super().update(db=db, id=db_obj.id, obj_in=obj_in, user=user, responsibility=responsibility)
 
