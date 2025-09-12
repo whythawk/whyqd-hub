@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from uuid import UUID
 from datetime import datetime
 
@@ -33,22 +33,15 @@ class ReferenceTemplateBase(BaseSchema):
 
 class ReferenceTemplateCreate(ReferenceTemplateBase):
     name: str = Field(..., description="A machine-readable name given to the reference.")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class ReferenceTemplateUpdate(ReferenceTemplateCreate):
     id: UUID = Field(..., description="Automatically generated unique identity.")
-
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
 
 class ReferenceTemplate(ReferenceTemplateBase):
     id: UUID = Field(..., description="Automatically generated unique identity.")
     created: datetime = Field(..., description="Automatically generated date reference was created.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

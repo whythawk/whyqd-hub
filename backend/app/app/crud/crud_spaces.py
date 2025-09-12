@@ -35,7 +35,7 @@ class CRUDSpaces:
         self.space = boto3.resource(
             "s3",
             region_name=settings.SPACES_REGION_NAME,
-            endpoint_url=settings.SPACES_ENDPOINT_URL,
+            endpoint_url=str(settings.SPACES_ENDPOINT_URL),
             aws_access_key_id=settings.SPACES_ACCESS_KEY,
             aws_secret_access_key=settings.SPACES_SECRET_KEY,
         )

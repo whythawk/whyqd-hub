@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, List
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from uuid import UUID
 from datetime import datetime
 from whyqd.models import FieldModel, DataSourceAttributeModel
@@ -45,9 +45,7 @@ class ResourceCreate(ResourceBase):
 
 class ResourceUpdate(ResourceCreate):
     id: UUID = Field(..., description="Automatically generated unique identity.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Resource(ResourceBase):
@@ -64,18 +62,14 @@ class Resource(ResourceBase):
     # transformdatasource: Optional[Reference] = Field(None, description="Transform source data table reference.")
     task: Optional[BaseSummarySchema] = Field(None, description="Associated task table reference.")
     project_id: Optional[UUID] = Field(None, description="Project model reference.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ResourceActivitySummary(ResourceBase):
     task_id: Optional[UUID] = Field(None, description="Task model reference.")
     project_id: Optional[UUID] = Field(None, description="Project model reference.")
     latest_activity: ResourceActivity = Field(..., description="Summary of latest activity")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 ########################################################################################################################
@@ -98,9 +92,7 @@ class ResourceReference(BaseSchema):
         description="A short description.",
     )
     links: Optional[List[ResourceModelLinks]] = Field([], description="List of model references informing this field.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ResourceDataReference(ResourceReference):
@@ -142,9 +134,7 @@ class ResourceManager(ResourceBase):
     task: Optional[BaseSummarySchema] = Field(None, description="Associated task table reference.")
     project_id: Optional[UUID] = Field(None, description="Project model reference.")
     latest_activity: ResourceActivity = Field(..., description="Summary of latest activity")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ResourceCrosswalkManager(ResourceBase):
@@ -157,6 +147,4 @@ class ResourceCrosswalkManager(ResourceBase):
     schema_object: Optional[ResourceSchemaReference] = Field(None, description="Schema object table reference.")
     task: Optional[BaseSummarySchema] = Field(None, description="Associated task table reference.")
     latest_activity: ResourceActivity = Field(..., description="Summary of latest activity")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, List
-from pydantic import Field, validator
+from pydantic import field_validator, ConfigDict, Field
 
 from sqlalchemy.orm import Query
 
@@ -95,11 +95,10 @@ class ProjectBase(BaseSchema):
         None,
         description="An established standard to which the described resource conforms.",
     )
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-
-    @validator("subjects", pre=True)
+    @field_validator("subjects", mode="before")
+    @classmethod
     def evaluate_subjects(cls, v):
         return [s for s in v]
 
@@ -122,9 +121,7 @@ class Project(ProjectBase):
     skhema: Optional[BaseSummarySchema] = Field(None, alias="schema", description="Schema summary.")
     # tasks: Optional[List[Task]] = Field(None, description="List of tasks for this project.")
     auths: List[RoleSummary] = Field(..., description="Project members.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     # @validator("tasks", pre=True)
     # def evaluate_lazy_tasks(cls, v):
@@ -134,7 +131,8 @@ class Project(ProjectBase):
     #         return v.order_by(desc("name")).all()
     #     return v
 
-    @validator("auths", pre=True)
+    @field_validator("auths", mode="before")
+    @classmethod
     def evaluate_lazy_auths(cls, v):
         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
         # Call PydanticModel.from_orm(dbQuery)

@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 from uuid import UUID
 from datetime import datetime
 
@@ -20,8 +20,7 @@ class RefreshTokenUpdate(RefreshTokenBase):
 
 
 class RefreshToken(RefreshTokenUpdate):
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Token(BaseModel):
@@ -66,6 +65,4 @@ class OgunToken(BaseModel):
         default=RoleType.SEEKER,
         description="Responsibility assigned to this ogun.",
     )
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

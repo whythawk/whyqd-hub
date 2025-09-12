@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional  # , List
-from pydantic import Field, validator
+from pydantic import field_validator, ConfigDict, Field
 
 from sqlalchemy.orm import Query
 
@@ -107,9 +107,7 @@ class TaskCreate(TaskBase):
 class TaskUpdate(TaskCreate):
     id: UUID = Field(..., description="Automatically generated unique identity.")
     name: Optional[str] = Field(None, description="A machine-readable name given to the task.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Task(TaskBase):
@@ -126,11 +124,10 @@ class Task(TaskBase):
     skhema: Optional[BaseSummarySchema] = Field(None, alias="schema", description="Schema summary.")
     project: Optional[BaseSummarySchema] = Field(None, description="Project summary.")
     resources: Optional[int] = Field(None, description="Count of incomplete resources.")
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-
-    @validator("resources", pre=True)
+    @field_validator("resources", mode="before")
+    @classmethod
     def evaluate_lazy_resources(cls, v):
         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
         # Call PydanticModel.from_orm(dbQuery)
@@ -149,12 +146,10 @@ class ScheduledTask(TaskBase):
     resources: Optional[int] = Field(None, description="Count of incomplete resources.")
     skhema: Optional[BaseSummarySchema] = Field(None, alias="schema", description="Schema summary.")
     project: Optional[BaseSummarySchema] = Field(None, description="Project summary.")
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-
-    @validator("resources", pre=True)
+    @field_validator("resources", mode="before")
+    @classmethod
     def evaluate_lazy_resources(cls, v):
         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
         # Call PydanticModel.from_orm(dbQuery)

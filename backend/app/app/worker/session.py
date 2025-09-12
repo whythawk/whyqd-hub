@@ -14,7 +14,7 @@ def get_scoped_session():
     #     SessionScoped.remove()
     # Has to be *inside* the function calling it to ensure that it is an independent session.
     engine = create_engine(
-        settings.SQLALCHEMY_DATABASE_URI,
+        settings.SQLALCHEMY_DATABASE_URI.unicode_string(),
         pool_pre_ping=True,
         pool_recycle=3600,  # this line might not be needed
         connect_args={

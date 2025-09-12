@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 from uuid import UUID, uuid4
 from passlib import pwd
 from datetime import datetime
@@ -36,6 +36,4 @@ class OgunUserUpdate(OgunUserCreate):
 class OgunUser(OgunUserBase):
     created: datetime = Field(..., description="Automatically generated date reference was created.")
     access_key: UUID = Field(..., description="Automatically generated access key.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

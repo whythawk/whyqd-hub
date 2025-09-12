@@ -1,11 +1,12 @@
 from __future__ import annotations
-from pydantic import Field, constr
+from pydantic import StringConstraints, ConfigDict, Field
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
 
 from app.schemas.base_schema import BaseSchema
 from app.schema_types import SubscriptionType, SubscriptionEventType, CurrencyType
+from typing_extensions import Annotated
 
 
 class OrderBase(BaseSchema):
@@ -19,7 +20,7 @@ class OrderBase(BaseSchema):
     subscription_id: Optional[str] = Field(None, description="Stripe subscription id.")
     charge_id: Optional[str] = Field(None, description="Stripe charge id.")
     invoice_url: Optional[str] = Field(None, description="Stripe customer invoice url.")
-    country_code: Optional[constr(max_length=3)] = Field(
+    country_code: Optional[Annotated[str, StringConstraints(max_length=3)]] = Field(
         None, description="ISO two/three-letter country code, if possible."
     )
     country_name: Optional[str] = Field(None, description="Country name, if possible.")
@@ -38,9 +39,7 @@ class OrderUpdate(OrderBase):
 
 class OrderInDBBase(OrderUpdate):
     created: datetime = Field(..., description="Automatically generated datetime of creation.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Properties to return to client
@@ -59,7 +58,7 @@ class OrderInView(BaseSchema):
     subscription_event_type: SubscriptionEventType = Field(
         default=SubscriptionEventType.PENDING, description="Event process status."
     )
-    country_code: Optional[constr(max_length=3)] = Field(
+    country_code: Optional[Annotated[str, StringConstraints(max_length=3)]] = Field(
         None, description="ISO two/three-letter country code, if possible."
     )
     country_name: Optional[str] = Field(None, description="Country name, if possible.")
@@ -67,6 +66,4 @@ class OrderInView(BaseSchema):
     currency: CurrencyType = Field(..., description="Currency of subscription fee.")
     amount: int = Field(..., description="Currency value of subscription fee.")
     invoice_url: Optional[str] = Field(None, description="Stripe customer invoice url.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

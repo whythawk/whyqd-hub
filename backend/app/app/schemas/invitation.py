@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-from pydantic import Field, EmailStr
+from pydantic import ConfigDict, Field, EmailStr
 from uuid import UUID
 from datetime import datetime
 
@@ -35,6 +35,4 @@ class Invitation(InvitationBase):
     response: InvitationResponseType = Field(
         default=InvitationResponseType.WAITING, description="Invitee current response."
     )
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from uuid import UUID
 from datetime import datetime
 
@@ -42,15 +42,11 @@ class Activity(ActivityBase):
     resource: Optional[BaseSummarySchema] = Field(None, description="Summary of an associated resource.")
     task: Optional[BaseSummarySchema] = Field(None, description="Summary of an associated task.")
     project: Optional[BaseSummarySchema] = Field(None, description="Summary of an associated project.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ResourceActivity(ActivityBase):
     id: UUID = Field(..., description="Automatically generated unique identity.")
     created: datetime = Field(..., description="Automatically generated date reference was created.")
     message: str = Field(..., description="Brief phrase describing the activity.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

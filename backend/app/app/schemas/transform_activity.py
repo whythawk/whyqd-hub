@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
@@ -26,9 +26,7 @@ class TransformActivityUpdate(TransformActivityBase):
 
 class TransformActivityInDBBase(TransformActivityUpdate):
     created: datetime = Field(..., description="Automatically generated datetime of creation.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Properties to return to client

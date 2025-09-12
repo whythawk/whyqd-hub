@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from uuid import UUID
 from datetime import datetime
 
@@ -44,9 +44,7 @@ class RoleBase(BaseSchema):
         None,
         description="Unique identity for the referenced resource.",
     )
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RoleCreate(RoleBase):
@@ -70,9 +68,7 @@ class Role(BaseSchema):
     resource: Optional[BaseSummarySchema] = Field(None, description="Resource summary.")
     reference: Optional[BaseSummarySchema] = Field(None, alias="schema", description="Reference summary.")
     referencetemplate: Optional[BaseSummarySchema] = Field(None, description="Reference template summary.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RoleSummary(BaseSchema):
@@ -80,6 +76,4 @@ class RoleSummary(BaseSchema):
     created: datetime = Field(..., description="Automatically generated datetime of creation.")
     researcher: UserSummary = Field(..., description="Specified researcher with responsibility.")
     responsibility: RoleType = Field(..., description="Responsibility assigned to this researcher.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

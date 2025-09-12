@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import Field, EmailStr, validator
+from pydantic import field_validator, ConfigDict, Field, EmailStr
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
@@ -34,9 +34,7 @@ class SubscriptionUpdate(SubscriptionBase):
 
 class SubscriptionInDBBase(SubscriptionUpdate):
     created: datetime = Field(..., description="Automatically generated datetime of creation.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Properties to return to client
@@ -69,11 +67,10 @@ class SubscriptionInView(BaseSchema):
         default=False, description="Admin-level override to generate free, persistent subscriptions."
     )
     subscriber: EmailStr = Field(..., description="User email.")
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-
-    @validator("subscriber", pre=True)
+    @field_validator("subscriber", mode="before")
+    @classmethod
     def evaluate_lazy_subscriber(cls, v):
         # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
         # Call PydanticModel.from_orm(dbQuery)

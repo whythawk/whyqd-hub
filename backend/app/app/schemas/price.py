@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from typing import Optional
 
 from app.schema_types import CurrencyType
@@ -32,8 +32,7 @@ class PriceUpdate(PriceBase):
 
 
 class PriceInDBBase(PriceBase):
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Properties to return to client

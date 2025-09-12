@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from typing import List, Optional
 
 from app.schema_types import SubscriptionType, CurrencyType
@@ -28,9 +28,7 @@ class ProductUpdate(ProductBase):
 
 class ProductInDBBase(ProductBase):
     prices: Optional[List[Price]] = Field([], description="List of prices by currency denomination for this product.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Properties to return to client
@@ -53,6 +51,4 @@ class ProductPricingView(BaseSchema):
     currency: CurrencyType = Field(default=CurrencyType.EUR, description="Currency for the fee.")
     per_month: Optional[Price] = Field(None, description="Monthly by currency denomination for this product.")
     per_annum: Optional[Price] = Field(None, description="Annually by currency denomination for this product.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

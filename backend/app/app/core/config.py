@@ -1,7 +1,18 @@
 import secrets
-from typing import Any, Dict, List, Optional, Union
+from typing import List, Optional, Union
+from typing_extensions import Self
 
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator
+from pydantic import (
+    field_validator,
+    AnyHttpUrl,
+    EmailStr,
+    HttpUrl,
+    PostgresDsn,
+    computed_field,
+    model_validator,
+)
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_core import MultiHostUrl
 
 
 class Settings(BaseSettings):
@@ -24,7 +35,8 @@ class Settings(BaseSettings):
     # Set to 1Mb ... Starlette has 1Mb as default, so only use this if different
     CHUNK_SIZE: int = 1024 * 1024
 
-    @validator("BACKEND_CORS_ORIGINS", pre=True)
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
@@ -35,7 +47,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str
     SENTRY_DSN: Optional[HttpUrl] = None
 
-    @validator("SENTRY_DSN", pre=True)
+    @field_validator("SENTRY_DSN", mode="before")
+    @classmethod
     def sentry_dsn_can_be_blank(cls, v: str) -> Optional[str]:
         if len(v) == 0:
             return None
@@ -51,18 +64,18 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
-    SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
+    POSTGRES_PORT: int = 5432
 
-    @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
-        if isinstance(v, str):
-            return v
-        return PostgresDsn.build(
-            scheme="postgresql",
-            user=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_SERVER"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
+        return MultiHostUrl.build(
+            scheme="postgresql+psycopg",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_SERVER,
+            port=self.POSTGRES_PORT,
+            path=self.POSTGRES_DB,
         )
 
     SMTP_TLS: bool = True
@@ -74,19 +87,20 @@ class Settings(BaseSettings):
     EMAILS_FROM_NAME: Optional[str] = None
     EMAILS_TO_EMAIL: Optional[EmailStr] = None
 
-    @validator("EMAILS_FROM_NAME")
-    def get_project_name(cls, v: Optional[str], values: Dict[str, Any]) -> str:
-        if not v:
-            return values["PROJECT_NAME"]
-        return v
+    @model_validator(mode="after")
+    def _set_default_emails_from(self) -> Self:
+        if not self.EMAILS_FROM_NAME:
+            self.EMAILS_FROM_NAME = self.PROJECT_NAME
+        return self
 
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
     EMAIL_TEMPLATES_DIR: str = "/app/app/email-templates/build"
     EMAILS_ENABLED: bool = False
 
-    @validator("EMAILS_ENABLED", pre=True)
-    def get_emails_enabled(cls, v: bool, values: Dict[str, Any]) -> bool:
-        return bool(values.get("SMTP_HOST") and values.get("SMTP_PORT") and values.get("EMAILS_FROM_EMAIL"))
+    @computed_field  # type: ignore[misc]
+    @property
+    def emails_enabled(self) -> bool:
+        return bool(self.SMTP_HOST and self.SMTP_PORT and self.EMAILS_FROM_EMAIL)
 
     EMAIL_TEST_USER: EmailStr = "test@example.com"  # type: ignore
     FIRST_SUPERUSER: EmailStr
@@ -95,7 +109,8 @@ class Settings(BaseSettings):
 
     # WHYQD KEYS
     # 10**9 == 1gb ==> try 16gb? 16000000000 dev_shm must be aligned in docker-compose, currently 8611409920
-    WHYQD_MEMORY: int = 6000000000
+    # ray uses bytes -> gigabytes
+    WHYQD_MEMORY: int = 6000000000  # 67104768
     WHYQD_CPUS: int = 3
     WHYQD_SPILLWAY: str = "/app/tmp/spill"
     WHYQD_DIRECTORY: str = "/app/working/tmp"
@@ -109,9 +124,10 @@ class Settings(BaseSettings):
     STRIPE_MINIMUM_CHARGE_AMOUNT: Optional[int] = None
     USE_STRIPE: bool = False
 
-    @validator("USE_STRIPE", pre=True)
-    def get_use_stripe(cls, v: bool, values: Dict[str, Any]) -> bool:
-        return bool(values.get("STRIPE_API_KEY") and values.get("STRIPE_PUBLIC_KEY") and values.get("STRIPE_WEBHOOK"))
+    @model_validator(mode="after")
+    def _get_use_stripe(self) -> Self:
+        self.USE_STRIPE = bool(self.STRIPE_API_KEY and self.STRIPE_PUBLIC_KEY and self.STRIPE_WEBHOOK)
+        return self
 
     # WORKING WITH REFERENCES
     WORKING_PATH: str = "/app/working"
@@ -126,15 +142,16 @@ class Settings(BaseSettings):
     SPACES_BUCKET: Optional[str] = None
     USE_SPACES: bool = False
 
-    @validator("USE_SPACES", pre=True)
-    def get_use_spaces(cls, v: bool, values: Dict[str, Any]) -> bool:
-        return bool(
-            values.get("SPACES_ACCESS_KEY")
-            and values.get("SPACES_SECRET_KEY")
-            and values.get("SPACES_REGION_NAME")
-            and values.get("SPACES_ENDPOINT_URL")
-            and values.get("SPACES_BUCKET")
+    @model_validator(mode="after")
+    def _get_use_spaces(self) -> Self:
+        self.USE_SPACES = bool(
+            self.SPACES_ACCESS_KEY
+            and self.SPACES_SECRET_KEY
+            and self.SPACES_REGION_NAME
+            and self.SPACES_ENDPOINT_URL
+            and self.SPACES_BUCKET
         )
+        return self
 
     # IP2LOCATION IP COUNTRY LOCATION
     IP2_LINK: HttpUrl = "https://www.ip2location.com/download/"
@@ -179,16 +196,17 @@ class Settings(BaseSettings):
         "SK",
     ]
 
-    @validator("IP2_ENDPOINT_URL", pre=True)
-    def get_ip2_endpoint_url(cls, v: str, values: Dict[str, Any]) -> str:
-        return f"{values.get('IP2_LINK')}?token={values.get('IP2_TOKEN')}&file={values.get('IP2_FILE')}"
+    @model_validator(mode="after")
+    def _get_ip2_endpoint_url(self) -> Self:
+        self.IP2_ENDPOINT_URL = f"{self.IP2_LINK}?token={self.IP2_TOKEN}&file={self.IP2_FILE}"
+        return self
 
-    @validator("USE_IP2", pre=True)
-    def get_use_ip2(cls, v: bool, values: Dict[str, Any]) -> bool:
-        return bool(values.get("IP2_TOKEN") and values.get("IP2_LINK") and values.get("IP2_FILE"))
+    @model_validator(mode="after")
+    def _get_use_ip2(self) -> Self:
+        self.USE_IP2 = bool(self.IP2_TOKEN and self.IP2_LINK and self.IP2_FILE)
+        return self
 
-    class Config:
-        case_sensitive = True
+    model_config = SettingsConfigDict(case_sensitive=True)
 
 
 settings = Settings()

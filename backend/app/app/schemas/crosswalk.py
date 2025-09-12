@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, Union, List, Tuple
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from uuid import UUID
 from datetime import datetime
 
@@ -46,9 +46,7 @@ class Crosswalk(CrosswalkBase):
     reference: Reference = Field(..., description="Reference model of schema definition.")
     subject: Schema = Field(..., description="Subject schema definition for source of crosswalk.")
     object: Schema = Field(..., description="Object schema definition for destination of crosswalk.")
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ActionModel(BaseSchema):
