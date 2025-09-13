@@ -227,7 +227,7 @@ class CRUDFiles:
         branch: bool = False,
     ) -> DataSourceTemplateModel | DataSourceModel | SchemaModel | CrosswalkModel | TransformModel:
         # Slight modification of the model
-        if "version" in obj_in.dict():
+        if "version" in obj_in.model_dump(by_alias=True, exclude_unset=True):
             if len(obj_in.version) >= 1:
                 # new UUID - saving a version history
                 if branch:
@@ -239,7 +239,7 @@ class CRUDFiles:
             if user.full_name:
                 update.name = f"{user.full_name} <{user.email}>"
             obj_in.version.append(update)
-        jsn_obj = obj_in.json(by_alias=True, exclude_defaults=True, exclude_none=True)
+        jsn_obj = obj_in.model_dump_json(by_alias=True, exclude_defaults=True, exclude_none=True)
         obj_name = f"{obj_in.uuid}.{obj_type.name}"
         if self.use_spaces:
             spaces.update(source=jsn_obj, filename=obj_name)
@@ -337,9 +337,9 @@ class CRUDFiles:
     def recreate_data_summary(
         self, *, obj_id: UUID | str, datasource_id: UUID | str, obj_in: DataSourceModel | ResourceDataReference
     ):
-        data_in = DataSourceTemplateModel(**obj_in.dict())
+        data_in = DataSourceTemplateModel(**obj_in.model_dump(by_alias=True, exclude_unset=True))
         data_in.uuid = obj_id  # db_obj.datasource.model ... db_obj.datasource.id
-        if "mimeType" in obj_in.dict():
+        if "mimeType" in obj_in.model_dump(by_alias=True, exclude_unset=True):
             data_in.mime = obj_in.mimeType
         self.save_data_summary(obj_id=datasource_id, obj_in=data_in)
         return self.get_data_summary(obj_id=datasource_id, sheet_name=obj_in.sheet_name)

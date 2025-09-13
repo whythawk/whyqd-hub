@@ -156,7 +156,7 @@ def create_multi_tasks_with_project(
                 status_code=400,
                 detail="Either of project or field name, or user does not have the rights for this request.",
             )
-    models_in = [json.loads(model_in.json(by_alias=True)) for model_in in models_in]
+    models_in = [json.loads(model_in.model_dump_json(by_alias=True, exclude_unset=True)) for model_in in models_in]
     celery_app.send_task(
         "app.worker.process_create_multi_tasks_from_project",
         args=[ogun_token.authenticates.id, project_id, models_in, field_id],

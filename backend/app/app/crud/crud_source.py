@@ -60,7 +60,7 @@ class CRUDSource(CRUDBase[SourceHistory, SourceHistoryCreate, SourceHistoryUpdat
         if not save_obj:
             return None
         # save_obj = json.loads(save_obj.decode("utf8"))
-        obj_out = {"source": obj_in.dict(), "definition": save_obj}
+        obj_out = {"source": obj_in.model_dump(exclude_unset=True), "definition": save_obj}
         return SourceDefinitionMake(**obj_out)
 
     def save_definition(self, *, obj_in: SourceDefinitionMake) -> None:

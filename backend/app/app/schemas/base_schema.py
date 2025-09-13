@@ -10,10 +10,10 @@ from app.schema_types import StateType
 class BaseSchema(BaseModel):
     @property
     def as_db_dict(self):
-        to_db = self.dict(exclude_defaults=True, exclude_none=True, exclude={"identifier, id"})
+        to_db = self.model_dump(exclude_defaults=True, exclude_none=True, exclude={"identifier, id"})
         for key in ["id", "identifier"]:
-            if key in self.dict().keys():
-                to_db[key] = self.dict()[key].hex
+            if key in self.model_dump(exclude_unset=True).keys():
+                to_db[key] = self.model_dump(exclude_unset=True)[key].hex
         return to_db
 
 

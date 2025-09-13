@@ -73,9 +73,9 @@ class CRUDReferenceTemplate(CRUDWhyqdBase[ReferenceTemplate, ReferenceTemplateCr
             "model": template_in.uuid,
             "model_type": reference_type,
         }
-        if "version" in template_in.dict() and template_in.version:
+        if "version" in template_in.model_dump(exclude_unset=True) and template_in.version:
             obj_in["version"] = template_in.version[-1].updated
-        if "mime" in template_in.dict() and template_in.mime:
+        if "mime" in template_in.model_dump(exclude_unset=True) and template_in.mime:
             obj_in["mime_type"] = template_in.mime
         obj_in = ReferenceTemplateCreate(**obj_in)
         return super().create(db=db, obj_in=obj_in, user=user)
@@ -97,13 +97,13 @@ class CRUDReferenceTemplate(CRUDWhyqdBase[ReferenceTemplate, ReferenceTemplateCr
         ):
             raise ValueError(f"{template_in.name} mismatch.")
         template_in = crud_files.create_or_update(user=user, obj_in=template_in, obj_type=db_obj.model_type)
-        obj_in = ReferenceTemplateUpdate.model_validate(db_obj).dict()
+        obj_in = ReferenceTemplateUpdate.model_validate(db_obj).model_dump(exclude_unset=True)
         obj_in["name"] = template_in.name
         obj_in["title"] = template_in.title
         obj_in["description"] = template_in.description
-        if "version" in template_in.dict() and template_in.version:
+        if "version" in template_in.model_dump(exclude_unset=True) and template_in.version:
             obj_in["version"] = template_in.version[-1].updated
-        if "mimetype" in template_in.dict() and template_in.mime:
+        if "mimetype" in template_in.model_dump(exclude_unset=True) and template_in.mime:
             obj_in["mimetype"] = template_in.mime
         obj_in = ReferenceTemplateUpdate(**obj_in)
         return super().update(db=db, id=db_obj.id, obj_in=obj_in, user=user, responsibility=responsibility)

@@ -49,7 +49,7 @@ async def create_upload_files(
                 status_code=400,
                 detail=e,
             )
-        datasource_in = json.loads(datasource_in.json(by_alias=True))
+        datasource_in = json.loads(datasource_in.model_dump_json(by_alias=True, exclude_unset=True))
         celery_app.send_task("app.worker.process_data_import", args=[current_user.id, datasource_in, sourceURL, None])
     return {
         "msg": "Source files successfully uploaded. Check your activity log to see when they're ready to process further."
@@ -92,7 +92,8 @@ async def create_upload_files_for_task(
                 status_code=400,
                 detail=e,
             )
-        datasource_in = json.loads(datasource_in.json(by_alias=True))
+        # datasource_in = json.loads(datasource_in.model_dump(mode="json", by_alias=True))
+        datasource_in = json.loads(datasource_in.model_dump_json(by_alias=True, exclude_unset=True))
         celery_app.send_task(
             "app.worker.process_data_import", args=[current_user.id, datasource_in, sourceURL, task_obj.id]
         )
@@ -124,7 +125,7 @@ def download_reference_model(
             detail="Either the reference does not exist, or you do not have the rights for this request.",
         )
     # https://stackoverflow.com/a/69799463/295606
-    stream = io.StringIO(model_obj.json(by_alias=True))
+    stream = io.StringIO(model_obj.model_dump_json(by_alias=True, exclude_unset=True))
     return StreamingResponse(
         iter([stream.getvalue()]),
         media_type="application/json",

@@ -51,7 +51,7 @@ class CRUDRole(CRUDBase[Role, RoleCreate, RoleUpdate]):
             .all()
         )
         for obj in db_objs:
-            obj_in = RoleUpdate.model_validate(obj).dict()
+            obj_in = RoleUpdate.model_validate(obj).model_dump(exclude_unset=True)
             for term in ["created", "id", self._get_by_type(db_obj=old_obj)]:
                 # The two resources don't have to be the same so pop it here
                 obj_in.pop(term, None)

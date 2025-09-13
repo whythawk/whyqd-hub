@@ -102,10 +102,10 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
     def update_all(self, db: Session, *, obj_list_in=List[ProductUpdate]) -> List[Product]:
         self._remove_all(db=db)
         for product in obj_list_in:
-            product_in = ProductCreate(**product.dict())
+            product_in = ProductCreate(**product.model_dump(exclude_unset=True))
             product_obj = self.create(db=db, obj_in=product_in)
             for price_in in product.prices:
-                price_in = PriceCreate(**price_in.dict())
+                price_in = PriceCreate(**price_in.model_dump(exclude_unset=True))
                 price_obj = price.create(db=db, obj_in=price_in)
                 product_obj = self._append_price(db=db, db_obj=product_obj, price_obj=price_obj)
         return db.query(self.model).all()

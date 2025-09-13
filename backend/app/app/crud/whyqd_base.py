@@ -122,7 +122,7 @@ class CRUDWhyqdBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
-            update_data = obj_in.dict(exclude_unset=True)
+            update_data = obj_in.model_dump(exclude_unset=True)
         db_obj = self.get(db=db, id=id, user=user, responsibility=responsibility)
         if not db_obj or not (update_data.get("id") and db_obj.id == update_data["id"]):
             raise ValueError("Reference does not exist or insufficient permissions for the task.")
