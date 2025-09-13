@@ -103,7 +103,8 @@ class ResourceDataReference(ResourceReference):
     mimeType: Optional[MimeType] = Field(None, alias="mime_type", description="Reference to data mime type.")
     index: Optional[int] = Field(None, description="Index of last row.")
     summarykeys: Optional[List[str]] = Field([], description="Keys for first fifty rows of data source.")
-    summary: Optional[List[DataSourceAttributeModel]] = Field([], description="First fifty rows of data source.")
+    # summary: Optional[List[DataSourceAttributeModel]] = Field([], description="First fifty rows of data source.")
+    summary: Optional[List[dict]] = Field([], description="First fifty rows of data source.")
 
 
 class ResourceSchemaReference(ResourceReference):

@@ -24,12 +24,18 @@ class DataSourceTemplateModel(BaseSchema):
         None,
         description="A complete description of the data source. Depending on how complex your work becomes, try and be as helpful as possible to 'future-you'. You'll thank yourself later.",
     )
-    path: Optional[Annotated[str, StringConstraints(strip_whitespace=True)]] = Field(None, description="Full path to valid source data file.")
+    path: Optional[Annotated[str, StringConstraints(strip_whitespace=True)]] = Field(
+        None, description="Full path to valid source data file."
+    )
     mime: Optional[MimeType] = Field(None, description="Mime type for source data. Automatically generated.")
     header: Optional[Union[int, List[int]]] = Field(
         0, description="Row (0-indexed) to use for the column labels of the parsed DataFrame. "
     )
-    attributes: Optional[DataSourceAttributeModel] = Field(
+    # attributes: Optional[DataSourceAttributeModel] = Field(
+    #     {},
+    #     description="Optional open dictionary for reader-specific attributes for Pandas' API. E.g. 'quoting' for the CSV library.",
+    # )
+    attributes: Optional[dict] = Field(
         {},
         description="Optional open dictionary for reader-specific attributes for Pandas' API. E.g. 'quoting' for the CSV library.",
     )

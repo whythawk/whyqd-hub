@@ -12,7 +12,7 @@ from app.core.celery_app import celery_app
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.Resource], response_model_exclude_unset=True)
+@router.get("/", response_model=List[schemas.Resource])
 def read_all_resources(
     *,
     db: Session = Depends(deps.get_db),
@@ -39,7 +39,7 @@ def read_all_resources(
     )
 
 
-@router.get("/task/{task_id}", response_model=List[schemas.Resource], response_model_exclude_unset=True)
+@router.get("/task/{task_id}", response_model=List[schemas.Resource])
 def read_all_task_resources(
     *,
     db: Session = Depends(deps.get_db),
