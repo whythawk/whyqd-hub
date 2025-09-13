@@ -12,7 +12,7 @@ from app.core.celery_app import celery_app
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.Resource])
+@router.get("/", response_model=List[schemas.Resource], response_model_exclude_unset=True)
 def read_all_resources(
     *,
     db: Session = Depends(deps.get_db),
@@ -39,7 +39,7 @@ def read_all_resources(
     )
 
 
-@router.get("/task/{task_id}", response_model=List[schemas.Resource])
+@router.get("/task/{task_id}", response_model=List[schemas.Resource], response_model_exclude_unset=True)
 def read_all_task_resources(
     *,
     db: Session = Depends(deps.get_db),
@@ -74,7 +74,7 @@ def read_all_task_resources(
     )
 
 
-@router.get("/{id}", response_model=schemas.ResourceManager)
+@router.get("/{id}", response_model=schemas.ResourceManager, response_model_exclude_unset=True)
 def get_resource(
     *,
     db: Session = Depends(deps.get_db),
@@ -89,7 +89,7 @@ def get_resource(
     )
 
 
-@router.get("/template/{id}", response_model=schemas.DataSourceTemplateModel)
+@router.get("/template/{id}", response_model=schemas.DataSourceTemplateModel, response_model_exclude_unset=True)
 def get_resource_source_template(
     *,
     db: Session = Depends(deps.get_db),
@@ -108,7 +108,7 @@ def get_resource_source_template(
     return crud.reference.get_model(db_obj=resource_obj.datasource)
 
 
-@router.post("/{id}/schema/{term_id}", response_model=schemas.ResourceManager)
+@router.post("/{id}/schema/{term_id}", response_model=schemas.ResourceManager, response_model_exclude_unset=True)
 def add_schema_object_to_resource(
     *,
     db: Session = Depends(deps.get_db),
@@ -231,7 +231,7 @@ def remove_resource(
     return {"msg": "Resource has been successfully removed."}
 
 
-@router.delete("/transform/{id}", response_model=schemas.ResourceManager)
+@router.delete("/transform/{id}", response_model=schemas.ResourceManager, response_model_exclude_unset=True)
 def remove_resource_transform(
     *,
     db: Session = Depends(deps.get_db),
@@ -254,7 +254,7 @@ def remove_resource_transform(
     return crud.reference.get_resource_manager(db=db, id=id, user=current_user)
 
 
-@router.delete("/crosswalk/{id}", response_model=schemas.ResourceManager)
+@router.delete("/crosswalk/{id}", response_model=schemas.ResourceManager, response_model_exclude_unset=True)
 def remove_resource_crosswalk(
     *,
     db: Session = Depends(deps.get_db),
@@ -275,7 +275,7 @@ def remove_resource_crosswalk(
     return crud.reference.get_resource_manager(db=db, id=id, user=current_user)
 
 
-@router.delete("/schema/{id}", response_model=schemas.ResourceManager)
+@router.delete("/schema/{id}", response_model=schemas.ResourceManager, response_model_exclude_unset=True)
 def remove_resource_schema(
     *,
     db: Session = Depends(deps.get_db),
